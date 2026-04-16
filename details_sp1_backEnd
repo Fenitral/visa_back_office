@@ -1,0 +1,127 @@
+═══════════════════════════════════════════════════════════════
+ENTITÉS (Models/Entities)
+═══════════════════════════════════════════════════════════════
+
+📦 Class Personne
+   - id_personne: Long
+   - nom: String
+   - prenom: String
+   - nom_de_jeune_fille: String
+   - date_de_naissance: LocalDate
+   - lieu_de_naissance: String
+   - situation_de_famille: String
+   - nationalite: String
+   - adresse: String
+   - email: String
+   - telephone: String
+
+📦 Class VisaTransformable
+   - id_visa_transformable: Long
+   - id_personne: Long (FK)
+   - reference: Integer
+   - date_expiration: LocalDate
+   - date_arrivee: LocalDate
+   - lieu_d_arrivee: String
+   - statut: String
+
+📦 Class TypeVisa
+   - id_type_visa: Long
+   - nom: String
+
+📦 Class DemandeTransformation
+   - id_demande_transformation: Long
+   - id_personne: Long (FK)
+   - id_visa_transformable: Long (FK)
+   - id_type_visa: Long (FK)
+   - numero_demande: String (UNIQUE)
+   - statut: String
+   - date_creation: LocalDateTime
+
+═══════════════════════════════════════════════════════════════
+REPOSITORIES
+═══════════════════════════════════════════════════════════════
+
+📂 Interface PersonneRepository extends JpaRepository<Personne, Long>
+   + Personne findByEmail(String email)
+
+📂 Interface VisaTransformableRepository extends JpaRepository<VisaTransformable, Long>
+   + List<VisaTransformable> findByIdPersonne(Long idPersonne)
+   + Optional<VisaTransformable> findByReference(Integer reference)
+
+📂 Interface DemandeTransformationRepository extends JpaRepository<DemandeTransformation, Long>
+   + Optional<DemandeTransformation> findByNumerodemande(String numero)
+   + List<DemandeTransformation> findByIdPersonne(Long idPersonne)
+
+═══════════════════════════════════════════════════════════════
+SERVICE
+═══════════════════════════════════════════════════════════════
+
+📋 Class DemandeTransformationService
+   
+   + DemandeResponse enregistrerDemande(CreateDemandeRequest request)
+      ├─ Paramètres: 
+      │  nom, prenom, nom_de_jeune_fille, date_de_naissance,
+      │  lieu_de_naissance, situation_de_famille, nationalite,
+      │  adresse, email, telephone, reference, date_expiration,
+      │  date_arrivee, lieu_d_arrivee, id_type_visa
+      │
+      ├─ Logique:
+      │  1. Créer Personne
+      │  2. Créer VisaTransformable (lié à Personne)
+      │  3. Générer numéro_demande (DT-YYYY-XXXXX)
+      │  4. Créer DemandeTransformation
+      │  5. Sauvegarder tout
+      │
+      └─ Retour: {id_demande, numero_demande, statut, message}
+      
+   + String generateNummeroDemande()
+      └─ Retour: String (format: DT-2026-00001)
+      
+   + void validateRequest(CreateDemandeRequest request) throws Exception
+      ├─ Email unique
+      ├─ Champs obligatoires non null
+      └─ Type visa existe
+
+═══════════════════════════════════════════════════════════════
+DTO (Data Transfer Objects)
+═══════════════════════════════════════════════════════════════
+
+📊 Class CreateDemandeRequest
+   + String nom
+   + String prenom
+   + String nom_de_jeune_fille
+   + LocalDate date_de_naissance
+   + String lieu_de_naissance
+   + String situation_de_famille
+   + String nationalite
+   + String adresse
+   + String email
+   + String telephone
+   + Integer reference
+   + LocalDate date_expiration
+   + LocalDate date_arrivee
+   + String lieu_d_arrivee
+   + Long id_type_visa
+
+📊 Class DemandeResponse
+   + Long id_demande
+   + String numero_demande
+   + String statut
+   + String message
+
+═══════════════════════════════════════════════════════════════
+CONTROLLER
+═══════════════════════════════════════════════════════════════
+
+🎮 Class DemandeTransformationController
+   
+   @PostMapping("/api/demandes-transformation")
+   + ResponseEntity<DemandeResponse> enregistrerDemande(
+         @RequestBody CreateDemandeRequest request
+      )
+      ├─ Appel: demandeService.enregistrerDemande(request)
+      ├─ Retour: ResponseEntity.status(HttpStatus.CREATED)
+                 .body(response)
+      └─ Exception handling: Retour erreur 400/500
+
+═══════════════════════════════════════════════════════════════
