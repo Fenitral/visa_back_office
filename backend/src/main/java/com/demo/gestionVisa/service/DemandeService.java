@@ -3,17 +3,16 @@ package com.demo.gestionVisa.service;
 import com.demo.gestionVisa.model.Demande;
 import com.demo.gestionVisa.model.Demandeur;
 import com.demo.gestionVisa.model.VisaTransformable;
-import com.demo.gestionVisa.model.PieceJustificative;
 import com.demo.gestionVisa.repository.DemandeRepository;
 import com.demo.gestionVisa.dto.DemandeRequestDTO;
 import com.demo.gestionVisa.dto.DemandeResponseDTO;
 import com.demo.gestionVisa.dto.PieceJustificativeDTO;
 import com.demo.gestionVisa.enums.StatutDemande;
-import com.demo.gestionVisa.enums.TypePieceJustificative;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -53,6 +52,14 @@ public class DemandeService {
         
         // Créer la demande
         Demande demande = new Demande(demandeur, visa, demandeRequest.getTypeDemande());
+
+        // Initialiser les champs non nuls avant le premier insert
+        demande.setStatut(StatutDemande.DOSSIER_CREE);
+        demande.setPiecesObligatoiresCompletes(false);
+        demande.setDossierComplet(false);
+
+        // Persister d'abord la demande pour obtenir un ID avant toute association/requete sur les pieces
+        demande = demandeRepository.save(demande);
         
         // Créer les pièces justificatives
         if (demandeRequest.getPiecesJustificatives() != null) {
@@ -61,8 +68,10 @@ public class DemandeService {
             }
         }
         
-        // Vérifier les pièces justificatives et attribuer le statut
-        attribuerStatut(demande);
+        // Recalculer les indicateurs seulement si des pieces sont fournies
+        if (demandeRequest.getPiecesJustificatives() != null && !demandeRequest.getPiecesJustificatives().isEmpty()) {
+            attribuerStatut(demande);
+        }
         
         return demandeRepository.save(demande);
     }
@@ -159,7 +168,7 @@ public class DemandeService {
      * Récupérer une demande par ID
      */
     public Optional<Demande> getDemandeById(Long id) {
-        return demandeRepository.findById(id);
+        return demandeRepository.findById(Objects.requireNonNull(id));
     }
     
     /**
@@ -194,7 +203,7 @@ public class DemandeService {
      * Mettre à jour le statut d'une demande
      */
     public Demande updateStatut(Long demandeId, StatutDemande nouveauStatut) {
-        Optional<Demande> demandeOptional = demandeRepository.findById(demandeId);
+        Optional<Demande> demandeOptional = demandeRepository.findById(Objects.requireNonNull(demandeId));
         
         if (demandeOptional.isPresent()) {
             Demande demande = demandeOptional.get();
@@ -215,7 +224,7 @@ public class DemandeService {
      * Revérifier les statuts après ajout de pièces
      */
     public Demande revérifierEtMajStatut(Long demandeId) {
-        Optional<Demande> demandeOptional = demandeRepository.findById(demandeId);
+        Optional<Demande> demandeOptional = demandeRepository.findById(Objects.requireNonNull(demandeId));
         
         if (demandeOptional.isPresent()) {
             Demande demande = demandeOptional.get();
@@ -232,7 +241,7 @@ public class DemandeService {
      * Supprimer une demande
      */
     public void deleteDemande(Long id) {
-        demandeRepository.deleteById(id);
+        demandeRepository.deleteById(Objects.requireNonNull(id));
     }
     
     /**
