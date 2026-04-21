@@ -6,8 +6,11 @@ import com.demo.gestionVisa.model.VisaTransformable;
 import com.demo.gestionVisa.repository.DemandeRepository;
 import com.demo.gestionVisa.dto.DemandeRequestDTO;
 import com.demo.gestionVisa.dto.DemandeResponseDTO;
+import com.demo.gestionVisa.dto.DemandeurDTO;
 import com.demo.gestionVisa.dto.PieceJustificativeDTO;
+import com.demo.gestionVisa.dto.VisaTransformableDTO;
 import com.demo.gestionVisa.enums.StatutDemande;
+import com.demo.gestionVisa.enums.TypeDemande;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -218,6 +221,38 @@ public class DemandeService {
         }
         
         return null;
+    }
+
+    /**
+     * Modifier une demande existante (demandeur + visa + type)
+     */
+    public Demande modifierDemande(Long demandeId, DemandeurDTO demandeurDTO, VisaTransformableDTO visaDTO, TypeDemande typeDemande) throws Exception {
+        Optional<Demande> demandeOptional = demandeRepository.findById(Objects.requireNonNull(demandeId));
+        if (demandeOptional.isEmpty()) {
+            throw new Exception("Demande non trouvée");
+        }
+        Demande demande = demandeOptional.get();
+
+        if (demandeurDTO == null || visaDTO == null || typeDemande == null) {
+            throw new Exception("Données de modification incomplètes");
+        }
+
+        Demandeur updatedDemandeur = demandeurService.updateDemandeur(demande.getDemandeur().getId(), demandeurDTO);
+        if (updatedDemandeur == null) {
+            throw new Exception("Demandeur non trouvé");
+        }
+
+        VisaTransformable updatedVisa = visaTransformableService.updateVisaTransformable(demande.getVisaTransformable().getId(), visaDTO);
+        if (updatedVisa == null) {
+            throw new Exception("Visa transformable non trouvé");
+        }
+
+        demande.setDemandeur(updatedDemandeur);
+        demande.setVisaTransformable(updatedVisa);
+        demande.setTypeDemande(typeDemande);
+        demande.setDateModification(LocalDateTime.now());
+
+        return demandeRepository.save(demande);
     }
     
     /**

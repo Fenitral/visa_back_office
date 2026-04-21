@@ -5,15 +5,23 @@ import com.demo.gestionVisa.model.PieceJustificative;
 import com.demo.gestionVisa.service.DemandeService;
 import com.demo.gestionVisa.service.PieceJustificativeService;
 import com.demo.gestionVisa.dto.DemandeRequestDTO;
+import com.demo.gestionVisa.dto.DemandeurDTO;
 import com.demo.gestionVisa.dto.PieceJustificativeDTO;
+import com.demo.gestionVisa.dto.VisaTransformableDTO;
+import com.demo.gestionVisa.enums.SituationFamiliale;
 import com.demo.gestionVisa.enums.StatutDemande;
 import com.demo.gestionVisa.enums.TypeDemande;
+import com.demo.gestionVisa.enums.TypePieceJustificative;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -73,16 +81,157 @@ public class DemandeController {
             Demande dem = demande.get();
             model.addAttribute("demande", dem);
             
-            List<PieceJustificative> pieces = pieceJustificativeService.getPiecesByDemande(dem);
-            model.addAttribute("pieces", pieces);
-            
             model.addAttribute("statuts", StatutDemande.values());
             
             return "demande/detail-demande";
         }
         
         model.addAttribute("error", "Demande non trouvée");
-        return "redirect:/demandes/liste";
+        return "redirect:/demandes";
+    }
+
+    /**
+     * Afficher une page de modification (pieces justificatives)
+     * GET /demandes/{id}/modifier
+     */
+    @GetMapping("/{id}/modifier")
+    public String afficherModification(@PathVariable Long id, Model model) {
+        Optional<Demande> demande = demandeService.getDemandeById(id);
+        if (demande.isEmpty()) {
+            model.addAttribute("error", "Demande non trouvée");
+            return "redirect:/demandes";
+        }
+
+        Demande dem = demande.get();
+        model.addAttribute("demande", dem);
+
+        List<PieceJustificative> pieces = pieceJustificativeService.getPiecesByDemande(dem);
+        Map<String, PieceJustificative> piecesParType = new HashMap<>();
+        for (PieceJustificative p : pieces) {
+            if (p.getTypePiece() != null) {
+                piecesParType.put(p.getTypePiece().name(), p);
+            }
+        }
+        model.addAttribute("typesPieces", TypePieceJustificative.values());
+        model.addAttribute("piecesParType", piecesParType);
+
+        model.addAttribute("typesDemande", TypeDemande.values());
+        model.addAttribute("situations", SituationFamiliale.values());
+
+        return "demande/modifier-pieces";
+    }
+
+    /**
+     * Enregistrer la modification des pieces (checkboxes)
+     * POST /demandes/{id}/modifier
+     */
+    @PostMapping("/{id}/modifier")
+    public String enregistrerModification(
+            @PathVariable Long id,
+            @RequestParam("nom") String nom,
+            @RequestParam("prenom") String prenom,
+            @RequestParam(value = "nomJeuneFille", required = false) String nomJeuneFille,
+            @RequestParam("dateNaissance") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateNaissance,
+            @RequestParam("situationFamiliale") SituationFamiliale situationFamiliale,
+            @RequestParam("nationalite") String nationalite,
+            @RequestParam(value = "profession", required = false) String profession,
+            @RequestParam("adresseMadagascar") String adresseMadagascar,
+            @RequestParam(value = "telephone", required = false) String telephone,
+            @RequestParam("referenceVisa") String referenceVisa,
+            @RequestParam("dateEntree") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateEntree,
+            @RequestParam("lieuEntree") String lieuEntree,
+            @RequestParam("dateExpiration") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateExpiration,
+            @RequestParam("typeDemande") TypeDemande typeDemande,
+            @RequestParam(value = "pieces", required = false) List<String> piecesSelectionnees,
+            RedirectAttributes redirectAttributes) {
+        try {
+            Optional<Demande> demandeOptional = demandeService.getDemandeById(id);
+            if (demandeOptional.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Demande non trouvée");
+                return "redirect:/demandes";
+            }
+
+            Demande dem = demandeOptional.get();
+
+            DemandeurDTO demandeurDTO = new DemandeurDTO();
+            demandeurDTO.setNom(nom);
+            demandeurDTO.setPrenom(prenom);
+            demandeurDTO.setNomJeuneFille(nomJeuneFille);
+            demandeurDTO.setDateNaissance(dateNaissance);
+            demandeurDTO.setSituationFamiliale(situationFamiliale);
+            demandeurDTO.setNationalite(nationalite);
+            demandeurDTO.setProfession(profession);
+            demandeurDTO.setAdresseMadagascar(adresseMadagascar);
+            demandeurDTO.setTelephone(telephone);
+
+            VisaTransformableDTO visaDTO = new VisaTransformableDTO();
+            visaDTO.setReference(referenceVisa);
+            visaDTO.setDateEntree(dateEntree);
+            visaDTO.setLieuEntree(lieuEntree);
+            visaDTO.setDateExpiration(dateExpiration);
+
+            // Mettre à jour les infos principales de la demande
+            dem = demandeService.modifierDemande(id, demandeurDTO, visaDTO, typeDemande);
+
+            for (TypePieceJustificative type : TypePieceJustificative.values()) {
+                boolean shouldBeSubmitted = piecesSelectionnees != null && piecesSelectionnees.contains(type.name());
+
+                Optional<PieceJustificative> existing = pieceJustificativeService.getPieceByDemandeAndType(dem, type);
+
+                if (shouldBeSubmitted) {
+                    if (existing.isPresent()) {
+                        if (!existing.get().isSousmise()) {
+                            pieceJustificativeService.soumettePieceJustificative(existing.get().getId());
+                        }
+                    } else {
+                        PieceJustificativeDTO dto = new PieceJustificativeDTO();
+                        dto.setTypePiece(type);
+                        dto.setNomFichier("piece-" + type.name() + ".pdf");
+                        dto.setSousmise(true);
+                        pieceJustificativeService.creerPieceJustificative(dem, dto);
+                    }
+                } else {
+                    if (existing.isPresent() && existing.get().isSousmise()) {
+                        pieceJustificativeService.retirerPieceJustificative(existing.get().getId());
+                    }
+                }
+            }
+
+            demandeService.revérifierEtMajStatut(id);
+            redirectAttributes.addFlashAttribute("success", "Modification enregistrée");
+            return "redirect:/demandes";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/demandes/" + id + "/modifier";
+        }
+    }
+
+    /**
+     * Version imprimable (PDF via impression navigateur)
+     * GET /demandes/{id}/imprimer
+     */
+    @GetMapping("/{id}/imprimer")
+    public String imprimerDemande(@PathVariable Long id, Model model) {
+        Optional<Demande> demande = demandeService.getDemandeById(id);
+        if (demande.isEmpty()) {
+            model.addAttribute("error", "Demande non trouvée");
+            return "redirect:/demandes";
+        }
+
+        Demande dem = demande.get();
+        model.addAttribute("demande", dem);
+
+        List<PieceJustificative> pieces = pieceJustificativeService.getPiecesByDemande(dem);
+        Map<String, PieceJustificative> piecesParType = new HashMap<>();
+        for (PieceJustificative p : pieces) {
+            if (p.getTypePiece() != null) {
+                piecesParType.put(p.getTypePiece().name(), p);
+            }
+        }
+        model.addAttribute("typesPieces", TypePieceJustificative.values());
+        model.addAttribute("piecesParType", piecesParType);
+
+        return "demande/imprimer-demande";
     }
     
     /**
@@ -155,7 +304,7 @@ public class DemandeController {
             }
             
             Demande demande = demandeOptional.get();
-            PieceJustificative piece = pieceJustificativeService.creerPieceJustificative(demande, pieceDTO);
+            pieceJustificativeService.creerPieceJustificative(demande, pieceDTO);
             
             // Revérifier et mettre à jour le statut
             demandeService.revérifierEtMajStatut(demandeId);

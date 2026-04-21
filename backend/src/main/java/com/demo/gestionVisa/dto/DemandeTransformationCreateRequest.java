@@ -2,6 +2,7 @@ package com.demo.gestionVisa.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Request DTO du sprint 1 pour l'enregistrement d'une demande de transformation.
@@ -52,6 +53,9 @@ public class DemandeTransformationCreateRequest {
 
     @JsonProperty("id_type_visa")
     private Integer idTypeVisa;
+
+    @JsonProperty("pieces")
+    private List<String> pieces;
 
     public String getNom() {
         return nom;
@@ -171,5 +175,13 @@ public class DemandeTransformationCreateRequest {
 
     public void setIdTypeVisa(Integer idTypeVisa) {
         this.idTypeVisa = idTypeVisa;
+    }
+
+    public List<String> getPieces() {
+        return pieces;
+    }
+
+    public void setPieces(List<String> pieces) {
+        this.pieces = pieces;
     }
 }

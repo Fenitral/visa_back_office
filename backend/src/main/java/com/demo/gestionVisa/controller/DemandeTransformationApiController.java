@@ -4,16 +4,20 @@ import com.demo.gestionVisa.dto.DemandeRequestDTO;
 import com.demo.gestionVisa.dto.DemandeTransformationCreateRequest;
 import com.demo.gestionVisa.dto.DemandeTransformationCreateResponse;
 import com.demo.gestionVisa.dto.DemandeurDTO;
+import com.demo.gestionVisa.dto.PieceJustificativeDTO;
 import com.demo.gestionVisa.dto.VisaTransformableDTO;
 import com.demo.gestionVisa.enums.SituationFamiliale;
 import com.demo.gestionVisa.enums.TypeDemande;
+import com.demo.gestionVisa.enums.TypePieceJustificative;
 import com.demo.gestionVisa.model.Demande;
 import com.demo.gestionVisa.model.Demandeur;
 import com.demo.gestionVisa.service.DemandeService;
 import com.demo.gestionVisa.service.DemandeurService;
 import com.demo.gestionVisa.service.VisaTransformableService;
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,6 +80,28 @@ public class DemandeTransformationApiController {
             demandeRequestDTO.setDemandeur(demandeurDTO);
             demandeRequestDTO.setVisaTransformable(visaDTO);
             demandeRequestDTO.setTypeDemande(mapTypeDemande(request.getIdTypeVisa()));
+
+            if (request.getPieces() != null && !request.getPieces().isEmpty()) {
+                List<PieceJustificativeDTO> pieces = new ArrayList<>();
+                for (String raw : request.getPieces()) {
+                    if (!StringUtils.hasText(raw)) {
+                        continue;
+                    }
+                    TypePieceJustificative type;
+                    try {
+                        type = TypePieceJustificative.valueOf(raw.trim().toUpperCase());
+                    } catch (IllegalArgumentException ex) {
+                        throw new IllegalArgumentException("Type de piece invalide: " + raw);
+                    }
+
+                    PieceJustificativeDTO dto = new PieceJustificativeDTO();
+                    dto.setTypePiece(type);
+                    dto.setNomFichier("piece-" + type.name() + ".pdf");
+                    dto.setSousmise(true);
+                    pieces.add(dto);
+                }
+                demandeRequestDTO.setPiecesJustificatives(pieces);
+            }
 
             Demande demande = demandeService.creerDemande(demandeRequestDTO);
             String numeroDemande = String.format("DT-%d-%03d", Year.now().getValue(), demande.getId());
