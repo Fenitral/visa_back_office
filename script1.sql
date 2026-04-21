@@ -1,3 +1,6 @@
+CREATE DATABASE gestion_visa;
+\c gestion_visa;
+
 CREATE TABLE Nationalite (
     id SERIAL PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
@@ -83,7 +86,6 @@ CREATE TABLE Demande (
     id SERIAL PRIMARY KEY,
     id_visa_transformable INT NOT NULL,
     date_demande DATE NOT NULL,
-    id_statut INT NOT NULL,
     id_demandeur INT NOT NULL,
     id_type_visa INT NOT NULL,
     id_type_demande INT NOT NULL,
@@ -119,7 +121,7 @@ CREATE TABLE carte_resident (
 CREATE TABLE Statut_demande (
     id SERIAL PRIMARY KEY,
     id_demande INT NOT NULL,
-    statut INT NOT NULL,-- 'brouillon', 'soumise', 'en_cours', 'validee', 'rejetee'
+    statut VARCHAR(50) NOT NULL,-- 'brouillon', 'soumise', 'en_cours', 'validee', 'rejetee'
     date_changement_statut DATE,
     FOREIGN KEY (id_demande) REFERENCES Demande(id)
 );
