@@ -2,8 +2,8 @@ package com.demo.gestionVisa.repository;
 
 import com.demo.gestionVisa.model.Demande;
 import com.demo.gestionVisa.model.Demandeur;
+import com.demo.gestionVisa.model.TypeDemandeRef;
 import com.demo.gestionVisa.enums.StatutDemande;
-import com.demo.gestionVisa.enums.TypeDemande;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +28,7 @@ public interface DemandeRepository extends JpaRepository<Demande, Long> {
     /**
      * Recherche toutes les demandes par type
      */
-    List<Demande> findByTypeDemande(TypeDemande typeDemande);
+    List<Demande> findByTypeDemande(TypeDemandeRef typeDemande);
     
     /**
      * Compte les demandes d'un demandeur

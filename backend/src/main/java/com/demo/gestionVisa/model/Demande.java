@@ -3,7 +3,6 @@ package com.demo.gestionVisa.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import com.demo.gestionVisa.enums.StatutDemande;
-import com.demo.gestionVisa.enums.TypeDemande;
 
 /**
  * Entité représentant une demande de visa
@@ -24,9 +23,13 @@ public class Demande {
     @JoinColumn(name = "visa_transformable_id", nullable = false)
     private VisaTransformable visaTransformable;
     
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TypeDemande typeDemande;
+    @ManyToOne
+    @JoinColumn(name = "id_type_visa")
+    private TypeVisa typeVisa;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_type_demande", nullable = false)
+    private TypeDemandeRef typeDemande;
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -53,9 +56,10 @@ public class Demande {
     }
 
     public Demande(Demandeur demandeur, VisaTransformable visaTransformable, 
-                   TypeDemande typeDemande) {
+                   TypeVisa typeVisa, TypeDemandeRef typeDemande) {
         this.demandeur = demandeur;
         this.visaTransformable = visaTransformable;
+        this.typeVisa = typeVisa;
         this.typeDemande = typeDemande;
         this.dateCreation = LocalDateTime.now();
     }
@@ -85,12 +89,20 @@ public class Demande {
         this.visaTransformable = visaTransformable;
     }
 
-    public TypeDemande getTypeDemande() {
+    public TypeDemandeRef getTypeDemande() {
         return typeDemande;
     }
 
-    public void setTypeDemande(TypeDemande typeDemande) {
+    public void setTypeDemande(TypeDemandeRef typeDemande) {
         this.typeDemande = typeDemande;
+    }
+
+    public TypeVisa getTypeVisa() {
+        return typeVisa;
+    }
+
+    public void setTypeVisa(TypeVisa typeVisa) {
+        this.typeVisa = typeVisa;
     }
 
     public StatutDemande getStatut() {

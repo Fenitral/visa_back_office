@@ -27,12 +27,13 @@ public class Demandeur {
     @Column(nullable = false)
     private LocalDate dateNaissance;
     
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private com.demo.gestionVisa.enums.SituationFamiliale situationFamiliale;
+    @ManyToOne
+    @JoinColumn(name = "id_situation_familiale", nullable = false)
+    private SituationFamilialeRef situationFamiliale;
     
-    @Column(nullable = false)
-    private String nationalite;
+    @ManyToOne
+    @JoinColumn(name = "id_nationalite", nullable = false)
+    private Nationalite nationalite;
     
     @Column
     private String profession;
@@ -55,8 +56,8 @@ public class Demandeur {
     }
 
     public Demandeur(String nom, String prenom, LocalDate dateNaissance, 
-                     com.demo.gestionVisa.enums.SituationFamiliale situationFamiliale, 
-                     String nationalite, String adresseMadagascar) {
+                     SituationFamilialeRef situationFamiliale, 
+                     Nationalite nationalite, String adresseMadagascar) {
         this.nom = nom;
         this.prenom = prenom;
         this.dateNaissance = dateNaissance;
@@ -107,19 +108,19 @@ public class Demandeur {
         this.dateNaissance = dateNaissance;
     }
 
-    public com.demo.gestionVisa.enums.SituationFamiliale getSituationFamiliale() {
+    public SituationFamilialeRef getSituationFamiliale() {
         return situationFamiliale;
     }
 
-    public void setSituationFamiliale(com.demo.gestionVisa.enums.SituationFamiliale situationFamiliale) {
+    public void setSituationFamiliale(SituationFamilialeRef situationFamiliale) {
         this.situationFamiliale = situationFamiliale;
     }
 
-    public String getNationalite() {
+    public Nationalite getNationalite() {
         return nationalite;
     }
 
-    public void setNationalite(String nationalite) {
+    public void setNationalite(Nationalite nationalite) {
         this.nationalite = nationalite;
     }
 

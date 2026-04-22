@@ -1,6 +1,7 @@
 package com.demo.gestionVisa.repository;
 
 import com.demo.gestionVisa.model.Demandeur;
+import com.demo.gestionVisa.model.Nationalite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,5 +22,5 @@ public interface DemandeurRepository extends JpaRepository<Demandeur, Long> {
     /**
      * Recherche tous les demandeurs par nationalité
      */
-    List<Demandeur> findByNationalite(String nationalite);
+    List<Demandeur> findByNationalite(Nationalite nationalite);
 }

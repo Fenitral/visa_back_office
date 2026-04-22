@@ -1,8 +1,13 @@
 package com.demo.gestionVisa.service;
 
 import com.demo.gestionVisa.model.Demandeur;
+import com.demo.gestionVisa.model.SituationFamilialeRef;
+import com.demo.gestionVisa.model.Nationalite;
 import com.demo.gestionVisa.repository.DemandeurRepository;
+import com.demo.gestionVisa.repository.SituationFamilialeRefRepository;
+import com.demo.gestionVisa.repository.NationaliteRepository;
 import com.demo.gestionVisa.dto.DemandeurDTO;
+import com.demo.gestionVisa.enums.SituationFamiliale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -17,6 +22,12 @@ public class DemandeurService {
     @Autowired
     private DemandeurRepository demandeurRepository;
     
+    @Autowired
+    private SituationFamilialeRefRepository situationFamilialeRefRepository;
+    
+    @Autowired
+    private NationaliteRepository nationaliteRepository;
+    
     /**
      * Créer un nouveau demandeur
      */
@@ -26,8 +37,21 @@ public class DemandeurService {
         demandeur.setPrenom(demandeurDTO.getPrenom());
         demandeur.setNomJeuneFille(demandeurDTO.getNomJeuneFille());
         demandeur.setDateNaissance(demandeurDTO.getDateNaissance());
-        demandeur.setSituationFamiliale(demandeurDTO.getSituationFamiliale());
-        demandeur.setNationalite(demandeurDTO.getNationalite());
+        
+        // Convertir l'enum SituationFamiliale en entité SituationFamilialeRef
+        if (demandeurDTO.getSituationFamiliale() != null) {
+            SituationFamilialeRef situationRef = situationFamilialeRefRepository
+                .findByLibelle(demandeurDTO.getSituationFamiliale().getLabel());
+            demandeur.setSituationFamiliale(situationRef);
+        }
+        
+        // Convertir la nationalité String en entité Nationalite
+        if (demandeurDTO.getNationalite() != null && !demandeurDTO.getNationalite().isEmpty()) {
+            Nationalite nationalite = nationaliteRepository
+                .findByLibelle(demandeurDTO.getNationalite());
+            demandeur.setNationalite(nationalite);
+        }
+        
         demandeur.setProfession(demandeurDTO.getProfession());
         demandeur.setAdresseMadagascar(demandeurDTO.getAdresseMadagascar());
         demandeur.setTelephone(demandeurDTO.getTelephone());
@@ -68,8 +92,21 @@ public class DemandeurService {
             demandeur.setPrenom(demandeurDTO.getPrenom());
             demandeur.setNomJeuneFille(demandeurDTO.getNomJeuneFille());
             demandeur.setDateNaissance(demandeurDTO.getDateNaissance());
-            demandeur.setSituationFamiliale(demandeurDTO.getSituationFamiliale());
-            demandeur.setNationalite(demandeurDTO.getNationalite());
+            
+            // Convertir l'enum SituationFamiliale en entité SituationFamilialeRef
+            if (demandeurDTO.getSituationFamiliale() != null) {
+                SituationFamilialeRef situationRef = situationFamilialeRefRepository
+                    .findByLibelle(demandeurDTO.getSituationFamiliale().getLabel());
+                demandeur.setSituationFamiliale(situationRef);
+            }
+            
+            // Convertir la nationalité String en entité Nationalite
+            if (demandeurDTO.getNationalite() != null && !demandeurDTO.getNationalite().isEmpty()) {
+                Nationalite nationalite = nationaliteRepository
+                    .findByLibelle(demandeurDTO.getNationalite());
+                demandeur.setNationalite(nationalite);
+            }
+            
             demandeur.setProfession(demandeurDTO.getProfession());
             demandeur.setAdresseMadagascar(demandeurDTO.getAdresseMadagascar());
             demandeur.setTelephone(demandeurDTO.getTelephone());

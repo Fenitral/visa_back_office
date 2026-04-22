@@ -2,6 +2,7 @@ package com.demo.gestionVisa.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import com.demo.gestionVisa.enums.TypePieceJustificative;
 
 /**
@@ -28,6 +29,9 @@ public class PieceJustificative {
     
     @Column
     private String cheminFichier;
+    
+    @ManyToMany(mappedBy = "piecesJustificatives")
+    private List<TypeVisa> typesVisa;
     
     @Column(nullable = false)
     private boolean sousmise;

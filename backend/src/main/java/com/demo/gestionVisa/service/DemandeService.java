@@ -3,14 +3,17 @@ package com.demo.gestionVisa.service;
 import com.demo.gestionVisa.model.Demande;
 import com.demo.gestionVisa.model.Demandeur;
 import com.demo.gestionVisa.model.VisaTransformable;
+import com.demo.gestionVisa.model.TypeDemandeRef;
+import com.demo.gestionVisa.model.TypeVisa;
 import com.demo.gestionVisa.repository.DemandeRepository;
+import com.demo.gestionVisa.repository.TypeDemandeRefRepository;
+import com.demo.gestionVisa.repository.TypeVisaRepository;
 import com.demo.gestionVisa.dto.DemandeRequestDTO;
 import com.demo.gestionVisa.dto.DemandeResponseDTO;
 import com.demo.gestionVisa.dto.DemandeurDTO;
 import com.demo.gestionVisa.dto.PieceJustificativeDTO;
 import com.demo.gestionVisa.dto.VisaTransformableDTO;
 import com.demo.gestionVisa.enums.StatutDemande;
-import com.demo.gestionVisa.enums.TypeDemande;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -27,6 +30,12 @@ public class DemandeService {
     
     @Autowired
     private DemandeRepository demandeRepository;
+    
+    @Autowired
+    private TypeDemandeRefRepository typeDemandeRefRepository;
+    
+    @Autowired
+    private TypeVisaRepository typeVisaRepository;
     
     @Autowired
     private DemandeurService demandeurService;
@@ -53,8 +62,16 @@ public class DemandeService {
             demandeRequest.getVisaTransformable().getReference()
         ).orElseThrow(() -> new Exception("Visa transformable non trouvé"));
         
+        // Récupérer l'entité TypeDemande
+        TypeDemandeRef typeDemandeEntity = typeDemandeRefRepository.findByLibelle(
+            demandeRequest.getTypeDemande().name()
+        );
+        if (typeDemandeEntity == null) {
+            throw new Exception("Type de demande non trouvé");
+        }
+        
         // Créer la demande
-        Demande demande = new Demande(demandeur, visa, demandeRequest.getTypeDemande());
+        Demande demande = new Demande(demandeur, visa, null, typeDemandeEntity);
 
         // Initialiser les champs non nuls avant le premier insert
         demande.setStatut(StatutDemande.DOSSIER_CREE);
@@ -192,7 +209,11 @@ public class DemandeService {
      * Récupérer toutes les demandes par type
      */
     public List<Demande> getDemandesByType(com.demo.gestionVisa.enums.TypeDemande type) {
-        return demandeRepository.findByTypeDemande(type);
+        TypeDemandeRef typeDemandeEntity = typeDemandeRefRepository.findByLibelle(type.name());
+        if (typeDemandeEntity == null) {
+            return List.of();
+        }
+        return demandeRepository.findByTypeDemande(typeDemandeEntity);
     }
     
     /**
@@ -226,7 +247,7 @@ public class DemandeService {
     /**
      * Modifier une demande existante (demandeur + visa + type)
      */
-    public Demande modifierDemande(Long demandeId, DemandeurDTO demandeurDTO, VisaTransformableDTO visaDTO, TypeDemande typeDemande) throws Exception {
+    public Demande modifierDemande(Long demandeId, DemandeurDTO demandeurDTO, VisaTransformableDTO visaDTO, com.demo.gestionVisa.enums.TypeDemande typeDemande) throws Exception {
         Optional<Demande> demandeOptional = demandeRepository.findById(Objects.requireNonNull(demandeId));
         if (demandeOptional.isEmpty()) {
             throw new Exception("Demande non trouvée");
@@ -246,10 +267,16 @@ public class DemandeService {
         if (updatedVisa == null) {
             throw new Exception("Visa transformable non trouvé");
         }
+        
+        // Récupérer l'entité TypeDemandeRef
+        TypeDemandeRef typeDemandeEntity = typeDemandeRefRepository.findByLibelle(typeDemande.name());
+        if (typeDemandeEntity == null) {
+            throw new Exception("Type de demande non trouvé");
+        }
 
         demande.setDemandeur(updatedDemandeur);
         demande.setVisaTransformable(updatedVisa);
-        demande.setTypeDemande(typeDemande);
+        demande.setTypeDemande(typeDemandeEntity);
         demande.setDateModification(LocalDateTime.now());
 
         return demandeRepository.save(demande);
@@ -286,7 +313,12 @@ public class DemandeService {
         DemandeResponseDTO response = new DemandeResponseDTO();
         response.setId(demande.getId());
         response.setStatut(demande.getStatut());
-        response.setTypeDemande(demande.getTypeDemande());
+        // Convertir l'entité TypeDemandeRef en enum TypeDemande
+        if (demande.getTypeDemande() != null) {
+            response.setTypeDemande(
+                com.demo.gestionVisa.enums.TypeDemande.valueOf(demande.getTypeDemande().getLibelle())
+            );
+        }
         response.setPiecesObligatoiresCompletes(demande.isPiecesObligatoiresCompletes());
         response.setDossierComplet(demande.isDossierComplet());
         response.setDateCreation(demande.getDateCreation());
