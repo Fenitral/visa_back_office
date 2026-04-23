@@ -1,8 +1,8 @@
-# Fix JSTL ClassNotFoundError in Spring Boot JSP App
+# TODO pour corriger l'interface visa
 
-- [x] Step 1: Edit backend/pom.xml to add WAR packaging (executable with embedded Tomcat)
-- [x] Step 2: Run `cd backend &amp;&amp; mvn clean package`
-- [ ] Step 3: Run `cd backend &amp;&amp; java -jar target/gestionVisa-0.0.1-SNAPSHOT.war`
-- [ ] Step 4: Test JSP pages (e.g., /demandes) - confirm no ClassNotFoundError
-- [ ] Step 5: Update TODO with completion and attempt_completion
-
+- [ ] Étape 1: Corriger formulaire-demande.jsp (taglib incomplet, ajouter formulaire complet)
+- [ ] Étape 2: Vérifier et corriger autres JSP si nécessaire (ex: demande-transformation/formulaire.jsp)
+- [ ] Étape 3: Compiler le projet (mvn clean compile dans backend/)
+- [ ] Étape 4: Redémarrer l'app Spring Boot pour exécuter Flyway migrations DB
+- [ ] Étape 5: Tester http://localhost:8081/demandes
+- [ ] Étape 6: Ajouter données test si besoin

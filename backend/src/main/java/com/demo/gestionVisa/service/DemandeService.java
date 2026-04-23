@@ -88,6 +88,11 @@ public class DemandeService {
             }
         }
         
+        // VALIDATION BLOQUANTE: Vérifier que toutes les pièces obligatoires sont fournies
+        if (!pieceJustificativeService.verifierPiecesObligatoires(demande)) {
+            throw new Exception("Les pièces justificatives obligatoires doivent être fournies à la création de la demande");
+        }
+        
         // Recalculer les indicateurs seulement si des pieces sont fournies
         if (demandeRequest.getPiecesJustificatives() != null && !demandeRequest.getPiecesJustificatives().isEmpty()) {
             attribuerStatut(demande);
@@ -225,12 +230,21 @@ public class DemandeService {
     
     /**
      * Mettre à jour le statut d'une demande
+     * VALIDATION: Les pièces justificatives obligatoires doivent être complètes avant
+     * tout changement de statut vers VALIDEE ou REJETEE
      */
-    public Demande updateStatut(Long demandeId, StatutDemande nouveauStatut) {
+    public Demande updateStatut(Long demandeId, StatutDemande nouveauStatut) throws Exception {
         Optional<Demande> demandeOptional = demandeRepository.findById(Objects.requireNonNull(demandeId));
         
         if (demandeOptional.isPresent()) {
             Demande demande = demandeOptional.get();
+            
+            // VALIDATION BLOQUANTE: Vérifier les pièces obligatoires avant changement vers VALIDEE ou REJETEE
+            if ((nouveauStatut == StatutDemande.VALIDEE || nouveauStatut == StatutDemande.REJETEE) &&
+                !pieceJustificativeService.verifierPiecesObligatoires(demande)) {
+                throw new Exception("Impossible de changer le statut. Les pièces justificatives obligatoires ne sont pas complètes.");
+            }
+            
             demande.setStatut(nouveauStatut);
             demande.setDateModification(LocalDateTime.now());
             

@@ -1,4 +1,4 @@
-package com.demo.gestionEntreprise.config;
+package com.demo.gestionVisa.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

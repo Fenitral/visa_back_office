@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Controller pour la gestion des demandes de visa (MVC)
- */
 @Controller
 @RequestMapping("/demandes")
 public class DemandeController {
@@ -37,20 +34,15 @@ public class DemandeController {
     @Autowired
     private PieceJustificativeService pieceJustificativeService;
     
-    /**
-     * Afficher le formulaire de création d'une nouvelle demande
-     * GET /demandes/nouvelle
-     */
     @GetMapping("/nouvelle")
     public String afficherFormulaireDemande(Model model) {
+        model.addAttribute("typesPieces", TypePieceJustificative.values());
         model.addAttribute("types", TypeDemande.values());
+        model.addAttribute("demandeRequest", new DemandeRequestDTO());
+        model.addAttribute("situations", SituationFamiliale.values());
         return "demande/formulaire-demande";
     }
     
-    /**
-     * Enregistrer une nouvelle demande de visa
-     * POST /demandes/enregistrer
-     */
     @PostMapping("/enregistrer")
     public String enregistrerDemande(
             @ModelAttribute DemandeRequestDTO demandeRequest,
@@ -69,10 +61,6 @@ public class DemandeController {
         }
     }
     
-    /**
-     * Afficher les détails d'une demande
-     * GET /demandes/{id}
-     */
     @GetMapping("/{id}")
     public String afficherDemande(@PathVariable Long id, Model model) {
         Optional<Demande> demande = demandeService.getDemandeById(id);
@@ -90,10 +78,6 @@ public class DemandeController {
         return "redirect:/demandes";
     }
 
-    /**
-     * Afficher une page de modification (pieces justificatives)
-     * GET /demandes/{id}/modifier
-     */
     @GetMapping("/{id}/modifier")
     public String afficherModification(@PathVariable Long id, Model model) {
         Optional<Demande> demande = demandeService.getDemandeById(id);
@@ -121,10 +105,6 @@ public class DemandeController {
         return "demande/modifier-pieces";
     }
 
-    /**
-     * Enregistrer la modification des pieces (checkboxes)
-     * POST /demandes/{id}/modifier
-     */
     @PostMapping("/{id}/modifier")
     public String enregistrerModification(
             @PathVariable Long id,
@@ -170,7 +150,6 @@ public class DemandeController {
             visaDTO.setLieuEntree(lieuEntree);
             visaDTO.setDateExpiration(dateExpiration);
 
-            // Mettre à jour les infos principales de la demande
             dem = demandeService.modifierDemande(id, demandeurDTO, visaDTO, typeDemande);
 
             for (TypePieceJustificative type : TypePieceJustificative.values()) {
@@ -206,10 +185,6 @@ public class DemandeController {
         }
     }
 
-    /**
-     * Version imprimable (PDF via impression navigateur)
-     * GET /demandes/{id}/imprimer
-     */
     @GetMapping("/{id}/imprimer")
     public String imprimerDemande(@PathVariable Long id, Model model) {
         Optional<Demande> demande = demandeService.getDemandeById(id);
@@ -234,10 +209,6 @@ public class DemandeController {
         return "demande/imprimer-demande";
     }
     
-    /**
-     * Afficher la liste de toutes les demandes
-     * GET /demandes
-     */
     @GetMapping
     public String afficherListeDemandes(Model model) {
         List<Demande> demandes = demandeService.getAllDemandes();
@@ -247,10 +218,6 @@ public class DemandeController {
         return "demande/liste-demandes";
     }
     
-    /**
-     * Filtrer les demandes par statut
-     * GET /demandes/statut/{statut}
-     */
     @GetMapping("/statut/{statut}")
     public String afficherDemandesByStatut(@PathVariable String statut, Model model) {
         try {
@@ -268,10 +235,6 @@ public class DemandeController {
         }
     }
     
-    /**
-     * Afficher le formulaire pour ajouter une pièce justificative
-     * GET /demandes/{demandeId}/ajouter-piece
-     */
     @GetMapping("/{demandeId}/ajouter-piece")
     public String afficherFormulairePiece(@PathVariable Long demandeId, Model model) {
         Optional<Demande> demande = demandeService.getDemandeById(demandeId);
@@ -286,10 +249,6 @@ public class DemandeController {
         return "redirect:/demandes";
     }
     
-    /**
-     * Ajouter une pièce justificative à une demande
-     * POST /demandes/{demandeId}/ajouter-piece
-     */
     @PostMapping("/{demandeId}/ajouter-piece")
     public String ajouterPieceJustificative(
             @PathVariable Long demandeId,
@@ -306,7 +265,6 @@ public class DemandeController {
             Demande demande = demandeOptional.get();
             pieceJustificativeService.creerPieceJustificative(demande, pieceDTO);
             
-            // Revérifier et mettre à jour le statut
             demandeService.revérifierEtMajStatut(demandeId);
             
             redirectAttributes.addFlashAttribute("success", "Pièce justificative ajoutée avec succès");
@@ -318,10 +276,6 @@ public class DemandeController {
         }
     }
     
-    /**
-     * Soumettre une pièce justificative
-     * POST /demandes/pieces/{pieceId}/soumettre
-     */
     @PostMapping("/pieces/{pieceId}/soumettre")
     public String soumettePiece(
             @PathVariable Long pieceId,
@@ -330,7 +284,6 @@ public class DemandeController {
             PieceJustificative piece = pieceJustificativeService.soumettePieceJustificative(pieceId);
             
             if (piece != null) {
-                // Revérifier et mettre à jour le statut de la demande
                 demandeService.revérifierEtMajStatut(piece.getDemande().getId());
                 
                 redirectAttributes.addFlashAttribute("success", "Pièce soumise avec succès");
@@ -345,10 +298,6 @@ public class DemandeController {
         }
     }
     
-    /**
-     * Retirer une pièce justificative
-     * POST /demandes/pieces/{pieceId}/retirer
-     */
     @PostMapping("/pieces/{pieceId}/retirer")
     public String retirerPiece(
             @PathVariable Long pieceId,
@@ -375,10 +324,6 @@ public class DemandeController {
         }
     }
     
-    /**
-     * Valider une demande
-     * POST /demandes/{id}/valider
-     */
     @PostMapping("/{id}/valider")
     public String validerDemande(
             @PathVariable Long id,
@@ -399,10 +344,6 @@ public class DemandeController {
         }
     }
     
-    /**
-     * Rejeter une demande
-     * POST /demandes/{id}/rejeter
-     */
     @PostMapping("/{id}/rejeter")
     public String rejeterDemande(
             @PathVariable Long id,
@@ -423,10 +364,6 @@ public class DemandeController {
         }
     }
     
-    /**
-     * Supprimer une demande
-     * POST /demandes/{id}/supprimer
-     */
     @PostMapping("/{id}/supprimer")
     public String supprimerDemande(
             @PathVariable Long id,
