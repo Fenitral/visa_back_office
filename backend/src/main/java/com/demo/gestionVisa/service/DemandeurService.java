@@ -10,6 +10,7 @@ import com.demo.gestionVisa.dto.DemandeurDTO;
 import com.demo.gestionVisa.enums.SituationFamiliale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,20 +38,9 @@ public class DemandeurService {
         demandeur.setPrenom(demandeurDTO.getPrenom());
         demandeur.setNomJeuneFille(demandeurDTO.getNomJeuneFille());
         demandeur.setDateNaissance(demandeurDTO.getDateNaissance());
-        
-        // Convertir l'enum SituationFamiliale en entité SituationFamilialeRef
-        if (demandeurDTO.getSituationFamiliale() != null) {
-            SituationFamilialeRef situationRef = situationFamilialeRefRepository
-                .findByLibelle(demandeurDTO.getSituationFamiliale().getLabel());
-            demandeur.setSituationFamiliale(situationRef);
-        }
-        
-        // Convertir la nationalité String en entité Nationalite
-        if (demandeurDTO.getNationalite() != null && !demandeurDTO.getNationalite().isEmpty()) {
-            Nationalite nationalite = nationaliteRepository
-                .findByLibelle(demandeurDTO.getNationalite());
-            demandeur.setNationalite(nationalite);
-        }
+
+        demandeur.setSituationFamiliale(resolveSituationFamiliale(demandeurDTO.getSituationFamiliale()));
+        demandeur.setNationalite(resolveOrCreateNationalite(demandeurDTO.getNationalite()));
         
         demandeur.setProfession(demandeurDTO.getProfession());
         demandeur.setAdresseMadagascar(demandeurDTO.getAdresseMadagascar());
@@ -92,20 +82,9 @@ public class DemandeurService {
             demandeur.setPrenom(demandeurDTO.getPrenom());
             demandeur.setNomJeuneFille(demandeurDTO.getNomJeuneFille());
             demandeur.setDateNaissance(demandeurDTO.getDateNaissance());
-            
-            // Convertir l'enum SituationFamiliale en entité SituationFamilialeRef
-            if (demandeurDTO.getSituationFamiliale() != null) {
-                SituationFamilialeRef situationRef = situationFamilialeRefRepository
-                    .findByLibelle(demandeurDTO.getSituationFamiliale().getLabel());
-                demandeur.setSituationFamiliale(situationRef);
-            }
-            
-            // Convertir la nationalité String en entité Nationalite
-            if (demandeurDTO.getNationalite() != null && !demandeurDTO.getNationalite().isEmpty()) {
-                Nationalite nationalite = nationaliteRepository
-                    .findByLibelle(demandeurDTO.getNationalite());
-                demandeur.setNationalite(nationalite);
-            }
+
+            demandeur.setSituationFamiliale(resolveSituationFamiliale(demandeurDTO.getSituationFamiliale()));
+            demandeur.setNationalite(resolveOrCreateNationalite(demandeurDTO.getNationalite()));
             
             demandeur.setProfession(demandeurDTO.getProfession());
             demandeur.setAdresseMadagascar(demandeurDTO.getAdresseMadagascar());
@@ -129,5 +108,62 @@ public class DemandeurService {
      */
     public void deleteDemandeur(Long id) {
         demandeurRepository.deleteById(id);
+    }
+
+    private SituationFamilialeRef resolveSituationFamiliale(SituationFamiliale situation) {
+        if (situation == null) {
+            throw new IllegalArgumentException("La situation familiale est obligatoire");
+        }
+
+        String expectedLabel = situation.getLabel();
+        SituationFamilialeRef exact = situationFamilialeRefRepository.findByLibelle(expectedLabel);
+        if (exact != null) {
+            return exact;
+        }
+
+        String normalizedExpected = normalize(expectedLabel);
+        for (SituationFamilialeRef ref : situationFamilialeRefRepository.findAll()) {
+            if (normalizedExpected.equals(normalize(ref.getLibelle()))) {
+                return ref;
+            }
+        }
+
+        SituationFamilialeRef created = new SituationFamilialeRef();
+        created.setLibelle(expectedLabel);
+        return situationFamilialeRefRepository.save(created);
+    }
+
+    private Nationalite resolveOrCreateNationalite(String nationaliteInput) {
+        if (nationaliteInput == null || nationaliteInput.trim().isEmpty()) {
+            throw new IllegalArgumentException("La nationalite est obligatoire");
+        }
+
+        String trimmed = nationaliteInput.trim();
+        Nationalite exact = nationaliteRepository.findByLibelle(trimmed);
+        if (exact != null) {
+            return exact;
+        }
+
+        String normalizedExpected = normalize(trimmed);
+        for (Nationalite nationalite : nationaliteRepository.findAll()) {
+            if (normalizedExpected.equals(normalize(nationalite.getLibelle()))) {
+                return nationalite;
+            }
+        }
+
+        Nationalite created = new Nationalite();
+        created.setLibelle(trimmed);
+        return nationaliteRepository.save(created);
+    }
+
+    private String normalize(String value) {
+        if (value == null) {
+            return "";
+        }
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD)
+            .replaceAll("\\p{M}", "")
+            .toLowerCase()
+            .trim();
+        return normalized;
     }
 }

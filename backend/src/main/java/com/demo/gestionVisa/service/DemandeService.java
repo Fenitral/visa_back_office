@@ -16,6 +16,7 @@ import com.demo.gestionVisa.dto.VisaTransformableDTO;
 import com.demo.gestionVisa.enums.StatutDemande;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -62,13 +63,8 @@ public class DemandeService {
             demandeRequest.getVisaTransformable().getReference()
         ).orElseThrow(() -> new Exception("Visa transformable non trouvé"));
         
-        // Récupérer l'entité TypeDemande
-        TypeDemandeRef typeDemandeEntity = typeDemandeRefRepository.findByLibelle(
-            demandeRequest.getTypeDemande().name()
-        );
-        if (typeDemandeEntity == null) {
-            throw new Exception("Type de demande non trouvé");
-        }
+        // Récupérer l'entité TypeDemande (mapping robuste)
+        TypeDemandeRef typeDemandeEntity = resolveOrCreateTypeDemandeRef(demandeRequest.getTypeDemande());
         
         // Créer la demande
         Demande demande = new Demande(demandeur, visa, null, typeDemandeEntity);
@@ -214,7 +210,7 @@ public class DemandeService {
      * Récupérer toutes les demandes par type
      */
     public List<Demande> getDemandesByType(com.demo.gestionVisa.enums.TypeDemande type) {
-        TypeDemandeRef typeDemandeEntity = typeDemandeRefRepository.findByLibelle(type.name());
+        TypeDemandeRef typeDemandeEntity = resolveOrCreateTypeDemandeRef(type);
         if (typeDemandeEntity == null) {
             return List.of();
         }
@@ -282,11 +278,8 @@ public class DemandeService {
             throw new Exception("Visa transformable non trouvé");
         }
         
-        // Récupérer l'entité TypeDemandeRef
-        TypeDemandeRef typeDemandeEntity = typeDemandeRefRepository.findByLibelle(typeDemande.name());
-        if (typeDemandeEntity == null) {
-            throw new Exception("Type de demande non trouvé");
-        }
+        // Récupérer l'entité TypeDemandeRef (mapping robuste)
+        TypeDemandeRef typeDemandeEntity = resolveOrCreateTypeDemandeRef(typeDemande);
 
         demande.setDemandeur(updatedDemandeur);
         demande.setVisaTransformable(updatedVisa);
@@ -329,9 +322,7 @@ public class DemandeService {
         response.setStatut(demande.getStatut());
         // Convertir l'entité TypeDemandeRef en enum TypeDemande
         if (demande.getTypeDemande() != null) {
-            response.setTypeDemande(
-                com.demo.gestionVisa.enums.TypeDemande.valueOf(demande.getTypeDemande().getLibelle())
-            );
+            response.setTypeDemande(resolveEnumTypeDemande(demande.getTypeDemande().getLibelle()));
         }
         response.setPiecesObligatoiresCompletes(demande.isPiecesObligatoiresCompletes());
         response.setDossierComplet(demande.isDossierComplet());
@@ -339,5 +330,60 @@ public class DemandeService {
         response.setDateModification(demande.getDateModification());
         
         return response;
+    }
+
+    private TypeDemandeRef resolveOrCreateTypeDemandeRef(com.demo.gestionVisa.enums.TypeDemande type) {
+        if (type == null) {
+            return null;
+        }
+
+        // 1) Recherche exacte sur le nom enum (ex: INVESTISSEUR)
+        TypeDemandeRef byEnumName = typeDemandeRefRepository.findByLibelle(type.name());
+        if (byEnumName != null) {
+            return byEnumName;
+        }
+
+        // 2) Recherche exacte sur le label enum (ex: Visa Investisseur)
+        TypeDemandeRef byLabel = typeDemandeRefRepository.findByLibelle(type.getLabel());
+        if (byLabel != null) {
+            return byLabel;
+        }
+
+        // 3) Recherche tolérante sur toutes les valeurs de la table
+        String expectedName = normalize(type.name());
+        String expectedLabel = normalize(type.getLabel());
+        for (TypeDemandeRef ref : typeDemandeRefRepository.findAll()) {
+            String dbValue = normalize(ref.getLibelle());
+            if (expectedName.equals(dbValue) || expectedLabel.equals(dbValue)) {
+                return ref;
+            }
+        }
+
+        // 4) Fallback: créer la référence si absente
+        TypeDemandeRef created = new TypeDemandeRef();
+        created.setLibelle(type.name());
+        return typeDemandeRefRepository.save(created);
+    }
+
+    private com.demo.gestionVisa.enums.TypeDemande resolveEnumTypeDemande(String libelle) {
+        if (libelle == null || libelle.trim().isEmpty()) {
+            return null;
+        }
+
+        String normalized = normalize(libelle);
+        for (com.demo.gestionVisa.enums.TypeDemande type : com.demo.gestionVisa.enums.TypeDemande.values()) {
+            if (normalized.equals(normalize(type.name())) || normalized.equals(normalize(type.getLabel()))) {
+                return type;
+            }
+        }
+
+        return null;
+    }
+
+    private String normalize(String value) {
+        return Normalizer.normalize(value, Normalizer.Form.NFD)
+            .replaceAll("\\p{M}", "")
+            .toLowerCase()
+            .trim();
     }
 }
