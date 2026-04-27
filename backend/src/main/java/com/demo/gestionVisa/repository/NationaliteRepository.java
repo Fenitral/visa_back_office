@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NationaliteRepository extends JpaRepository<Nationalite, Long> {
-    Nationalite findByLibelle(String libelle);
 }

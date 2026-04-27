@@ -1,166 +1,63 @@
 package com.demo.gestionVisa.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import lombok.*;
 
-/**
- * Entité représentant un demandeur de visa
- */
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "demandeur")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Demandeur {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(nullable = false)
+
+    @Column(length = 100, nullable = false)
     private String nom;
-    
-    @Column(nullable = false)
+
+    @Column(length = 100)
     private String prenom;
-    
-    @Column(name = "nom_jeune_fille")
+
+    @Column(name = "nom_jeune_fille", length = 100)
     private String nomJeuneFille;
-    
-    @Column(nullable = false)
+
+    @Column(name = "date_naissance", nullable = false)
     private LocalDate dateNaissance;
-    
+
+    @Column(name = "lieu_naissance", length = 150)
+    private String lieuNaissance;
+
     @ManyToOne
-    @JoinColumn(name = "id_situation_familiale", nullable = false)
-    private SituationFamilialeRef situationFamiliale;
-    
-    @ManyToOne
+    @JoinColumn(name = "id_situation_familiale")
+    private SituationFamiliale situationFamiliale;
+
+    @ManyToOne(optional = false)
     @JoinColumn(name = "id_nationalite", nullable = false)
     private Nationalite nationalite;
-    
-    @Column
-    private String profession;
-    
-    @Column(nullable = false, name = "adresse_madagascar")
+
+    @Column(name = "adresse_madagascar", columnDefinition = "TEXT", nullable = false)
     private String adresseMadagascar;
-    
-    @Column
+
+    @Column(length = 20, nullable = false)
     private String telephone;
-    
-    @Column(nullable = false)
-    private LocalDateTime dateCreation;
-    
-    @Column
-    private LocalDateTime dateModification;
 
-    // Constructeurs
-    public Demandeur() {
-        this.dateCreation = LocalDateTime.now();
-    }
+    @Column(length = 150)
+    private String email;
 
-    public Demandeur(String nom, String prenom, LocalDate dateNaissance, 
-                     SituationFamilialeRef situationFamiliale, 
-                     Nationalite nationalite, String adresseMadagascar) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.dateNaissance = dateNaissance;
-        this.situationFamiliale = situationFamiliale;
-        this.nationalite = nationalite;
-        this.adresseMadagascar = adresseMadagascar;
-        this.dateCreation = LocalDateTime.now();
-    }
+    @OneToMany(mappedBy = "demandeur")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Passeport> passeports = new HashSet<>();
 
-    // Getters et Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public String getNomJeuneFille() {
-        return nomJeuneFille;
-    }
-
-    public void setNomJeuneFille(String nomJeuneFille) {
-        this.nomJeuneFille = nomJeuneFille;
-    }
-
-    public LocalDate getDateNaissance() {
-        return dateNaissance;
-    }
-
-    public void setDateNaissance(LocalDate dateNaissance) {
-        this.dateNaissance = dateNaissance;
-    }
-
-    public SituationFamilialeRef getSituationFamiliale() {
-        return situationFamiliale;
-    }
-
-    public void setSituationFamiliale(SituationFamilialeRef situationFamiliale) {
-        this.situationFamiliale = situationFamiliale;
-    }
-
-    public Nationalite getNationalite() {
-        return nationalite;
-    }
-
-    public void setNationalite(Nationalite nationalite) {
-        this.nationalite = nationalite;
-    }
-
-    public String getProfession() {
-        return profession;
-    }
-
-    public void setProfession(String profession) {
-        this.profession = profession;
-    }
-
-    public String getAdresseMadagascar() {
-        return adresseMadagascar;
-    }
-
-    public void setAdresseMadagascar(String adresseMadagascar) {
-        this.adresseMadagascar = adresseMadagascar;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
-    public LocalDateTime getDateModification() {
-        return dateModification;
-    }
-
-    public void setDateModification(LocalDateTime dateModification) {
-        this.dateModification = dateModification;
-    }
+    @OneToMany(mappedBy = "demandeur")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Demande> demandes = new HashSet<>();
 }

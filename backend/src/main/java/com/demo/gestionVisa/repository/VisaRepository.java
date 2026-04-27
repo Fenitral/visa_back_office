@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VisaRepository extends JpaRepository<Visa, Long> {
-    Visa findByReference(String reference);
 }

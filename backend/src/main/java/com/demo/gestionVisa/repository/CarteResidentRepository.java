@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CarteResidentRepository extends JpaRepository<CarteResident, Long> {
-    CarteResident findByReference(String reference);
 }

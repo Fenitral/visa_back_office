@@ -1,42 +1,49 @@
 package com.demo.gestionVisa.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.LocalDate;
-import java.util.List;
+import lombok.*;
 
-/**
- * Entité représentant un passeport
- */
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "passeport")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Passeport {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne
-    @JoinColumn(name = "id_demandeur", nullable = false)
-    private Demandeur demandeur;
-    
-    @Column(nullable = false, unique = true, length = 50)
-    private String numeroPasseport;
-    
-    @Column(nullable = false)
+
+    @Column(length = 50, unique = true)
+    private String numero;
+
+    @Column(name = "date_delivrance")
     private LocalDate dateDelivrance;
-    
-    @Column(nullable = false)
+
+    @Column(name = "date_expiration")
     private LocalDate dateExpiration;
-    
-    @Column(length = 100)
-    private String paysDelivrance;
-    
-    @OneToMany(mappedBy = "passeport", cascade = CascadeType.ALL)
-    private List<StatutPasseport> statuts;
+
+    @ManyToOne
+    @JoinColumn(name = "id_demandeur")
+    private Demandeur demandeur;
+
+    @OneToMany(mappedBy = "passeport")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<VisaTransformable> visasTransformables = new HashSet<>();
+
+    @OneToMany(mappedBy = "passeport")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Visa> visas = new HashSet<>();
+
+    @OneToMany(mappedBy = "passeport")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<CarteResident> cartesResidents = new HashSet<>();
 }

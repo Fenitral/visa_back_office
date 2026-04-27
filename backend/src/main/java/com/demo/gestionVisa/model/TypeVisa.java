@@ -1,33 +1,28 @@
 package com.demo.gestionVisa.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.util.List;
+import lombok.*;
 
-/**
- * Entité représentant un type de visa
- */
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "type_visa")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TypeVisa {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(nullable = false, length = 50)
+
+    @Column(length = 100, nullable = false)
     private String libelle;
-    
-    @ManyToMany
-    @JoinTable(
-        name = "piece_type_visa",
-        joinColumns = @JoinColumn(name = "id_type_visa"),
-        inverseJoinColumns = @JoinColumn(name = "id_piece_justificatives")
-    )
-    private List<PieceJustificative> piecesJustificatives;
+
+    @OneToMany(mappedBy = "typeVisa")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Demande> demandes = new HashSet<>();
 }

@@ -1,39 +1,36 @@
 package com.demo.gestionVisa.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDate;
 
-/**
- * Entité représentant un visa
- */
 @Entity
 @Table(name = "visa")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Visa {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne
-    @JoinColumn(name = "id_demande", nullable = false)
-    private Demande demande;
-    
-    @Column(length = 50)
-    private String reference;
-    
-    @Column(nullable = false)
+
+    @Column(name = "reference_visa", length = 100)
+    private String referenceVisa;
+
+    @Column(name = "date_debut")
     private LocalDate dateDebut;
-    
-    @Column(nullable = false)
+
+    @Column(name = "date_fin")
     private LocalDate dateFin;
-    
+
     @ManyToOne
-    @JoinColumn(name = "id_passeport", nullable = false)
+    @JoinColumn(name = "id_passeport")
     private Passeport passeport;
+
+    @ManyToOne
+    @JoinColumn(name = "id_demande")
+    private Demande demande;
 }

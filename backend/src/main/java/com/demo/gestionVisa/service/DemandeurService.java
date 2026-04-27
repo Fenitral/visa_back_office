@@ -1,169 +1,115 @@
 package com.demo.gestionVisa.service;
 
-import com.demo.gestionVisa.model.Demandeur;
-import com.demo.gestionVisa.model.SituationFamilialeRef;
-import com.demo.gestionVisa.model.Nationalite;
-import com.demo.gestionVisa.repository.DemandeurRepository;
-import com.demo.gestionVisa.repository.SituationFamilialeRefRepository;
-import com.demo.gestionVisa.repository.NationaliteRepository;
 import com.demo.gestionVisa.dto.DemandeurDTO;
-import com.demo.gestionVisa.enums.SituationFamiliale;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.demo.gestionVisa.model.Demandeur;
+import com.demo.gestionVisa.model.Nationalite;
+import com.demo.gestionVisa.model.SituationFamiliale;
+import com.demo.gestionVisa.repository.DemandeurRepository;
+import com.demo.gestionVisa.repository.NationaliteRepository;
+import com.demo.gestionVisa.repository.SituationFamilialeRepository;
+import com.demo.gestionVisa.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import java.text.Normalizer;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service pour la gestion des demandeurs
- */
 @Service
+@Transactional
 public class DemandeurService {
-    
-    @Autowired
-    private DemandeurRepository demandeurRepository;
-    
-    @Autowired
-    private SituationFamilialeRefRepository situationFamilialeRefRepository;
-    
-    @Autowired
-    private NationaliteRepository nationaliteRepository;
-    
-    /**
-     * Créer un nouveau demandeur
-     */
-    public Demandeur creerDemandeur(DemandeurDTO demandeurDTO) {
-        Demandeur demandeur = new Demandeur();
-        demandeur.setNom(demandeurDTO.getNom());
-        demandeur.setPrenom(demandeurDTO.getPrenom());
-        demandeur.setNomJeuneFille(demandeurDTO.getNomJeuneFille());
-        demandeur.setDateNaissance(demandeurDTO.getDateNaissance());
 
-        demandeur.setSituationFamiliale(resolveSituationFamiliale(demandeurDTO.getSituationFamiliale()));
-        demandeur.setNationalite(resolveOrCreateNationalite(demandeurDTO.getNationalite()));
-        
-        demandeur.setProfession(demandeurDTO.getProfession());
-        demandeur.setAdresseMadagascar(demandeurDTO.getAdresseMadagascar());
-        demandeur.setTelephone(demandeurDTO.getTelephone());
-        
-        return demandeurRepository.save(demandeur);
-    }
-    
-    /**
-     * Récupérer un demandeur par ID
-     */
-    public Optional<Demandeur> getDemandeurById(Long id) {
-        return demandeurRepository.findById(id);
-    }
-    
-    /**
-     * Récupérer ou créer un demandeur
-     */
-    public Demandeur getOuCreerDemandeur(DemandeurDTO demandeurDTO) {
-        Optional<Demandeur> demandeurExistant = 
-            demandeurRepository.findByNomAndPrenom(demandeurDTO.getNom(), demandeurDTO.getPrenom());
-        
-        if (demandeurExistant.isPresent()) {
-            return demandeurExistant.get();
-        }
-        
-        return creerDemandeur(demandeurDTO);
-    }
-    
-    /**
-     * Mettre à jour un demandeur
-     */
-    public Demandeur updateDemandeur(Long id, DemandeurDTO demandeurDTO) {
-        Optional<Demandeur> demandeurOptional = demandeurRepository.findById(id);
-        
-        if (demandeurOptional.isPresent()) {
-            Demandeur demandeur = demandeurOptional.get();
-            demandeur.setNom(demandeurDTO.getNom());
-            demandeur.setPrenom(demandeurDTO.getPrenom());
-            demandeur.setNomJeuneFille(demandeurDTO.getNomJeuneFille());
-            demandeur.setDateNaissance(demandeurDTO.getDateNaissance());
+    private final DemandeurRepository demandeurRepository;
+    private final NationaliteRepository nationaliteRepository;
+    private final SituationFamilialeRepository situationFamilialeRepository;
 
-            demandeur.setSituationFamiliale(resolveSituationFamiliale(demandeurDTO.getSituationFamiliale()));
-            demandeur.setNationalite(resolveOrCreateNationalite(demandeurDTO.getNationalite()));
-            
-            demandeur.setProfession(demandeurDTO.getProfession());
-            demandeur.setAdresseMadagascar(demandeurDTO.getAdresseMadagascar());
-            demandeur.setTelephone(demandeurDTO.getTelephone());
-            
-            return demandeurRepository.save(demandeur);
-        }
-        
-        return null;
+    public DemandeurService(DemandeurRepository demandeurRepository,
+                           NationaliteRepository nationaliteRepository,
+                           SituationFamilialeRepository situationFamilialeRepository) {
+        this.demandeurRepository = demandeurRepository;
+        this.nationaliteRepository = nationaliteRepository;
+        this.situationFamilialeRepository = situationFamilialeRepository;
     }
-    
-    /**
-     * Récupérer tous les demandeurs
-     */
-    public List<Demandeur> getAllDemandeurs() {
+
+    public List<Demandeur> findAll() {
         return demandeurRepository.findAll();
     }
-    
-    /**
-     * Supprimer un demandeur
-     */
-    public void deleteDemandeur(Long id) {
+
+    public Optional<Demandeur> findById(Long id) {
+        return demandeurRepository.findById(id);
+    }
+
+    public Demandeur save(Demandeur demandeur) {
+        return demandeurRepository.save(demandeur);
+    }
+
+    public void deleteById(Long id) {
         demandeurRepository.deleteById(id);
     }
 
-    private SituationFamilialeRef resolveSituationFamiliale(SituationFamiliale situation) {
-        if (situation == null) {
-            throw new IllegalArgumentException("La situation familiale est obligatoire");
+    /**
+     * Crée ou récupère un demandeur existant.
+     *
+     * Cherche d'abord un demandeur par nom et prénom, sinon crée un nouveau.
+     *
+     * @param dto les données du formulaire
+     * @return le demandeur créé ou existant
+     */
+    public Demandeur creerOuRecuperer(DemandeurDTO dto) {
+        // Chercher si un demandeur existe déjà avec le même nom et date de naissance
+        Optional<Demandeur> existing = demandeurRepository.findByNomAndDateNaissance(dto.getNom(), dto.getDateNaissance());
+
+        if (existing.isPresent()) {
+            return existing.get();
         }
 
-        String expectedLabel = situation.getLabel();
-        SituationFamilialeRef exact = situationFamilialeRefRepository.findByLibelle(expectedLabel);
-        if (exact != null) {
-            return exact;
+        // Créer un nouveau demandeur
+        Demandeur demandeur = new Demandeur();
+        demandeur.setNom(dto.getNom());
+        demandeur.setPrenom(dto.getPrenom());
+        demandeur.setNomJeuneFille(dto.getNomJeuneFille());
+        demandeur.setDateNaissance(dto.getDateNaissance());
+        demandeur.setLieuNaissance(dto.getLieuNaissance());
+        demandeur.setAdresseMadagascar(dto.getAdresseMadagascar());
+        demandeur.setTelephone(dto.getTelephone());
+        demandeur.setEmail(dto.getEmail());
+
+        // Résoudre SituationFamiliale
+        if (dto.getIdSituationFamiliale() != null) {
+            SituationFamiliale sf = situationFamilialeRepository.findById(dto.getIdSituationFamiliale())
+                    .orElse(null);
+            demandeur.setSituationFamiliale(sf);
         }
 
-        String normalizedExpected = normalize(expectedLabel);
-        for (SituationFamilialeRef ref : situationFamilialeRefRepository.findAll()) {
-            if (normalizedExpected.equals(normalize(ref.getLibelle()))) {
-                return ref;
-            }
-        }
+        // Résoudre Nationalité (obligatoire)
+        Nationalite nationalite = nationaliteRepository.findById(dto.getIdNationalite())
+                .orElseThrow(() -> new RuntimeException("Nationalité introuvable"));
+        demandeur.setNationalite(nationalite);
 
-        SituationFamilialeRef created = new SituationFamilialeRef();
-        created.setLibelle(expectedLabel);
-        return situationFamilialeRefRepository.save(created);
+        return demandeurRepository.save(demandeur);
     }
 
-    private Nationalite resolveOrCreateNationalite(String nationaliteInput) {
-        if (nationaliteInput == null || nationaliteInput.trim().isEmpty()) {
-            throw new IllegalArgumentException("La nationalite est obligatoire");
+    public Demandeur modifier(Demandeur demandeur, DemandeurDTO dto) {
+        demandeur.setNom(dto.getNom());
+        demandeur.setPrenom(dto.getPrenom());
+        demandeur.setNomJeuneFille(dto.getNomJeuneFille());
+        demandeur.setDateNaissance(dto.getDateNaissance());
+        demandeur.setLieuNaissance(dto.getLieuNaissance());
+        demandeur.setAdresseMadagascar(dto.getAdresseMadagascar());
+        demandeur.setTelephone(dto.getTelephone());
+        demandeur.setEmail(dto.getEmail());
+
+        if (dto.getIdSituationFamiliale() != null) {
+            SituationFamiliale sf = situationFamilialeRepository.findById(dto.getIdSituationFamiliale())
+                    .orElseThrow(() -> new ResourceNotFoundException("Situation familiale introuvable : id=" + dto.getIdSituationFamiliale()));
+            demandeur.setSituationFamiliale(sf);
+        } else {
+            demandeur.setSituationFamiliale(null);
         }
 
-        String trimmed = nationaliteInput.trim();
-        Nationalite exact = nationaliteRepository.findByLibelle(trimmed);
-        if (exact != null) {
-            return exact;
-        }
+        Nationalite nationalite = nationaliteRepository.findById(dto.getIdNationalite())
+                .orElseThrow(() -> new ResourceNotFoundException("Nationalité introuvable : id=" + dto.getIdNationalite()));
+        demandeur.setNationalite(nationalite);
 
-        String normalizedExpected = normalize(trimmed);
-        for (Nationalite nationalite : nationaliteRepository.findAll()) {
-            if (normalizedExpected.equals(normalize(nationalite.getLibelle()))) {
-                return nationalite;
-            }
-        }
-
-        Nationalite created = new Nationalite();
-        created.setLibelle(trimmed);
-        return nationaliteRepository.save(created);
-    }
-
-    private String normalize(String value) {
-        if (value == null) {
-            return "";
-        }
-        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD)
-            .replaceAll("\\p{M}", "")
-            .toLowerCase()
-            .trim();
-        return normalized;
+        return demandeurRepository.save(demandeur);
     }
 }

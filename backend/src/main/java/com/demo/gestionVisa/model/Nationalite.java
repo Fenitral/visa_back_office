@@ -1,32 +1,28 @@
 package com.demo.gestionVisa.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-/**
- * Entité représentant une nationalité
- */
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "nationalite")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Nationalite {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(nullable = false, length = 50)
+
+    @Column(length = 100, unique = true, nullable = false)
     private String libelle;
 
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
+    @OneToMany(mappedBy = "nationalite")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Demandeur> demandeurs = new HashSet<>();
 }

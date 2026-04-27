@@ -300,7 +300,7 @@
                 </div>
                 <div class="paper-row">
                     <label for="lieuNaissance">Lieu de naissance</label>
-                    <input id="lieuNaissance" class="paper-input" type="text">
+                    <input id="lieuNaissance" class="paper-input" type="text" required>
                 </div>
                 <div class="paper-row">
                     <label for="situationFamille">Situation de famille *</label>
@@ -320,11 +320,11 @@
                 </div>
                 <div class="paper-row">
                     <label for="telephone">Telephone</label>
-                    <input id="telephone" class="paper-input" type="text">
+                    <input id="telephone" class="paper-input" type="text" required>
                 </div>
                 <div class="paper-row">
                     <label for="email">Email</label>
-                    <input id="email" class="paper-input" type="email">
+                    <input id="email" class="paper-input" type="email" required>
                 </div>
                 <div class="paper-row full">
                     <label for="adresse">Adresse a Madagascar *</label>
@@ -508,7 +508,7 @@
     }
 
     function validateBeforeSubmit() {
-        const requiredIds = ['nom', 'prenom', 'dateNaissance', 'situationFamille', 'nationalite', 'adresse', 'reference', 'dateExpiration', 'dateArrivee', 'lieuArrivee'];
+        const requiredIds = ['nom', 'prenom', 'dateNaissance', 'lieuNaissance', 'situationFamille', 'nationalite', 'email', 'telephone', 'adresse', 'reference', 'dateExpiration', 'dateArrivee', 'lieuArrivee'];
         const missing = requiredIds.some(function(id) {
             return !valueOf(id);
         });
