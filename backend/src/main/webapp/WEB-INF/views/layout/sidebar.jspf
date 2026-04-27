@@ -1,0 +1,11 @@
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h2>Visa Back-Office</h2>
+        <p>Gestion des demandes</p>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="${pageContext.request.contextPath}/demandes">Liste des demandes</a></li>
+        <li><a href="${pageContext.request.contextPath}/demandes-transformation/nouvelle">Nouvelle demande</a></li>
+    </ul>
+</aside>
+<div class="main-content">

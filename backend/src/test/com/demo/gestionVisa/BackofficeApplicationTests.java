@@ -1,10 +1,10 @@
-package com.demo.gestionVisa;
+package com.visa.backoffice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GestionVisaApplicationTests {
+class BackofficeApplicationTests {
 
 	@Test
 	void contextLoads() {

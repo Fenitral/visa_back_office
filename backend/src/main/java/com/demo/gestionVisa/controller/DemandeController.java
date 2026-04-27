@@ -1,302 +1,259 @@
 package com.demo.gestionVisa.controller;
 
-import com.demo.gestionVisa.model.Demande;
-import com.demo.gestionVisa.model.PieceJustificative;
+import com.demo.gestionVisa.dto.DemandeCreateDTO;
+import com.demo.gestionVisa.dto.DemandeResponseDTO;
+import com.demo.gestionVisa.dto.PieceDTO;
+import com.demo.gestionVisa.exception.BusinessException;
+import com.demo.gestionVisa.repository.NationaliteRepository;
+import com.demo.gestionVisa.repository.SituationFamilialeRepository;
+import com.demo.gestionVisa.repository.StatutDemandeRepository;
+import com.demo.gestionVisa.repository.TypeVisaRepository;
 import com.demo.gestionVisa.service.DemandeService;
-import com.demo.gestionVisa.service.PieceJustificativeService;
-import com.demo.gestionVisa.dto.DemandeRequestDTO;
-import com.demo.gestionVisa.dto.PieceJustificativeDTO;
-import com.demo.gestionVisa.enums.StatutDemande;
-import com.demo.gestionVisa.enums.TypeDemande;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.demo.gestionVisa.service.PieceService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.util.List;
-import java.util.Optional;
 
-/**
- * Controller pour la gestion des demandes de visa (MVC)
- */
+import java.util.List;
+
 @Controller
 @RequestMapping("/demandes")
 public class DemandeController {
-    
-    @Autowired
-    private DemandeService demandeService;
-    
-    @Autowired
-    private PieceJustificativeService pieceJustificativeService;
-    
+
+    private final DemandeService demandeService;
+    private final TypeVisaRepository typeVisaRepository;
+    private final SituationFamilialeRepository situationFamilialeRepository;
+    private final NationaliteRepository nationaliteRepository;
+    private final PieceService pieceService;
+    private final StatutDemandeRepository statutDemandeRepository;
+
+    public DemandeController(DemandeService demandeService,
+                            TypeVisaRepository typeVisaRepository,
+                            SituationFamilialeRepository situationFamilialeRepository,
+                            NationaliteRepository nationaliteRepository,
+                            PieceService pieceService,
+                            StatutDemandeRepository statutDemandeRepository) {
+        this.demandeService = demandeService;
+        this.typeVisaRepository = typeVisaRepository;
+        this.situationFamilialeRepository = situationFamilialeRepository;
+        this.nationaliteRepository = nationaliteRepository;
+        this.pieceService = pieceService;
+        this.statutDemandeRepository = statutDemandeRepository;
+    }
+
     /**
-     * Afficher le formulaire de création d'une nouvelle demande
      * GET /demandes/nouvelle
+     * Afficher le formulaire vierge
      */
     @GetMapping("/nouvelle")
-    public String afficherFormulaireDemande(Model model) {
-        model.addAttribute("types", TypeDemande.values());
-        return "demande/formulaire-demande";
+    public String afficherFormulaire(@RequestParam(required = false) Long idTypeVisa, Model model) {
+        DemandeCreateDTO form = new DemandeCreateDTO();
+        form.setIdTypeVisa(idTypeVisa);
+
+        model.addAttribute("demandeForm", form);
+        model.addAttribute("typesVisa", typeVisaRepository.findAll());
+        model.addAttribute("situationsFamiliales", situationFamilialeRepository.findAll());
+        model.addAttribute("nationalites", nationaliteRepository.findAll());
+        model.addAttribute("piecesCommunes", pieceService.getPiecesCommunes());
+        model.addAttribute("piecesSpecifiques", idTypeVisa != null ? demandeService.getPiecesFormulaire(idTypeVisa) : List.of());
+        model.addAttribute("pageTitle", "Nouvelle demande de visa transformable");
+        model.addAttribute("formAction", "/demandes/nouvelle");
+        model.addAttribute("submitLabel", "ENREGISTRER");
+        model.addAttribute("cancelUrl", "/demandes");
+        return "demande/formulaire";
     }
-    
+
     /**
-     * Enregistrer une nouvelle demande de visa
-     * POST /demandes/enregistrer
+     * GET /demandes/pieces?idTypeVisa=1
+     * AJAX : retourner les pièces spécifiques en JSON
      */
-    @PostMapping("/enregistrer")
-    public String enregistrerDemande(
-            @ModelAttribute DemandeRequestDTO demandeRequest,
+    @GetMapping("/pieces")
+    @ResponseBody
+    public ResponseEntity<List<PieceDTO>> getPiecesParTypeVisa(@RequestParam Long idTypeVisa) {
+        List<PieceDTO> pieces = demandeService.getPiecesFormulaire(idTypeVisa);
+        return ResponseEntity.ok(pieces);
+    }
+
+    /**
+     * POST /demandes/nouvelle
+     * Soumettre et enregistrer la demande
+     */
+    @PostMapping("/nouvelle")
+    public String soumettreFormulaire(
+            @Valid @ModelAttribute("demandeForm") DemandeCreateDTO dto,
+            BindingResult result,
+            Model model,
             RedirectAttributes redirectAttributes) {
+
+        // Si erreurs de validation Bean Validation (@NotBlank, @NotNull, etc.)
+        if (result.hasErrors()) {
+            // Recharger les listes du formulaire
+            model.addAttribute("typesVisa", typeVisaRepository.findAll());
+            model.addAttribute("situationsFamiliales", situationFamilialeRepository.findAll());
+            model.addAttribute("nationalites", nationaliteRepository.findAll());
+            model.addAttribute("piecesCommunes", pieceService.getPiecesCommunes());
+            model.addAttribute("piecesSpecifiques", dto.getIdTypeVisa() != null ? demandeService.getPiecesFormulaire(dto.getIdTypeVisa()) : List.of());
+            model.addAttribute("pageTitle", "Nouvelle demande de visa transformable");
+            model.addAttribute("formAction", "/demandes/nouvelle");
+            model.addAttribute("submitLabel", "ENREGISTRER");
+            model.addAttribute("cancelUrl", "/demandes");
+            return "demande/formulaire";
+        }
+
         try {
-            Demande demande = demandeService.creerDemande(demandeRequest);
-            
-            redirectAttributes.addFlashAttribute("success", "Demande enregistrée avec succès");
-            redirectAttributes.addFlashAttribute("demandeId", demande.getId());
-            redirectAttributes.addFlashAttribute("statut", demande.getStatut());
-            
-            return "redirect:/demandes/" + demande.getId();
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/demandes/nouvelle";
+            DemandeResponseDTO response = demandeService.creerDemande(dto);
+            redirectAttributes.addFlashAttribute("successMessage", "Demande créée avec succès. Référence : #" + response.getId());
+            return "redirect:/demandes/" + response.getId() + "/confirmation";
+
+        } catch (BusinessException e) {
+            // Erreur métier (pièce manquante, référence dupliquée, etc.)
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("typesVisa", typeVisaRepository.findAll());
+            model.addAttribute("situationsFamiliales", situationFamilialeRepository.findAll());
+            model.addAttribute("nationalites", nationaliteRepository.findAll());
+            model.addAttribute("piecesCommunes", pieceService.getPiecesCommunes());
+            model.addAttribute("piecesSpecifiques", dto.getIdTypeVisa() != null ? demandeService.getPiecesFormulaire(dto.getIdTypeVisa()) : List.of());
+            model.addAttribute("pageTitle", "Nouvelle demande de visa transformable");
+            model.addAttribute("formAction", "/demandes/nouvelle");
+            model.addAttribute("submitLabel", "ENREGISTRER");
+            model.addAttribute("cancelUrl", "/demandes");
+            return "demande/formulaire";
         }
     }
-    
+
     /**
-     * Afficher les détails d'une demande
-     * GET /demandes/{id}
+     * GET /demandes/{id}/modifier
+     * Afficher le formulaire pré-rempli pour modification
      */
-    @GetMapping("/{id}")
-    public String afficherDemande(@PathVariable Long id, Model model) {
-        Optional<Demande> demande = demandeService.getDemandeById(id);
-        
-        if (demande.isPresent()) {
-            Demande dem = demande.get();
-            model.addAttribute("demande", dem);
-            
-            List<PieceJustificative> pieces = pieceJustificativeService.getPiecesByDemande(dem);
-            model.addAttribute("pieces", pieces);
-            
-            model.addAttribute("statuts", StatutDemande.values());
-            
-            return "demande/detail-demande";
-        }
-        
-        model.addAttribute("error", "Demande non trouvée");
-        return "redirect:/demandes/liste";
+    @GetMapping("/{id}/modifier")
+    public String afficherFormulaireModification(@PathVariable Long id, Model model) {
+        DemandeCreateDTO form = demandeService.getDemandePourModification(id);
+        model.addAttribute("demandeForm", form);
+        model.addAttribute("typesVisa", typeVisaRepository.findAll());
+        model.addAttribute("situationsFamiliales", situationFamilialeRepository.findAll());
+        model.addAttribute("nationalites", nationaliteRepository.findAll());
+        model.addAttribute("piecesCommunes", pieceService.getPiecesCommunes());
+        model.addAttribute("piecesSpecifiques", form.getIdTypeVisa() != null ? demandeService.getPiecesFormulaire(form.getIdTypeVisa()) : List.of());
+        model.addAttribute("pageTitle", "Modifier la demande #" + id);
+        model.addAttribute("formAction", "/demandes/" + id + "/modifier");
+        model.addAttribute("submitLabel", "METTRE À JOUR");
+        model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
+        return "demande/formulaire";
     }
-    
+
     /**
-     * Afficher la liste de toutes les demandes
+     * POST /demandes/{id}/modifier
+     * Enregistrer les modifications depuis le formulaire
+     */
+    @PostMapping("/{id}/modifier")
+    public String soumettreModification(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("demandeForm") DemandeCreateDTO dto,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            model.addAttribute("typesVisa", typeVisaRepository.findAll());
+            model.addAttribute("situationsFamiliales", situationFamilialeRepository.findAll());
+            model.addAttribute("nationalites", nationaliteRepository.findAll());
+            model.addAttribute("piecesCommunes", pieceService.getPiecesCommunes());
+            model.addAttribute("piecesSpecifiques", dto.getIdTypeVisa() != null ? demandeService.getPiecesFormulaire(dto.getIdTypeVisa()) : List.of());
+            model.addAttribute("pageTitle", "Modifier la demande #" + id);
+            model.addAttribute("formAction", "/demandes/" + id + "/modifier");
+            model.addAttribute("submitLabel", "METTRE À JOUR");
+            model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
+            return "demande/formulaire";
+        }
+
+        try {
+            demandeService.modifierDemande(id, dto);
+            redirectAttributes.addFlashAttribute("successMessage", "Demande mise à jour avec succès");
+            return "redirect:/demandes/" + id + "/details";
+        } catch (BusinessException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("typesVisa", typeVisaRepository.findAll());
+            model.addAttribute("situationsFamiliales", situationFamilialeRepository.findAll());
+            model.addAttribute("nationalites", nationaliteRepository.findAll());
+            model.addAttribute("piecesCommunes", pieceService.getPiecesCommunes());
+            model.addAttribute("piecesSpecifiques", dto.getIdTypeVisa() != null ? demandeService.getPiecesFormulaire(dto.getIdTypeVisa()) : List.of());
+            model.addAttribute("pageTitle", "Modifier la demande #" + id);
+            model.addAttribute("formAction", "/demandes/" + id + "/modifier");
+            model.addAttribute("submitLabel", "METTRE À JOUR");
+            model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
+            return "demande/formulaire";
+        }
+    }
+
+    /**
+     * GET /demandes/{id}/confirmation
+     * Page de confirmation post-création
+     */
+    @GetMapping("/{id}/confirmation")
+    public String afficherConfirmation(@PathVariable Long id, Model model) {
+        DemandeResponseDTO demande = demandeService.getDemande(id);
+        model.addAttribute("demande", demande);
+        return "demande/confirmation";
+    }
+
+    /**
      * GET /demandes
+     * Afficher la liste de toutes les demandes
      */
     @GetMapping
-    public String afficherListeDemandes(Model model) {
-        List<Demande> demandes = demandeService.getAllDemandes();
-        model.addAttribute("demandes", demandes);
-        model.addAttribute("total", demandes.size());
-        
-        return "demande/liste-demandes";
+    public String afficherListe(Model model) {
+        model.addAttribute("demandes", demandeService.getToutesDemandes());
+        return "demande/liste";
     }
-    
+
     /**
-     * Filtrer les demandes par statut
-     * GET /demandes/statut/{statut}
+     * GET /demandes/{id}/details
+     * Afficher les détails d'une demande
      */
-    @GetMapping("/statut/{statut}")
-    public String afficherDemandesByStatut(@PathVariable String statut, Model model) {
-        try {
-            StatutDemande statutEnum = StatutDemande.valueOf(statut.toUpperCase());
-            List<Demande> demandes = demandeService.getDemandesByStatut(statutEnum);
-            
-            model.addAttribute("demandes", demandes);
-            model.addAttribute("statutFiltre", statut);
-            model.addAttribute("total", demandes.size());
-            
-            return "demande/liste-demandes";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", "Statut invalide");
-            return "redirect:/demandes";
-        }
+    @GetMapping("/{id}/details")
+    public String afficherDetails(@PathVariable Long id, Model model) {
+        DemandeResponseDTO demande = demandeService.getDemande(id);
+        model.addAttribute("demande", demande);
+        return "demande/details";
     }
-    
+
     /**
-     * Afficher le formulaire pour ajouter une pièce justificative
-     * GET /demandes/{demandeId}/ajouter-piece
+     * GET /demandes/{id}/supprimer
+     * Page de confirmation de suppression (sans JavaScript)
      */
-    @GetMapping("/{demandeId}/ajouter-piece")
-    public String afficherFormulairePiece(@PathVariable Long demandeId, Model model) {
-        Optional<Demande> demande = demandeService.getDemandeById(demandeId);
-        
-        if (demande.isPresent()) {
-            model.addAttribute("demandeId", demandeId);
-            model.addAttribute("demande", demande.get());
-            return "demande/ajouter-piece";
-        }
-        
-        model.addAttribute("error", "Demande non trouvée");
-        return "redirect:/demandes";
+    @GetMapping("/{id}/supprimer")
+    public String confirmerSuppression(@PathVariable Long id, Model model) {
+        DemandeResponseDTO demande = demandeService.getDemande(id);
+        model.addAttribute("demande", demande);
+        return "demande/confirmation-suppression";
     }
-    
+
     /**
-     * Ajouter une pièce justificative à une demande
-     * POST /demandes/{demandeId}/ajouter-piece
-     */
-    @PostMapping("/{demandeId}/ajouter-piece")
-    public String ajouterPieceJustificative(
-            @PathVariable Long demandeId,
-            @ModelAttribute PieceJustificativeDTO pieceDTO,
-            RedirectAttributes redirectAttributes) {
-        try {
-            Optional<Demande> demandeOptional = demandeService.getDemandeById(demandeId);
-            
-            if (demandeOptional.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Demande non trouvée");
-                return "redirect:/demandes";
-            }
-            
-            Demande demande = demandeOptional.get();
-            PieceJustificative piece = pieceJustificativeService.creerPieceJustificative(demande, pieceDTO);
-            
-            // Revérifier et mettre à jour le statut
-            demandeService.revérifierEtMajStatut(demandeId);
-            
-            redirectAttributes.addFlashAttribute("success", "Pièce justificative ajoutée avec succès");
-            
-            return "redirect:/demandes/" + demandeId;
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/demandes/" + demandeId + "/ajouter-piece";
-        }
-    }
-    
-    /**
-     * Soumettre une pièce justificative
-     * POST /demandes/pieces/{pieceId}/soumettre
-     */
-    @PostMapping("/pieces/{pieceId}/soumettre")
-    public String soumettePiece(
-            @PathVariable Long pieceId,
-            RedirectAttributes redirectAttributes) {
-        try {
-            PieceJustificative piece = pieceJustificativeService.soumettePieceJustificative(pieceId);
-            
-            if (piece != null) {
-                // Revérifier et mettre à jour le statut de la demande
-                demandeService.revérifierEtMajStatut(piece.getDemande().getId());
-                
-                redirectAttributes.addFlashAttribute("success", "Pièce soumise avec succès");
-                return "redirect:/demandes/" + piece.getDemande().getId();
-            }
-            
-            redirectAttributes.addFlashAttribute("error", "Pièce non trouvée");
-            return "redirect:/demandes";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/demandes";
-        }
-    }
-    
-    /**
-     * Retirer une pièce justificative
-     * POST /demandes/pieces/{pieceId}/retirer
-     */
-    @PostMapping("/pieces/{pieceId}/retirer")
-    public String retirerPiece(
-            @PathVariable Long pieceId,
-            RedirectAttributes redirectAttributes) {
-        try {
-            Optional<PieceJustificative> pieceOptional = pieceJustificativeService.getPieceById(pieceId);
-            
-            if (pieceOptional.isPresent()) {
-                PieceJustificative piece = pieceOptional.get();
-                Long demandeId = piece.getDemande().getId();
-                
-                pieceJustificativeService.retirerPieceJustificative(pieceId);
-                demandeService.revérifierEtMajStatut(demandeId);
-                
-                redirectAttributes.addFlashAttribute("success", "Pièce retirée avec succès");
-                return "redirect:/demandes/" + demandeId;
-            }
-            
-            redirectAttributes.addFlashAttribute("error", "Pièce non trouvée");
-            return "redirect:/demandes";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/demandes";
-        }
-    }
-    
-    /**
-     * Valider une demande
-     * POST /demandes/{id}/valider
-     */
-    @PostMapping("/{id}/valider")
-    public String validerDemande(
-            @PathVariable Long id,
-            RedirectAttributes redirectAttributes) {
-        try {
-            Demande demandeUpdated = demandeService.updateStatut(id, StatutDemande.VALIDEE);
-            
-            if (demandeUpdated != null) {
-                redirectAttributes.addFlashAttribute("success", "Demande validée avec succès");
-                return "redirect:/demandes/" + id;
-            }
-            
-            redirectAttributes.addFlashAttribute("error", "Demande non trouvée");
-            return "redirect:/demandes";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/demandes/" + id;
-        }
-    }
-    
-    /**
-     * Rejeter une demande
-     * POST /demandes/{id}/rejeter
-     */
-    @PostMapping("/{id}/rejeter")
-    public String rejeterDemande(
-            @PathVariable Long id,
-            RedirectAttributes redirectAttributes) {
-        try {
-            Demande demandeUpdated = demandeService.updateStatut(id, StatutDemande.REJETEE);
-            
-            if (demandeUpdated != null) {
-                redirectAttributes.addFlashAttribute("success", "Demande rejetée avec succès");
-                return "redirect:/demandes/" + id;
-            }
-            
-            redirectAttributes.addFlashAttribute("error", "Demande non trouvée");
-            return "redirect:/demandes";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/demandes/" + id;
-        }
-    }
-    
-    /**
+     * DELETE /demandes/{id}
      * Supprimer une demande
+     */
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> supprimerDemande(@PathVariable Long id) {
+        demandeService.supprimerDemande(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * POST /demandes/{id}/supprimer
+     * Supprimer une demande (version POST pour formulaire HTML)
      */
     @PostMapping("/{id}/supprimer")
-    public String supprimerDemande(
-            @PathVariable Long id,
-            RedirectAttributes redirectAttributes) {
+    public String supprimerDemandeForm(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            Optional<Demande> demande = demandeService.getDemandeById(id);
-            
-            if (demande.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Demande non trouvée");
-                return "redirect:/demandes";
-            }
-            
-            demandeService.deleteDemande(id);
-            
-            redirectAttributes.addFlashAttribute("success", "Demande supprimée avec succès");
-            return "redirect:/demandes";
+            demandeService.supprimerDemande(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Demande supprimée avec succès");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/demandes";
+            redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la suppression : " + e.getMessage());
         }
+        return "redirect:/demandes";
     }
 }

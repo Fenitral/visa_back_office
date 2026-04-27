@@ -1,253 +1,327 @@
 package com.demo.gestionVisa.service;
 
-import com.demo.gestionVisa.model.Demande;
-import com.demo.gestionVisa.model.Demandeur;
-import com.demo.gestionVisa.model.VisaTransformable;
-import com.demo.gestionVisa.model.PieceJustificative;
-import com.demo.gestionVisa.repository.DemandeRepository;
-import com.demo.gestionVisa.dto.DemandeRequestDTO;
+import com.demo.gestionVisa.dto.DemandeCreateDTO;
+import com.demo.gestionVisa.dto.DemandeurDTO;
 import com.demo.gestionVisa.dto.DemandeResponseDTO;
-import com.demo.gestionVisa.dto.PieceJustificativeDTO;
-import com.demo.gestionVisa.enums.StatutDemande;
-import com.demo.gestionVisa.enums.TypePieceJustificative;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.demo.gestionVisa.dto.PasseportDTO;
+import com.demo.gestionVisa.dto.PieceDTO;
+import com.demo.gestionVisa.dto.VisaTransformableDTO;
+import com.demo.gestionVisa.exception.BusinessException;
+import com.demo.gestionVisa.exception.ResourceNotFoundException;
+import com.demo.gestionVisa.mapper.DemandeMapper;
+import com.demo.gestionVisa.model.*;
+import com.demo.gestionVisa.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
-/**
- * Service principal pour la gestion des demandes de visa
- * Contient la logique métier complexe
- */
 @Service
+@Transactional
 public class DemandeService {
-    
-    @Autowired
-    private DemandeRepository demandeRepository;
-    
-    @Autowired
-    private DemandeurService demandeurService;
-    
-    @Autowired
-    private VisaTransformableService visaTransformableService;
-    
-    @Autowired
-    private PieceJustificativeService pieceJustificativeService;
-    
+
+    private final DemandeRepository demandeRepository;
+    private final HistoriqueStatutRepository historiqueStatutRepository;
+    private final DemandePieceRepository demandePieceRepository;
+    private final TypeVisaRepository typeVisaRepository;
+    private final TypeDemandeRepository typeDemandeRepository;
+    private final StatutDemandeRepository statutDemandeRepository;
+    private final PieceRepository pieceRepository;
+    private final VisaTransformableService visaTransformableService;
+    private final DemandeurService demandeurService;
+    private final DemandeurRepository demandeurRepository;
+    private final PasseportService passeportService;
+    private final DemandeMapper demandeMapper;
+    private final PieceService pieceService;
+
+    public DemandeService(DemandeRepository demandeRepository,
+                         HistoriqueStatutRepository historiqueStatutRepository,
+                         DemandePieceRepository demandePieceRepository,
+                         TypeVisaRepository typeVisaRepository,
+                         TypeDemandeRepository typeDemandeRepository,
+                         StatutDemandeRepository statutDemandeRepository,
+                         PieceRepository pieceRepository,
+                         VisaTransformableService visaTransformableService,
+                         DemandeurService demandeurService,
+                         DemandeurRepository demandeurRepository,
+                         PasseportService passeportService,
+                         DemandeMapper demandeMapper,
+                         PieceService pieceService) {
+        this.demandeRepository = demandeRepository;
+        this.historiqueStatutRepository = historiqueStatutRepository;
+        this.demandePieceRepository = demandePieceRepository;
+        this.typeVisaRepository = typeVisaRepository;
+        this.typeDemandeRepository = typeDemandeRepository;
+        this.statutDemandeRepository = statutDemandeRepository;
+        this.pieceRepository = pieceRepository;
+        this.visaTransformableService = visaTransformableService;
+        this.demandeurService = demandeurService;
+        this.demandeurRepository = demandeurRepository;
+        this.passeportService = passeportService;
+        this.demandeMapper = demandeMapper;
+        this.pieceService = pieceService;
+    }
+
     /**
-     * Créer une nouvelle demande de visa
-     * Applique la logique métier complexe pour l'attribution du statut
+     * Crée une nouvelle demande de visa complète.
+     *
+     * Étapes internes (dans cet ordre) :
+     *   1. Créer ou récupérer le Demandeur (Dev1)
+     *   2. Créer le Passeport lié (Dev1)
+     *   3. Créer le VisaTransformable
+     *   4. Résoudre TypeVisa par id
+     *   5. Forcer TypeDemande = "NOUVELLE"
+     *   6. Forcer StatutDemande = "CREE"
+     *   7. Construire et sauvegarder la Demande
+     *   8. Créer l'historique de statut initial
+     *   9. Lier les pièces à la demande
+     *  10. Retourner le DTO de réponse
+     *
+     * @param dto   formulaire complet soumis par l'utilisateur
+     * @return      DemandeResponseDTO avec id, statut, pièces
+     * @throws BusinessException si règle métier violée
+     * @throws ResourceNotFoundException si TypeVisa introuvable
      */
-    public Demande creerDemande(DemandeRequestDTO demandeRequest) throws Exception {
-        // Validation des données obligatoires
-        validerDonnees(demandeRequest);
-        
-        // Récupérer ou créer le demandeur
-        Demandeur demandeur = demandeurService.getOuCreerDemandeur(demandeRequest.getDemandeur());
-        
-        // Récupérer le visa transformable
-        VisaTransformable visa = visaTransformableService.getVisaByReference(
-            demandeRequest.getVisaTransformable().getReference()
-        ).orElseThrow(() -> new Exception("Visa transformable non trouvé"));
-        
-        // Créer la demande
-        Demande demande = new Demande(demandeur, visa, demandeRequest.getTypeDemande());
-        
-        // Créer les pièces justificatives
-        if (demandeRequest.getPiecesJustificatives() != null) {
-            for (PieceJustificativeDTO pieceDTO : demandeRequest.getPiecesJustificatives()) {
-                pieceJustificativeService.creerPieceJustificative(demande, pieceDTO);
+    public DemandeResponseDTO creerDemande(DemandeCreateDTO dto) {
+
+        // ÉTAPE 0 — Vérifier si le demandeur existe déjà
+        boolean demandeurExistait = demandeurRepository.findByNomAndDateNaissance(
+                dto.getDemandeurDTO().getNom(),
+                dto.getDemandeurDTO().getDateNaissance()
+        ).isPresent();
+
+        // ÉTAPE 1 — Demandeur (Dev1)
+        Demandeur demandeur = demandeurService.creerOuRecuperer(dto.getDemandeurDTO());
+
+        // ÉTAPE 2 — Passeport (Dev1)
+        Passeport passeport = passeportService.creer(dto.getPasseportDTO(), demandeur);
+
+        // ÉTAPE 3 — VisaTransformable
+        VisaTransformable visa = visaTransformableService.creer(dto.getVisaDTO(), passeport);
+
+        // ÉTAPE 4 — TypeVisa
+        TypeVisa typeVisa = typeVisaRepository.findById(dto.getIdTypeVisa())
+                .orElseThrow(() -> new ResourceNotFoundException("TypeVisa introuvable : id=" + dto.getIdTypeVisa()));
+
+        // ÉTAPE 5 — TypeDemande forcé à NOUVELLE
+        TypeDemande typeDemande = typeDemandeRepository.findByLibelle("NOUVELLE")
+                .orElseThrow(() -> new ResourceNotFoundException("TypeDemande NOUVELLE introuvable en base"));
+
+        // ÉTAPE 6 — StatutDemande forcé à CREE
+        StatutDemande statutCree = statutDemandeRepository.findByLibelle("CREE")
+                .orElseThrow(() -> new ResourceNotFoundException("StatutDemande CREE introuvable en base"));
+
+        // ÉTAPE 7 — Construire et sauvegarder la Demande
+        Demande demande = new Demande();
+        demande.setDateDemande(LocalDateTime.now());
+        demande.setDemandeur(demandeur);
+        demande.setVisaTransformable(visa);
+        demande.setTypeVisa(typeVisa);
+        demande.setTypeDemande(typeDemande);
+        demande.setStatutDemande(statutCree);
+        // demande.setDemandeurExistant(demandeurExistait);
+        demande = demandeRepository.save(demande);
+
+        // ÉTAPE 8 — Historique statut initial (RG-07 : obligatoire)
+        creerHistoriqueStatut(demande, statutCree, "Création de la demande");
+
+        // ÉTAPE 9 — Lier les pièces
+        lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa);
+
+        // ÉTAPE 10 — Recharger avec pièces et retourner DTO
+        Demande demandeFinal = demandeRepository.findById(demande.getId()).orElseThrow();
+        return demandeMapper.toResponseDTO(demandeFinal);
+    }
+
+    /**
+     * Crée une entrée dans l'historique des statuts.
+     * Appelée à chaque changement de statut (y compris la création).
+     *
+     * @param demande       la demande concernée
+     * @param statut        le nouveau statut
+     * @param commentaire   motif du changement (ex: "Création de la demande")
+     */
+    private void creerHistoriqueStatut(Demande demande, StatutDemande statut, String commentaire) {
+        HistoriqueStatut historique = new HistoriqueStatut();
+        historique.setDemande(demande);
+        historique.setStatutDemande(statut);
+        historique.setDateChangement(LocalDateTime.now());
+        historique.setCommentaire(commentaire);
+        historiqueStatutRepository.save(historique);
+    }
+
+    /**
+     * Lie les pièces (communes + spécifiques) à une demande.
+     * Vérifie que toutes les pièces obligatoires sont fournies.
+     *
+     * Règles :
+     *   RG-08 : lier COMMUN + spécifiques selon typeVisa
+     *   RG-09 : pièce obligatoire non fournie → BusinessException
+     *
+     * @param demande           la demande à lier
+     * @param piecesFournies    ids des pièces cochées dans le formulaire
+     * @param typeVisa          type de visa sélectionné
+     * @throws BusinessException si pièce obligatoire manquante
+     */
+    private void lierPiecesADemande(Demande demande, List<Long> piecesFournies, TypeVisa typeVisa) {
+        List<String> codes = List.of("COMMUN", typeVisa.getLibelle().toUpperCase());
+        List<Piece> toutes = pieceRepository.findByTypePieceCodeIn(codes);
+
+        for (Piece piece : toutes) {
+            boolean fourni = piecesFournies != null && piecesFournies.contains(piece.getId());
+
+            // RG-09 : contrôle pièce obligatoire
+            if (Boolean.TRUE.equals(piece.getObligatoire()) && !fourni) {
+                throw new BusinessException("Pièce obligatoire non fournie : " + piece.getNom());
             }
-        }
-        
-        // Vérifier les pièces justificatives et attribuer le statut
-        attribuerStatut(demande);
-        
-        return demandeRepository.save(demande);
-    }
-    
-    /**
-     * Valider les données obligatoires de la demande
-     */
-    private void validerDonnees(DemandeRequestDTO demandeRequest) throws Exception {
-        // Validation demandeur
-        if (demandeRequest.getDemandeur() == null) {
-            throw new Exception("Les informations du demandeur sont obligatoires");
-        }
-        
-        if (demandeRequest.getDemandeur().getNom() == null || 
-            demandeRequest.getDemandeur().getNom().isEmpty()) {
-            throw new Exception("Le nom du demandeur est obligatoire");
-        }
-        
-        if (demandeRequest.getDemandeur().getPrenom() == null || 
-            demandeRequest.getDemandeur().getPrenom().isEmpty()) {
-            throw new Exception("Le prénom du demandeur est obligatoire");
-        }
-        
-        if (demandeRequest.getDemandeur().getDateNaissance() == null) {
-            throw new Exception("La date de naissance est obligatoire");
-        }
-        
-        if (demandeRequest.getDemandeur().getSituationFamiliale() == null) {
-            throw new Exception("La situation familiale est obligatoire");
-        }
-        
-        if (demandeRequest.getDemandeur().getNationalite() == null || 
-            demandeRequest.getDemandeur().getNationalite().isEmpty()) {
-            throw new Exception("La nationalité est obligatoire");
-        }
-        
-        if (demandeRequest.getDemandeur().getAdresseMadagascar() == null || 
-            demandeRequest.getDemandeur().getAdresseMadagascar().isEmpty()) {
-            throw new Exception("L'adresse à Madagascar est obligatoire");
-        }
-        
-        // Validation visa transformable
-        if (demandeRequest.getVisaTransformable() == null) {
-            throw new Exception("Les informations du visa transformable sont obligatoires");
-        }
-        
-        if (demandeRequest.getVisaTransformable().getReference() == null || 
-            demandeRequest.getVisaTransformable().getReference().isEmpty()) {
-            throw new Exception("La référence du visa est obligatoire");
-        }
-        
-        if (demandeRequest.getVisaTransformable().getDateEntree() == null) {
-            throw new Exception("La date d'entrée à Madagascar est obligatoire");
-        }
-        
-        if (demandeRequest.getVisaTransformable().getLieuEntree() == null || 
-            demandeRequest.getVisaTransformable().getLieuEntree().isEmpty()) {
-            throw new Exception("Le lieu d'entrée est obligatoire");
-        }
-        
-        if (demandeRequest.getVisaTransformable().getDateExpiration() == null) {
-            throw new Exception("La date d'expiration du visa est obligatoire");
-        }
-        
-        // Validation type de demande
-        if (demandeRequest.getTypeDemande() == null) {
-            throw new Exception("Le type de demande est obligatoire");
+
+            DemandePiece dp = new DemandePiece();
+            dp.setDemande(demande);
+            dp.setPiece(piece);
+            dp.setFourni(fourni);
+            demandePieceRepository.save(dp);
         }
     }
-    
+
     /**
-     * Attribuer le statut approprié à la demande selon les pièces justificatives
-     * 
-     * Cas 1: Si pièces obligatoires manquent → DOSSIER_CREE
-     * Cas 2: Si seules les pièces facultatives manquent → DOSSIER_CREE
-     * Cas 3: Si toutes les pièces obligatoires présentes → DOSSIER_CREE (en attente de validation)
-     * Cas 4: Si toutes les pièces (obligatoires + facultatives) présentes → DOSSIER_CREE (en attente de validation)
+     * Récupère une demande par son identifiant.
+     *
+     * @param id    identifiant de la demande
+     * @return      DemandeResponseDTO
+     * @throws ResourceNotFoundException si demande absente
      */
-    private void attribuerStatut(Demande demande) {
-        // Vérifier les pièces obligatoires
-        boolean piecesObligatoiresOk = pieceJustificativeService.verifierPiecesObligatoires(demande);
-        
-        // Vérifier le dossier complet
-        boolean dossierComplet = pieceJustificativeService.verifierDossierComplet(demande);
-        
-        demande.setPiecesObligatoiresCompletes(piecesObligatoiresOk);
-        demande.setDossierComplet(dossierComplet);
-        
-        // Toute demande commence en DOSSIER_CREE jusqu'à validation
-        demande.setStatut(StatutDemande.DOSSIER_CREE);
+    public DemandeResponseDTO getDemande(Long id) {
+        Demande demande = demandeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable : id=" + id));
+        return demandeMapper.toResponseDTO(demande);
     }
-    
+
     /**
-     * Récupérer une demande par ID
+     * Retourne les pièces à afficher pour un type visa donné (AJAX).
+     * Retourne uniquement les pièces SPÉCIFIQUES (pas les communes,
+     * qui sont déjà affichées statiquement dans le formulaire).
+     *
+     * @param idTypeVisa    id du type visa sélectionné dans le select
+     * @return              liste de PieceDTO spécifiques
      */
-    public Optional<Demande> getDemandeById(Long id) {
-        return demandeRepository.findById(id);
+    public List<PieceDTO> getPiecesFormulaire(Long idTypeVisa) {
+        TypeVisa typeVisa = typeVisaRepository.findById(idTypeVisa)
+                .orElseThrow(() -> new ResourceNotFoundException("TypeVisa introuvable : id=" + idTypeVisa));
+        return pieceService.getPiecesParTypeVisa(typeVisa.getLibelle());
     }
-    
+
     /**
-     * Récupérer toutes les demandes d'un demandeur
+     * Récupère toutes les demandes.
+     *
+     * @return  liste de toutes les DemandeResponseDTO
      */
-    public List<Demande> getDemandesByDemandeur(Demandeur demandeur) {
-        return demandeRepository.findByDemandeur(demandeur);
+    public List<DemandeResponseDTO> getToutesDemandes() {
+        return demandeRepository.findAll()
+                .stream()
+                .map(demandeMapper::toResponseDTO)
+                .toList();
     }
-    
+
     /**
-     * Récupérer toutes les demandes par statut
+     * Supprime une demande (et ses dépendances en cascade).
+     *
+     * @param id  id de la demande
+     * @throws ResourceNotFoundException si demande absente
      */
-    public List<Demande> getDemandesByStatut(StatutDemande statut) {
-        return demandeRepository.findByStatut(statut);
+    public void supprimerDemande(Long id) {
+        Demande demande = demandeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable : id=" + id));
+
+        // Supprimer les historiques
+        historiqueStatutRepository.deleteAll(demande.getHistoriques());
+
+        // Supprimer les pièces
+        demandePieceRepository.deleteAll(demande.getDemandePieces());
+
+        // Supprimer la demande
+        demandeRepository.delete(demande);
     }
-    
-    /**
-     * Récupérer toutes les demandes par type
-     */
-    public List<Demande> getDemandesByType(com.demo.gestionVisa.enums.TypeDemande type) {
-        return demandeRepository.findByTypeDemande(type);
-    }
-    
-    /**
-     * Récupérer toutes les demandes
-     */
-    public List<Demande> getAllDemandes() {
-        return demandeRepository.findAll();
-    }
-    
-    /**
-     * Mettre à jour le statut d'une demande
-     */
-    public Demande updateStatut(Long demandeId, StatutDemande nouveauStatut) {
-        Optional<Demande> demandeOptional = demandeRepository.findById(demandeId);
-        
-        if (demandeOptional.isPresent()) {
-            Demande demande = demandeOptional.get();
-            demande.setStatut(nouveauStatut);
-            demande.setDateModification(LocalDateTime.now());
-            
-            if (nouveauStatut == StatutDemande.VALIDEE || nouveauStatut == StatutDemande.REJETEE) {
-                demande.setDateTraitement(LocalDateTime.now());
-            }
-            
-            return demandeRepository.save(demande);
+
+    public DemandeCreateDTO getDemandePourModification(Long id) {
+        Demande demande = demandeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable : id=" + id));
+
+        if (demande.getDemandeur() == null || demande.getVisaTransformable() == null || demande.getVisaTransformable().getPasseport() == null) {
+            throw new BusinessException("La demande est incomplète et ne peut pas être modifiée via le formulaire.");
         }
-        
-        return null;
+
+        Demandeur demandeur = demande.getDemandeur();
+        Passeport passeport = demande.getVisaTransformable().getPasseport();
+        VisaTransformable visa = demande.getVisaTransformable();
+
+        DemandeurDTO demandeurDTO = DemandeurDTO.builder()
+                .nom(demandeur.getNom())
+                .prenom(demandeur.getPrenom())
+                .nomJeuneFille(demandeur.getNomJeuneFille())
+                .dateNaissance(demandeur.getDateNaissance())
+                .lieuNaissance(demandeur.getLieuNaissance())
+                .idSituationFamiliale(demandeur.getSituationFamiliale() != null ? demandeur.getSituationFamiliale().getId() : null)
+                .idNationalite(demandeur.getNationalite() != null ? demandeur.getNationalite().getId() : null)
+                .adresseMadagascar(demandeur.getAdresseMadagascar())
+                .telephone(demandeur.getTelephone())
+                .email(demandeur.getEmail())
+                .build();
+
+        PasseportDTO passeportDTO = PasseportDTO.builder()
+                .numero(passeport.getNumero())
+                .dateDelivrance(passeport.getDateDelivrance())
+                .dateExpiration(passeport.getDateExpiration())
+                .build();
+
+        VisaTransformableDTO visaDTO = VisaTransformableDTO.builder()
+                .referenceVisa(visa.getReferenceVisa())
+                .dateEntree(visa.getDateEntree())
+                .lieuEntree(visa.getLieuEntree())
+                .dateExpiration(visa.getDateExpiration())
+                .build();
+
+        List<Long> piecesFournies = demande.getDemandePieces() == null ? List.of() :
+                demande.getDemandePieces().stream()
+                        .filter(dp -> Boolean.TRUE.equals(dp.getFourni()))
+                        .map(dp -> dp.getPiece() != null ? dp.getPiece().getId() : null)
+                        .filter(Objects::nonNull)
+                        .toList();
+
+        return DemandeCreateDTO.builder()
+                .demandeurDTO(demandeurDTO)
+                .passeportDTO(passeportDTO)
+                .visaDTO(visaDTO)
+                .idTypeVisa(demande.getTypeVisa() != null ? demande.getTypeVisa().getId() : null)
+                .piecesFournies(piecesFournies)
+                .build();
     }
-    
-    /**
-     * Revérifier les statuts après ajout de pièces
-     */
-    public Demande revérifierEtMajStatut(Long demandeId) {
-        Optional<Demande> demandeOptional = demandeRepository.findById(demandeId);
-        
-        if (demandeOptional.isPresent()) {
-            Demande demande = demandeOptional.get();
-            attribuerStatut(demande);
-            demande.setDateModification(LocalDateTime.now());
-            
-            return demandeRepository.save(demande);
+
+    public DemandeResponseDTO modifierDemande(Long id, DemandeCreateDTO dto) {
+        Demande demande = demandeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable : id=" + id));
+
+        if (demande.getDemandeur() == null || demande.getVisaTransformable() == null || demande.getVisaTransformable().getPasseport() == null) {
+            throw new BusinessException("La demande est incomplète et ne peut pas être modifiée via le formulaire.");
         }
-        
-        return null;
-    }
-    
-    /**
-     * Supprimer une demande
-     */
-    public void deleteDemande(Long id) {
-        demandeRepository.deleteById(id);
-    }
-    
-    /**
-     * Convertir une Demande en DemandeResponseDTO
-     */
-    public DemandeResponseDTO convertToResponseDTO(Demande demande) {
-        DemandeResponseDTO response = new DemandeResponseDTO();
-        response.setId(demande.getId());
-        response.setStatut(demande.getStatut());
-        response.setTypeDemande(demande.getTypeDemande());
-        response.setPiecesObligatoiresCompletes(demande.isPiecesObligatoiresCompletes());
-        response.setDossierComplet(demande.isDossierComplet());
-        response.setDateCreation(demande.getDateCreation());
-        response.setDateModification(demande.getDateModification());
-        
-        return response;
+
+        // TypeVisa
+        TypeVisa typeVisa = typeVisaRepository.findById(dto.getIdTypeVisa())
+                .orElseThrow(() -> new ResourceNotFoundException("TypeVisa introuvable : id=" + dto.getIdTypeVisa()));
+        demande.setTypeVisa(typeVisa);
+
+        // Demandeur / Passeport / VisaTransformable
+        demandeurService.modifier(demande.getDemandeur(), dto.getDemandeurDTO());
+        passeportService.modifier(demande.getVisaTransformable().getPasseport(), dto.getPasseportDTO());
+        visaTransformableService.modifier(demande.getVisaTransformable(), dto.getVisaDTO());
+
+        demandeRepository.save(demande);
+
+        // Pièces (recalculées sur le typeVisa courant)
+        demandePieceRepository.deleteAll(demande.getDemandePieces());
+        lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa);
+
+        return demandeMapper.toResponseDTO(demande);
     }
 }

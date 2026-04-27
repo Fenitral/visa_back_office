@@ -1,128 +1,42 @@
 package com.demo.gestionVisa.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDate;
-import com.demo.gestionVisa.enums.SituationFamiliale;
 
-/**
- * DTO pour les informations d'un demandeur
- */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class DemandeurDTO {
-    
-    private Long id;
-    private String nom;
-    private String prenom;
-    private String nomJeuneFille;
-    private LocalDate dateNaissance;
-    private SituationFamiliale situationFamiliale;
-    private String nationalite;
-    private String profession;
-    private String adresseMadagascar;
-    private String telephone;
 
-    // Constructeurs
-    public DemandeurDTO() {
-    }
+    @NotBlank(message = "Le nom est obligatoire")
+    private String nom;                     // (O)
 
-    public DemandeurDTO(String nom, String prenom, LocalDate dateNaissance,
-                       SituationFamiliale situationFamiliale, String nationalite,
-                       String adresseMadagascar) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.dateNaissance = dateNaissance;
-        this.situationFamiliale = situationFamiliale;
-        this.nationalite = nationalite;
-        this.adresseMadagascar = adresseMadagascar;
-    }
+    private String prenom;                  // (F)
 
-    // Getters et Setters
-    public Long getId() {
-        return id;
-    }
+    private String nomJeuneFille;           // (F)
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @NotNull(message = "La date de naissance est obligatoire")
+    private LocalDate dateNaissance;        // (O)
 
-    public String getNom() {
-        return nom;
-    }
+    private String lieuNaissance;           // (F)
 
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
+    @NotNull(message = "La situation familiale est obligatoire")
+    private Long idSituationFamiliale;      // (O, S)
 
-    public String getPrenom() {
-        return prenom;
-    }
+    @NotNull(message = "La nationalité est obligatoire")
+    private Long idNationalite;             // (O, S)
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
+    @NotBlank(message = "L'adresse Madagascar est obligatoire")
+    private String adresseMadagascar;       // (O)
 
-    public String getNomJeuneFille() {
-        return nomJeuneFille;
-    }
+    @NotBlank(message = "Le téléphone est obligatoire")
+    private String telephone;               // (O)
 
-    public void setNomJeuneFille(String nomJeuneFille) {
-        this.nomJeuneFille = nomJeuneFille;
-    }
-
-    public LocalDate getDateNaissance() {
-        return dateNaissance;
-    }
-
-    public void setDateNaissance(LocalDate dateNaissance) {
-        this.dateNaissance = dateNaissance;
-    }
-
-    public SituationFamiliale getSituationFamiliale() {
-        return situationFamiliale;
-    }
-
-    public void setSituationFamiliale(SituationFamiliale situationFamiliale) {
-        this.situationFamiliale = situationFamiliale;
-    }
-
-    public String getNationalite() {
-        return nationalite;
-    }
-
-    public void setNationalite(String nationalite) {
-        this.nationalite = nationalite;
-    }
-
-    public String getProfession() {
-        return profession;
-    }
-
-    public void setProfession(String profession) {
-        this.profession = profession;
-    }
-
-    public String getAdresseMadagascar() {
-        return adresseMadagascar;
-    }
-
-    public void setAdresseMadagascar(String adresseMadagascar) {
-        this.adresseMadagascar = adresseMadagascar;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    @Override
-    public String toString() {
-        return "DemandeurDTO{" +
-                "id=" + id +
-                ", nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
-                ", dateNaissance=" + dateNaissance +
-                ", nationalite='" + nationalite + '\'' +
-                '}';
-    }
+    private String email;                   // (F)
 }

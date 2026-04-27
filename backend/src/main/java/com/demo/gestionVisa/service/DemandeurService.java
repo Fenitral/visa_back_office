@@ -1,96 +1,115 @@
 package com.demo.gestionVisa.service;
 
-import com.demo.gestionVisa.model.Demandeur;
-import com.demo.gestionVisa.repository.DemandeurRepository;
 import com.demo.gestionVisa.dto.DemandeurDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.demo.gestionVisa.model.Demandeur;
+import com.demo.gestionVisa.model.Nationalite;
+import com.demo.gestionVisa.model.SituationFamiliale;
+import com.demo.gestionVisa.repository.DemandeurRepository;
+import com.demo.gestionVisa.repository.NationaliteRepository;
+import com.demo.gestionVisa.repository.SituationFamilialeRepository;
+import com.demo.gestionVisa.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service pour la gestion des demandeurs
- */
 @Service
+@Transactional
 public class DemandeurService {
-    
-    @Autowired
-    private DemandeurRepository demandeurRepository;
-    
-    /**
-     * Créer un nouveau demandeur
-     */
-    public Demandeur creerDemandeur(DemandeurDTO demandeurDTO) {
-        Demandeur demandeur = new Demandeur();
-        demandeur.setNom(demandeurDTO.getNom());
-        demandeur.setPrenom(demandeurDTO.getPrenom());
-        demandeur.setNomJeuneFille(demandeurDTO.getNomJeuneFille());
-        demandeur.setDateNaissance(demandeurDTO.getDateNaissance());
-        demandeur.setSituationFamiliale(demandeurDTO.getSituationFamiliale());
-        demandeur.setNationalite(demandeurDTO.getNationalite());
-        demandeur.setProfession(demandeurDTO.getProfession());
-        demandeur.setAdresseMadagascar(demandeurDTO.getAdresseMadagascar());
-        demandeur.setTelephone(demandeurDTO.getTelephone());
-        
-        return demandeurRepository.save(demandeur);
+
+    private final DemandeurRepository demandeurRepository;
+    private final NationaliteRepository nationaliteRepository;
+    private final SituationFamilialeRepository situationFamilialeRepository;
+
+    public DemandeurService(DemandeurRepository demandeurRepository,
+                           NationaliteRepository nationaliteRepository,
+                           SituationFamilialeRepository situationFamilialeRepository) {
+        this.demandeurRepository = demandeurRepository;
+        this.nationaliteRepository = nationaliteRepository;
+        this.situationFamilialeRepository = situationFamilialeRepository;
     }
-    
-    /**
-     * Récupérer un demandeur par ID
-     */
-    public Optional<Demandeur> getDemandeurById(Long id) {
-        return demandeurRepository.findById(id);
-    }
-    
-    /**
-     * Récupérer ou créer un demandeur
-     */
-    public Demandeur getOuCreerDemandeur(DemandeurDTO demandeurDTO) {
-        Optional<Demandeur> demandeurExistant = 
-            demandeurRepository.findByNomAndPrenom(demandeurDTO.getNom(), demandeurDTO.getPrenom());
-        
-        if (demandeurExistant.isPresent()) {
-            return demandeurExistant.get();
-        }
-        
-        return creerDemandeur(demandeurDTO);
-    }
-    
-    /**
-     * Mettre à jour un demandeur
-     */
-    public Demandeur updateDemandeur(Long id, DemandeurDTO demandeurDTO) {
-        Optional<Demandeur> demandeurOptional = demandeurRepository.findById(id);
-        
-        if (demandeurOptional.isPresent()) {
-            Demandeur demandeur = demandeurOptional.get();
-            demandeur.setNom(demandeurDTO.getNom());
-            demandeur.setPrenom(demandeurDTO.getPrenom());
-            demandeur.setNomJeuneFille(demandeurDTO.getNomJeuneFille());
-            demandeur.setDateNaissance(demandeurDTO.getDateNaissance());
-            demandeur.setSituationFamiliale(demandeurDTO.getSituationFamiliale());
-            demandeur.setNationalite(demandeurDTO.getNationalite());
-            demandeur.setProfession(demandeurDTO.getProfession());
-            demandeur.setAdresseMadagascar(demandeurDTO.getAdresseMadagascar());
-            demandeur.setTelephone(demandeurDTO.getTelephone());
-            
-            return demandeurRepository.save(demandeur);
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Récupérer tous les demandeurs
-     */
-    public List<Demandeur> getAllDemandeurs() {
+
+    public List<Demandeur> findAll() {
         return demandeurRepository.findAll();
     }
-    
-    /**
-     * Supprimer un demandeur
-     */
-    public void deleteDemandeur(Long id) {
+
+    public Optional<Demandeur> findById(Long id) {
+        return demandeurRepository.findById(id);
+    }
+
+    public Demandeur save(Demandeur demandeur) {
+        return demandeurRepository.save(demandeur);
+    }
+
+    public void deleteById(Long id) {
         demandeurRepository.deleteById(id);
+    }
+
+    /**
+     * Crée ou récupère un demandeur existant.
+     *
+     * Cherche d'abord un demandeur par nom et prénom, sinon crée un nouveau.
+     *
+     * @param dto les données du formulaire
+     * @return le demandeur créé ou existant
+     */
+    public Demandeur creerOuRecuperer(DemandeurDTO dto) {
+        // Chercher si un demandeur existe déjà avec le même nom et date de naissance
+        Optional<Demandeur> existing = demandeurRepository.findByNomAndDateNaissance(dto.getNom(), dto.getDateNaissance());
+
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+
+        // Créer un nouveau demandeur
+        Demandeur demandeur = new Demandeur();
+        demandeur.setNom(dto.getNom());
+        demandeur.setPrenom(dto.getPrenom());
+        demandeur.setNomJeuneFille(dto.getNomJeuneFille());
+        demandeur.setDateNaissance(dto.getDateNaissance());
+        demandeur.setLieuNaissance(dto.getLieuNaissance());
+        demandeur.setAdresseMadagascar(dto.getAdresseMadagascar());
+        demandeur.setTelephone(dto.getTelephone());
+        demandeur.setEmail(dto.getEmail());
+
+        // Résoudre SituationFamiliale
+        if (dto.getIdSituationFamiliale() != null) {
+            SituationFamiliale sf = situationFamilialeRepository.findById(dto.getIdSituationFamiliale())
+                    .orElse(null);
+            demandeur.setSituationFamiliale(sf);
+        }
+
+        // Résoudre Nationalité (obligatoire)
+        Nationalite nationalite = nationaliteRepository.findById(dto.getIdNationalite())
+                .orElseThrow(() -> new RuntimeException("Nationalité introuvable"));
+        demandeur.setNationalite(nationalite);
+
+        return demandeurRepository.save(demandeur);
+    }
+
+    public Demandeur modifier(Demandeur demandeur, DemandeurDTO dto) {
+        demandeur.setNom(dto.getNom());
+        demandeur.setPrenom(dto.getPrenom());
+        demandeur.setNomJeuneFille(dto.getNomJeuneFille());
+        demandeur.setDateNaissance(dto.getDateNaissance());
+        demandeur.setLieuNaissance(dto.getLieuNaissance());
+        demandeur.setAdresseMadagascar(dto.getAdresseMadagascar());
+        demandeur.setTelephone(dto.getTelephone());
+        demandeur.setEmail(dto.getEmail());
+
+        if (dto.getIdSituationFamiliale() != null) {
+            SituationFamiliale sf = situationFamilialeRepository.findById(dto.getIdSituationFamiliale())
+                    .orElseThrow(() -> new ResourceNotFoundException("Situation familiale introuvable : id=" + dto.getIdSituationFamiliale()));
+            demandeur.setSituationFamiliale(sf);
+        } else {
+            demandeur.setSituationFamiliale(null);
+        }
+
+        Nationalite nationalite = nationaliteRepository.findById(dto.getIdNationalite())
+                .orElseThrow(() -> new ResourceNotFoundException("Nationalité introuvable : id=" + dto.getIdNationalite()));
+        demandeur.setNationalite(nationalite);
+
+        return demandeurRepository.save(demandeur);
     }
 }

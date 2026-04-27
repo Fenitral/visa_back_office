@@ -1,143 +1,64 @@
 package com.demo.gestionVisa.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import com.demo.gestionVisa.enums.StatutDemande;
-import com.demo.gestionVisa.enums.TypeDemande;
+import lombok.*;
 
-/**
- * Entité représentant une demande de visa
- */
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "demande")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Demande {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne
-    @JoinColumn(name = "demandeur_id", nullable = false)
+
+    @Column(name = "date_demande", nullable = false)
+    private LocalDateTime dateDemande;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_demandeur", nullable = false)
     private Demandeur demandeur;
-    
+
     @ManyToOne
-    @JoinColumn(name = "visa_transformable_id", nullable = false)
+    @JoinColumn(name = "id_visa_transformable")
     private VisaTransformable visaTransformable;
-    
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+
+    @ManyToOne
+    @JoinColumn(name = "id_type_visa")
+    private TypeVisa typeVisa;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_type_demande", nullable = false)
     private TypeDemande typeDemande;
-    
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private StatutDemande statut;
-    
-    @Column(nullable = false, name = "pieces_obligatoires_completes")
-    private boolean piecesObligatoiresCompletes;
-    
-    @Column(name = "dossier_complet")
-    private boolean dossierComplet;
-    
-    @Column(nullable = false)
-    private LocalDateTime dateCreation;
-    
-    @Column
-    private LocalDateTime dateModification;
-    
-    @Column
-    private LocalDateTime dateTraitement;
 
-    // Constructeurs
-    public Demande() {
-        this.dateCreation = LocalDateTime.now();
-    }
+    @ManyToOne
+    @JoinColumn(name = "id_statut_demande")
+    private StatutDemande statutDemande;
 
-    public Demande(Demandeur demandeur, VisaTransformable visaTransformable, 
-                   TypeDemande typeDemande) {
-        this.demandeur = demandeur;
-        this.visaTransformable = visaTransformable;
-        this.typeDemande = typeDemande;
-        this.dateCreation = LocalDateTime.now();
-    }
+    @OneToMany(mappedBy = "demande")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Visa> visas = new HashSet<>();
 
-    // Getters et Setters
-    public Long getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "demande")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<CarteResident> cartesResidents = new HashSet<>();
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "demande")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<HistoriqueStatut> historiques = new HashSet<>();
 
-    public Demandeur getDemandeur() {
-        return demandeur;
-    }
-
-    public void setDemandeur(Demandeur demandeur) {
-        this.demandeur = demandeur;
-    }
-
-    public VisaTransformable getVisaTransformable() {
-        return visaTransformable;
-    }
-
-    public void setVisaTransformable(VisaTransformable visaTransformable) {
-        this.visaTransformable = visaTransformable;
-    }
-
-    public TypeDemande getTypeDemande() {
-        return typeDemande;
-    }
-
-    public void setTypeDemande(TypeDemande typeDemande) {
-        this.typeDemande = typeDemande;
-    }
-
-    public StatutDemande getStatut() {
-        return statut;
-    }
-
-    public void setStatut(StatutDemande statut) {
-        this.statut = statut;
-    }
-
-    public boolean isPiecesObligatoiresCompletes() {
-        return piecesObligatoiresCompletes;
-    }
-
-    public void setPiecesObligatoiresCompletes(boolean piecesObligatoiresCompletes) {
-        this.piecesObligatoiresCompletes = piecesObligatoiresCompletes;
-    }
-
-    public boolean isDossierComplet() {
-        return dossierComplet;
-    }
-
-    public void setDossierComplet(boolean dossierComplet) {
-        this.dossierComplet = dossierComplet;
-    }
-
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
-    public LocalDateTime getDateModification() {
-        return dateModification;
-    }
-
-    public void setDateModification(LocalDateTime dateModification) {
-        this.dateModification = dateModification;
-    }
-
-    public LocalDateTime getDateTraitement() {
-        return dateTraitement;
-    }
-
-    public void setDateTraitement(LocalDateTime dateTraitement) {
-        this.dateTraitement = dateTraitement;
-    }
+    @OneToMany(mappedBy = "demande")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<DemandePiece> demandePieces = new HashSet<>();
 }

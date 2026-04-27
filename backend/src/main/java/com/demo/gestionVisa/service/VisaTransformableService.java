@@ -1,97 +1,81 @@
 package com.demo.gestionVisa.service;
 
-import com.demo.gestionVisa.model.VisaTransformable;
-import com.demo.gestionVisa.model.Demandeur;
-import com.demo.gestionVisa.repository.VisaTransformableRepository;
 import com.demo.gestionVisa.dto.VisaTransformableDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.demo.gestionVisa.exception.BusinessException;
+import com.demo.gestionVisa.mapper.VisaTransformableMapper;
+import com.demo.gestionVisa.model.Passeport;
+import com.demo.gestionVisa.model.VisaTransformable;
+import com.demo.gestionVisa.repository.VisaTransformableRepository;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Service pour la gestion des visas transformables
- */
 @Service
+@Transactional
 public class VisaTransformableService {
-    
-    @Autowired
-    private VisaTransformableRepository visaTransformableRepository;
-    
-    @Autowired
-    private DemandeurService demandeurService;
-    
+
+    private final VisaTransformableRepository visaTransformableRepository;
+    private final VisaTransformableMapper visaTransformableMapper;
+
+    public VisaTransformableService(VisaTransformableRepository visaTransformableRepository,
+                                   VisaTransformableMapper visaTransformableMapper) {
+        this.visaTransformableRepository = visaTransformableRepository;
+        this.visaTransformableMapper = visaTransformableMapper;
+    }
+
     /**
-     * Créer un nouveau visa transformable
+     * Crée et persiste un nouveau VisaTransformable.
+     *
+     * Règles appliquées :
+     *   RG-01 : referenceVisa doit être unique
+     *   RG-02 : dateExpiration > dateEntree
+     *   RG-03 : passeport non null
+     *
+     * @param dto       données du formulaire
+     * @param passeport entité Passeport résolue (non null)
+     * @return          entité persistée
+     * @throws BusinessException si référence déjà utilisée ou dates incohérentes
      */
-    public VisaTransformable creerVisaTransformable(VisaTransformableDTO visaDTO) {
-        Optional<Demandeur> demandeur = demandeurService.getDemandeurById(visaDTO.getDemandeurId());
-        
-        if (demandeur.isEmpty()) {
-            throw new RuntimeException("Demandeur non trouvé avec l'ID: " + visaDTO.getDemandeurId());
+    public VisaTransformable creer(VisaTransformableDTO dto, Passeport passeport) {
+        // 1. Vérifier unicité referenceVisa
+        if (visaTransformableRepository.findByReferenceVisa(dto.getReferenceVisa()).isPresent()) {
+            throw new BusinessException("La référence visa '" + dto.getReferenceVisa() + "' est déjà utilisée.");
         }
-        
-        VisaTransformable visa = new VisaTransformable();
-        visa.setReference(visaDTO.getReference());
-        visa.setDemandeur(demandeur.get());
-        visa.setDateEntree(visaDTO.getDateEntree());
-        visa.setLieuEntree(visaDTO.getLieuEntree());
-        visa.setDateExpiration(visaDTO.getDateExpiration());
-        
-        return visaTransformableRepository.save(visa);
-    }
-    
-    /**
-     * Récupérer un visa par sa référence
-     */
-    public Optional<VisaTransformable> getVisaByReference(String reference) {
-        return visaTransformableRepository.findByReference(reference);
-    }
-    
-    /**
-     * Récupérer un visa par ID
-     */
-    public Optional<VisaTransformable> getVisaById(Long id) {
-        return visaTransformableRepository.findById(id);
-    }
-    
-    /**
-     * Récupérer tous les visas d'un demandeur
-     */
-    public List<VisaTransformable> getVisasByDemandeur(Demandeur demandeur) {
-        return visaTransformableRepository.findByDemandeur(demandeur);
-    }
-    
-    /**
-     * Mettre à jour un visa transformable
-     */
-    public VisaTransformable updateVisaTransformable(Long id, VisaTransformableDTO visaDTO) {
-        Optional<VisaTransformable> visaOptional = visaTransformableRepository.findById(id);
-        
-        if (visaOptional.isPresent()) {
-            VisaTransformable visa = visaOptional.get();
-            visa.setReference(visaDTO.getReference());
-            visa.setDateEntree(visaDTO.getDateEntree());
-            visa.setLieuEntree(visaDTO.getLieuEntree());
-            visa.setDateExpiration(visaDTO.getDateExpiration());
-            
-            return visaTransformableRepository.save(visa);
+
+        // 2. Vérifier cohérence des dates
+        if (!dto.getDateExpiration().isAfter(dto.getDateEntree())) {
+            throw new BusinessException("La date d'expiration doit être postérieure à la date d'entrée.");
         }
-        
-        return null;
+
+        // 3. Mapper et sauvegarder
+        VisaTransformable entity = visaTransformableMapper.toEntity(dto, passeport);
+        return visaTransformableRepository.save(entity);
     }
-    
+
     /**
-     * Récupérer tous les visas transformables
+     * Vérifie si une référence visa est déjà en base.
+     *
+     * @param referenceVisa     référence à tester
+     * @return                  true si elle existe déjà
      */
-    public List<VisaTransformable> getAllVisas() {
-        return visaTransformableRepository.findAll();
+    public boolean existeParReference(String referenceVisa) {
+        return visaTransformableRepository.findByReferenceVisa(referenceVisa).isPresent();
     }
-    
-    /**
-     * Supprimer un visa
-     */
-    public void deleteVisa(Long id) {
-        visaTransformableRepository.deleteById(id);
+
+    public VisaTransformable modifier(VisaTransformable visaTransformable, VisaTransformableDTO dto) {
+        visaTransformableRepository.findByReferenceVisa(dto.getReferenceVisa())
+                .filter(existing -> !existing.getId().equals(visaTransformable.getId()))
+                .ifPresent(existing -> {
+                    throw new BusinessException("La référence visa '" + dto.getReferenceVisa() + "' est déjà utilisée.");
+                });
+
+        if (!dto.getDateExpiration().isAfter(dto.getDateEntree())) {
+            throw new BusinessException("La date d'expiration doit être postérieure à la date d'entrée.");
+        }
+
+        visaTransformable.setReferenceVisa(dto.getReferenceVisa());
+        visaTransformable.setDateEntree(dto.getDateEntree());
+        visaTransformable.setLieuEntree(dto.getLieuEntree());
+        visaTransformable.setDateExpiration(dto.getDateExpiration());
+        return visaTransformableRepository.save(visaTransformable);
     }
 }
