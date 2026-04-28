@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @Builder
 public class DemandeurDTO {
 
+    private Long id;                        // (Optional - used in responses)
+
     @NotBlank(message = "Le nom est obligatoire")
     private String nom;                     // (O)
 

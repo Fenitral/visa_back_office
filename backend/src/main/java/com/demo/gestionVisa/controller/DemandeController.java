@@ -48,11 +48,16 @@ public class DemandeController {
     /**
      * GET /demandes/nouvelle
      * Afficher le formulaire vierge
+     * @param idTypeVisa type de visa à pré-sélectionner (optionnel)
+     * @param typeDemande type de demande: "NOUVELLE" ou "DUPLICATA" (optionnel, défaut: NOUVELLE)
      */
     @GetMapping("/nouvelle")
-    public String afficherFormulaire(@RequestParam(required = false) Long idTypeVisa, Model model) {
+    public String afficherFormulaire(@RequestParam(required = false) Long idTypeVisa,
+                                    @RequestParam(required = false, defaultValue = "NOUVELLE") String typeDemande,
+                                    Model model) {
         DemandeCreateDTO form = new DemandeCreateDTO();
         form.setIdTypeVisa(idTypeVisa);
+        form.setTypeDemande(typeDemande); // Assigner le type de demande au DTO
 
         model.addAttribute("demandeForm", form);
         model.addAttribute("typesVisa", typeVisaRepository.findAll());
@@ -64,6 +69,7 @@ public class DemandeController {
         model.addAttribute("formAction", "/demandes/nouvelle");
         model.addAttribute("submitLabel", "ENREGISTRER");
         model.addAttribute("cancelUrl", "/demandes");
+        model.addAttribute("typeDemande", typeDemande); // Passer le type de demande
         return "demande/formulaire";
     }
 
@@ -101,6 +107,7 @@ public class DemandeController {
             model.addAttribute("formAction", "/demandes/nouvelle");
             model.addAttribute("submitLabel", "ENREGISTRER");
             model.addAttribute("cancelUrl", "/demandes");
+            model.addAttribute("typeDemande", dto.getTypeDemande()); // Repasserle type de demande
             return "demande/formulaire";
         }
 
@@ -121,6 +128,7 @@ public class DemandeController {
             model.addAttribute("formAction", "/demandes/nouvelle");
             model.addAttribute("submitLabel", "ENREGISTRER");
             model.addAttribute("cancelUrl", "/demandes");
+            model.addAttribute("typeDemande", dto.getTypeDemande()); // Repasserle type de demande
             return "demande/formulaire";
         }
     }
@@ -142,6 +150,7 @@ public class DemandeController {
         model.addAttribute("formAction", "/demandes/" + id + "/modifier");
         model.addAttribute("submitLabel", "METTRE À JOUR");
         model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
+        model.addAttribute("typeDemande", form.getTypeDemande()); // Passer le type de demande
         return "demande/formulaire";
     }
 
@@ -166,6 +175,7 @@ public class DemandeController {
             model.addAttribute("formAction", "/demandes/" + id + "/modifier");
             model.addAttribute("submitLabel", "METTRE À JOUR");
             model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
+            model.addAttribute("typeDemande", dto.getTypeDemande());
             return "demande/formulaire";
         }
 
@@ -184,6 +194,7 @@ public class DemandeController {
             model.addAttribute("formAction", "/demandes/" + id + "/modifier");
             model.addAttribute("submitLabel", "METTRE À JOUR");
             model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
+            model.addAttribute("typeDemande", dto.getTypeDemande());
             return "demande/formulaire";
         }
     }

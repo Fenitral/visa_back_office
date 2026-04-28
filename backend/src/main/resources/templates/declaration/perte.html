@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclaration de Perte</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .step {
+            margin-bottom: 40px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 1.4em;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-reset:hover {
+            background: #e8e8e8;
+        }
+
+        .search-results {
+            margin-top: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .result-item {
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .result-item:hover {
+            background: #efefef;
+            padding-left: 20px;
+        }
+
+        .result-item strong {
+            color: #333;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 1.05em;
+        }
+
+        .result-item small {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .declaration-section {
+            display: none;
+        }
+
+        .declaration-section.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .demandeur-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 25px;
+        }
+
+        .demandeur-card strong {
+            display: block;
+            font-size: 1.15em;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .demandeur-card small {
+            color: #666;
+        }
+
+        .checkbox-group {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            margin-bottom: 25px;
+        }
+
+        .checkbox-group h3 {
+            color: #333;
+            margin-bottom: 18px;
+            font-size: 1.1em;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            font-size: 1.05em;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            flex: 1;
+            color: #333;
+        }
+
+        .textarea-group {
+            margin-bottom: 25px;
+        }
+
+        .textarea-group label {
+            display: block;
+            margin-bottom: 12px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        .textarea-group textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 110px;
+            transition: all 0.3s;
+        }
+
+        .textarea-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 35px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 14px 40px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-cancel {
+            background: #f0f0f0;
+            color: #333;
+            padding: 14px 40px;
+            border: 2px solid #ddd;
+        }
+
+        .btn-cancel:hover {
+            background: #e8e8e8;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            border-left: 4px solid;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border-left-color: #c33;
+        }
+
+        .alert-success {
+            background: #efe;
+            color: #3c3;
+            border-left-color: #3c3;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .renewal-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid #d1ecf1;
+            margin-top: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-info {
+            background: #d1ecf1 !important;
+            color: #0c5460 !important;
+            border-left-color: #0c5460 !important;
+        }
+
+        .no-results-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            border: 2px dashed #ffc107;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .no-results-box i {
+            font-size: 3em;
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+
+        .no-results-box p {
+            color: #666;
+            font-size: 1.05em;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚠️ Déclaration de Perte</h1>
+            <p>Signalez la perte de votre passeport et/ou carte résident</p>
+        </div>
+
+        <div class="content">
+            <!-- ÉTAPE 1: RECHERCHE -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Rechercher le demandeur</div>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 12px; color: #666; font-weight: 500;">
+                        <i class="fas fa-user"></i> Entrez le nom pour rechercher
+                    </label>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" 
+                               placeholder="Ex: Ange, Marie, Kofi..." autocomplete="off">
+                        <button class="btn btn-search" onclick="searchDemandeur()">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+                        <button class="btn btn-reset" onclick="resetSearch()">
+                            <i class="fas fa-redo"></i> Réinit.
+                        </button>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Recherche en cours...</p>
+                </div>
+
+                <div id="searchResults"></div>
+            </div>
+
+            <!-- RENOUVELLEMENT POUR LES SANS ANTÉCÉDENTS -->
+            <div id="renewalSection" class="renewal-box" style="display: none;">
+                <div class="alert alert-info" style="background: #d1ecf1; color: #0c5460; border-left-color: #0c5460; margin-bottom: 20px;">
+                    <strong>ℹ️ Aucune demande antérieure trouvée</strong>
+                    <p style="margin-top: 8px;">Pour déclarer une perte, il faut d'abord créer une nouvelle demande.</p>
+                </div>
+                <div class="demandeur-card">
+                    <strong><i class="fas fa-user-check" style="color: #667eea;"></i> Demandeur sélectionné</strong>
+                    <div id="demandeurRenewal" style="margin-top: 10px;"></div>
+                </div>
+                <div class="button-group" style="margin-top: 30px;">
+                    <button class="btn btn-submit" onclick="goToNewDemand()">
+                        <i class="fas fa-file-alt"></i> Créer une nouvelle demande
+                    </button>
+                    <button class="btn btn-cancel" onclick="cancelDeclaration()">
+                        <i class="fas fa-times-circle"></i> Annuler
+                    </button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 2: DÉCLARATION -->
+            <div class="declaration-section" id="declarationSection">
+                <div class="step">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Déclarer la perte</div>
+                    </div>
+
+                    <div class="alert alert-error" id="alertError"></div>
+                    <div class="alert alert-success" id="alertSuccess"></div>
+
+                    <div class="demandeur-card">
+                        <strong><i class="fas fa-user-check" style="color: #667eea;"></i> Demandeur sélectionné</strong>
+                        <div id="demandeurSelected" style="margin-top: 10px;"></div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <h3><i class="fas fa-file-alt"></i> Que souhaitez-vous déclarer comme perdu ?</h3>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pertePasseport" name="pertePasseport">
+                            <label for="pertePasseport">
+                                <i class="fas fa-passport" style="color: #667eea; margin-right: 8px;"></i>
+                                Perte du <strong>Passeport</strong>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="perteCarteResident" name="perteCarteResident">
+                            <label for="perteCarteResident">
+                                <i class="fas fa-id-card" style="color: #764ba2; margin-right: 8px;"></i>
+                                Perte de la <strong>Carte Résident</strong>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="textarea-group">
+                        <label for="motif">
+                            <i class="fas fa-notes-medical" style="color: #667eea; margin-right: 8px;"></i>
+                            Motif de la déclaration (optionnel)
+                        </label>
+                        <textarea id="motif" placeholder="Décrivez brièvement les circonstances de la perte (vol, oubli, dégâts, etc.)..."></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-submit" onclick="submitDeclaration()">
+                            <i class="fas fa-check-circle"></i> Confirmer la déclaration
+                        </button>
+                        <button class="btn btn-cancel" onclick="cancelDeclaration()">
+                            <i class="fas fa-times-circle"></i> Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDemandeur = null;
+
+        function searchDemandeur() {
+            const nom = document.getElementById('searchInput').value.trim();
+            if (!nom) {
+                showError('⚠️ Veuillez entrer un nom');
+                return;
+            }
+
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('searchResults').innerHTML = '';
+
+            fetch('/declaration/api/search-demandeur', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nom: nom })
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('loading').classList.remove('active');
+                let html = '';
+                if (data.length === 0) {
+                    html = `<div class="no-results-box">
+                        <i class="fas fa-user-plus"></i>
+                        <p>Aucun demandeur trouvé pour "<strong>${nom}</strong>"</p>
+                        <p style="font-size: 0.95em; color: #999; margin-bottom: 20px;">Le demandeur n'existe pas encore. Vous pouvez le créer et directement faire une déclaration de perte.</p>
+                        <button class="btn btn-submit" onclick="goToCreateDemandeur()">
+                            <i class="fas fa-user-plus"></i> Créer nouveau demandeur
+                        </button>
+                    </div>`;
+                } else {
+                    data.forEach(d => {
+                        html += `<div class="result-item" onclick="selectDemandeur('${d.demandeur.id}', '${d.demandeur.nom}', '${d.demandeur.prenom || ''}', ${d.hasAntecedents})">
+                            <strong><i class="fas fa-user-circle" style="margin-right: 8px;"></i>${d.demandeur.nom} ${d.demandeur.prenom || ''}</strong>
+                            <small>📅 ${d.demandeur.dateNaissance || 'N/A'} ${d.hasAntecedents ? '✅ Antécédents' : '🆕 Nouveau'}</small>
+                        </div>`;
+                    });
+                }
+                document.getElementById('searchResults').innerHTML = html;
+            })
+            .catch(e => {
+                document.getElementById('loading').classList.remove('active');
+                console.error('Erreur complète:', e);
+                showError('❌ Erreur: ' + e.message);
+            });
+        }
+
+        function selectDemandeur(id, nom, prenom, hasAntecedents) {
+            selectedDemandeur = { id: id, nom: nom, prenom: prenom, hasAntecedents: hasAntecedents };
+            
+            if (hasAntecedents) {
+                // Afficher le formulaire de déclaration de perte
+                document.getElementById('renewalSection').style.display = 'none';
+                document.getElementById('declarationSection').classList.add('active');
+                document.getElementById('demandeurSelected').innerHTML = 
+                    `<strong style="font-size: 1.1em;">${nom} ${prenom}</strong>`;
+                
+                // Reset checkboxes
+                document.getElementById('pertePasseport').checked = false;
+                document.getElementById('perteCarteResident').checked = false;
+                document.getElementById('motif').value = '';
+                
+                // Clear any previous errors
+                document.getElementById('alertError').classList.remove('show');
+            } else {
+                // Afficher le bouton de renouvellement
+                document.getElementById('declarationSection').classList.remove('active');
+                document.getElementById('renewalSection').style.display = 'block';
+                document.getElementById('demandeurRenewal').innerHTML = 
+                    `<strong style="font-size: 1.1em;">${nom} ${prenom}</strong>`;
+            }
+            
+            // Scroll to section
+            const targetSection = hasAntecedents ? 'declarationSection' : 'renewalSection';
+            document.getElementById(targetSection).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function goToNewDemand() {
+            if (!selectedDemandeur) return;
+            // Rediriger vers le formulaire de nouvelle demande avec le type DUPLICATA
+            window.location.href = '/demandes/nouvelle?typeDemande=DUPLICATA';
+        }
+
+        function goToCreateDemandeur() {
+            // Rediriger vers le formulaire de nouvelle demande avec le type DUPLICATA
+            // L'utilisateur créera d'abord le demandeur, puis la demande de type DUPLICATA
+            window.location.href = '/demandes/nouvelle?typeDemande=DUPLICATA';
+        }
+
+        function submitDeclaration() {
+            if (!selectedDemandeur) {
+                showError('❌ Sélectionnez un demandeur');
+                return;
+            }
+
+            const pertePasseport = document.getElementById('pertePasseport').checked;
+            const perteCarteResident = document.getElementById('perteCarteResident').checked;
+
+            if (!pertePasseport && !perteCarteResident) {
+                showError('⚠️ Cochez au moins un type de perte (Passeport et/ou Carte Résident)');
+                return;
+            }
+
+            document.getElementById('loading').classList.add('active');
+
+            fetch('/declaration/api/declarer-perte', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idDemandeur: parseInt(selectedDemandeur.id),
+                    pertePasseport: pertePasseport,
+                    perteCarteResident: perteCarteResident,
+                    motif: document.getElementById('motif').value || null
+                })
+            })
+            .then(r => {
+                if (!r.ok) {
+                    return r.json().then(err => {
+                        throw new Error(err.message || 'Erreur serveur');
+                    });
+                }
+                return r.json();
+            })
+            .then(data => {
+                document.getElementById('loading').classList.remove('active');
+                showSuccess('✅ Déclaration enregistrée avec succès!');
+                setTimeout(() => window.location.href = '/demandes/' + data.id + '/details', 1500);
+            })
+            .catch(e => {
+                document.getElementById('loading').classList.remove('active');
+                console.error('Erreur complète:', e);
+                showError('❌ Erreur: ' + e.message);
+            });
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('declarationSection').classList.remove('active');
+            selectedDemandeur = null;
+        }
+
+        function cancelDeclaration() {
+            resetSearch();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showError(msg) {
+            const div = document.getElementById('alertError');
+            div.textContent = msg;
+            div.classList.add('show');
+            setTimeout(() => div.classList.remove('show'), 5000);
+        }
+
+        function showSuccess(msg) {
+            const div = document.getElementById('alertSuccess');
+            div.textContent = msg;
+            div.classList.add('show');
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchDemandeur();
+        });
+    </script>
+</body>
+</html>

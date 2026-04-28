@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclaration de Perte - Carte de Résident</title>    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .search-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+        }
+        .form-group { margin-bottom: 20px; }
+        .search-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .search-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-input button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .search-results {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .result-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .result-item:hover { background-color: #f0f0f0; }
+        .declaration-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        .declaration-section.active { display: block; }
+        .checkbox-group {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        .btn-submit {
+            padding: 12px 30px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-annuler {
+            padding: 12px 30px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .alert {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>📋 Déclaration de Perte - Carte Résident</h1>
+        <p class="lead">Entrez le nom du demandeur pour retrouver son dossier</p>
+
+        <div class="search-section">
+            <h2>🔍 Étape 1: Rechercher le demandeur</h2>
+            <div class="search-input">
+                <input type="text" id="searchInput" placeholder="Ex: Ange, Marie, etc." autocomplete="off">
+                <button onclick="searchDemandeur()">Rechercher</button>
+                <button onclick="resetSearch()" type="button">Réinitialiser</button>
+            </div>
+            <div id="searchResults"></div>
+        </div>
+
+        <div class="declaration-section" id="declarationSection">
+            <h2>📝 Étape 2: Déclarer la perte</h2>
+            <div class="alert alert-error" id="alertError"></div>
+            <div class="alert alert-success" id="alertSuccess"></div>
+
+            <div class="form-group">
+                <label><strong>Demandeur sélectionné:</strong></label>
+                <div id="demandeurSelected" style="padding: 15px; background-color: #f9f9f9; border-radius: 4px;"></div>
+            </div>
+
+            <div class="checkbox-group">
+                <h3>Type(s) de perte à déclarer:</h3>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pertePasseport" name="pertePasseport">
+                    <label for="pertePasseport">Perte du Passeport</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="perteCarteResident" name="perteCarteResident">
+                    <label for="perteCarteResident">Perte de la Carte Résident (CR)</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="motif"><strong>Motif (optionnel):</strong></label>
+                <textarea id="motif" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-submit" onclick="submitDeclaration()">✅ Confirmer</button>
+                <button class="btn-annuler" onclick="cancelDeclaration()">❌ Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDemandeur = null;
+
+        function searchDemandeur() {
+            const nom = document.getElementById('searchInput').value.trim();
+            if (!nom) {
+                showError('Veuillez entrer un nom');
+                return;
+            }
+
+            fetch('/declaration/api/search-demandeur', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nom: nom })
+            })
+            .then(r => r.json())
+            .then(data => {
+                let html = '';
+                if (data.length === 0) {
+                    html = '<p style="padding: 20px; text-align: center;">Aucun demandeur trouvé</p>';
+                } else {
+                    data.forEach(d => {
+                        html += `<div class="result-item" onclick="selectDemandeur('${d.id}', '${d.nom}', '${d.prenom || ''}')">
+                            <strong>${d.nom} ${d.prenom || ''}</strong> - ${d.dateNaissance}
+                        </div>`;
+                    });
+                }
+                document.getElementById('searchResults').innerHTML = html;
+            })
+            .catch(e => showError('Erreur: ' + e.message));
+        }
+
+        function selectDemandeur(id, nom, prenom) {
+            selectedDemandeur = { id: id, nom: nom, prenom: prenom };
+            document.getElementById('demandeurSelected').innerHTML = `<strong>${nom} ${prenom}</strong>`;
+            document.getElementById('declarationSection').classList.add('active');
+        }
+
+        function submitDeclaration() {
+            if (!selectedDemandeur) {
+                showError('Sélectionnez un demandeur');
+                return;
+            }
+
+            const pertePasseport = document.getElementById('pertePasseport').checked;
+            const perteCarteResident = document.getElementById('perteCarteResident').checked;
+
+            if (!pertePasseport && !perteCarteResident) {
+                showError('Cochez au moins une case');
+                return;
+            }
+
+            fetch('/declaration/api/declarer-perte', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idDemandeur: parseInt(selectedDemandeur.id),
+                    pertePasseport: pertePasseport,
+                    perteCarteResident: perteCarteResident,
+                    motif: document.getElementById('motif').value || null
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                showSuccess('Déclaration enregistrée!');
+                setTimeout(() => window.location.href = '/demande/details/' + data.id, 1500);
+            })
+            .catch(e => showError('Erreur: ' + e.message));
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('declarationSection').classList.remove('active');
+            selectedDemandeur = null;
+        }
+
+        function cancelDeclaration() {
+            resetSearch();
+        }
+
+        function showError(msg) {
+            const div = document.getElementById('alertError');
+            div.textContent = msg;
+            div.classList.add('show');
+            setTimeout(() => div.classList.remove('show'), 5000);
+        }
+
+        function showSuccess(msg) {
+            const div = document.getElementById('alertSuccess');
+            div.textContent = msg;
+            div.classList.add('show');
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchDemandeur();
+        });
+    </script>
+</body>
+</html>    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .page-header h1 {
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            margin-bottom: 20px;
+        }
+        .search-section {
+            padding: 30px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-search {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        .btn-search:hover {
+            background-color: #5568d3;
+            border-color: #5568d3;
+            color: white;
+        }
+        .results-section {
+            padding: 30px;
+            display: none;
+        }
+        .result-card {
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+        .result-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .result-data {
+            flex: 1;
+            min-width: 300px;
+        }
+        .result-data p {
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        .result-label {
+            font-weight: 600;
+            color: #667eea;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-existing {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        .btn-existing:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            color: white;
+        }
+        .btn-new {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: white;
+        }
+        .btn-new:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+            color: white;
+        }
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .alert-custom {
+            border: none;
+            border-radius: 0.375rem;
+        }
+        @media (max-width: 768px) {
+            .result-info {
+                flex-direction: column;
+            }
+            .action-buttons {
+                width: 100%;
+            }
+            .action-buttons .btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1><i class="bi bi-exclamation-triangle"></i> Déclaration de Perte - Carte de Résident</h1>
+                    <p class="text-white-50 mb-0">Déclarez la perte de votre carte de résident</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" style="max-width: 1000px;">
+        <!-- Messages d'alerte -->
+        <div id="alertContainer"></div>
+
+        <!-- Étape 1: Recherche -->
+        <div class="card">
+            <div class="search-section">
+                <h3 class="mb-3"><i class="bi bi-search"></i> Étape 1: Rechercher le demandeur</h3>
+                <p class="text-muted">Entrez le nom du demandeur pour vérifier s'il existe déjà dans le système</p>
+                
+                <div class="input-group">
+                    <input type="text" class="form-control" id="nomSearch" placeholder="Entrez le nom du demandeur...">
+                    <button class="btn btn-search" type="button" onclick="searchDemandeur()">
+                        <i class="bi bi-search"></i> Rechercher
+                    </button>
+                    <button class="btn btn-secondary" type="button" onclick="resetSearch()">
+                        <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+                    </button>
+                </div>
+                
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2">Recherche en cours...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Étape 2: Résultats -->
+        <div class="card results-section" id="resultsSection">
+            <div class="search-section">
+                <h3 class="mb-3"><i class="bi bi-list-check"></i> Étape 2: Résultats</h3>
+                
+                <div id="resultsList"></div>
+
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
+                    <p class="mt-3">Aucun demandeur trouvé</p>
+                    <a href="/demandes/nouvelle" class="btn btn-primary" style="white-space: nowrap;">
+                        <i class="bi bi-plus-circle"></i> Nouvelle Demande
+                    </a>
+                
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire pour le cas EXISTANT -->
+        <div class="card" id="formExistantSection" style="display: none;">
+            <div class="search-section">
+                <h3 class="mb-3"><i class="bi bi-pencil-square"></i> Cas: Données Existantes</h3>
+                <p class="text-muted">Le demandeur existe déjà. Veuillez entrer le nouveau numéro de carte.</p>
+                
+                <form id="formExistant" onsubmit="submitExistant(event)">
+                    <div class="mb-3">
+                        <label for="demandeurId" class="form-label">Demandeur:</label>
+                        <input type="hidden" id="demandeurId">
+                        <input type="text" class="form-control" id="demandeurName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newNumeroCarte" class="form-label">Nouveau N° de Carte <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newNumeroCarte" placeholder="Ex: CR123456789" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Valider
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeExistantForm()">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Formulaire pour le cas NOUVEAU -->
+        <div class="card" id="formNouveauSection" style="display: none;">
+            <div class="search-section">
+                <h3 class="mb-3"><i class="bi bi-file-earmark-plus"></i> Cas: Nouvelle Demande</h3>
+                <p class="text-muted">Enregistrer les informations manquantes du demandeur et créer les demandes</p>
+                
+                <form id="formNouveau" onsubmit="submitNouveau(event)">
+                    <div class="mb-3">
+                        <label for="demandeurNameNouveau" class="form-label">Demandeur:</label>
+                        <input type="hidden" id="demandeurIdNouveau">
+                        <input type="text" class="form-control" id="demandeurNameNouveau" readonly>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="numeroPassportNouveau" class="form-label">N° Passeport <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="numeroPassportNouveau" placeholder="Ex: ABC123456" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="newNumeroCarteNouveau" class="form-label">N° Carte Résident <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="newNumeroCarteNouveau" placeholder="Ex: CR123456789" required>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Enregistrer
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeNouveauForm()">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bouton de retour -->
+        <div class="mt-4 mb-5">
+            <a href="/demandes" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function showAlert(message, type = 'success') {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-custom alert-dismissible fade show" role="alert">
+                    <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-circle-fill'}"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                </div>
+            `;
+            document.getElementById('alertContainer').innerHTML = alertHtml;
+        }
+
+        function searchDemandeur() {
+            const nom = document.getElementById('nomSearch').value.trim();
+            if (!nom) {
+                showAlert('Veuillez entrer un nom', 'warning');
+                return;
+            }
+
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+
+            fetch(`/api/perte-carte/search?nom=${encodeURIComponent(nom)}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    
+                    if (data.length > 0) {
+                        displayResults(data);
+                        document.getElementById('resultsSection').style.display = 'block';
+                    } else {
+                        showNoResults();
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    showAlert('Erreur lors de la recherche: ' + error.message, 'danger');
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayResults(results) {
+            let html = '';
+            results.forEach(result => {
+                html += `
+                    <div class="result-card">
+                        <div class="result-info">
+                            <div class="result-data">
+                                <p><span class="result-label">Nom:</span> ${result.nom} ${result.prenom}</p>
+                                <p><span class="result-label">Date de naissance:</span> ${result.dateNaissance}</p>
+                                ${result.numeroCarte ? `<p><span class="result-label">N° Carte Résident:</span> ${result.numeroCarte}</p>` : ''}
+                                ${result.dateFin ? `<p><span class="result-label">Expiration:</span> ${result.dateFin}</p>` : ''}
+                            </div>
+                            <div class="action-buttons">
+                                ${result.hasCarteResident ? 
+                                    `<button class="btn btn-existing btn-sm" onclick="showExistantForm(${result.demandeurId}, '${result.nom} ${result.prenom}')">
+                                        <i class="bi bi-pencil"></i> Déclarer
+                                    </button>` :
+                                    `<button class="btn btn-info btn-sm" onclick="showNouveauForm(${result.demandeurId}, '${result.nom} ${result.prenom}')">
+                                        <i class="bi bi-file-earmark-plus"></i> Nouvelle Demande
+                                    </button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('resultsList').innerHTML = html;
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        function showNoResults() {
+            document.getElementById('resultsList').innerHTML = '';
+            document.getElementById('noResults').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function showExistantForm(demandeurId, demandeurName) {
+            document.getElementById('demandeurId').value = demandeurId;
+            document.getElementById('demandeurName').value = demandeurName;
+            document.getElementById('newNumeroCarte').value = '';
+            document.getElementById('formExistantSection').style.display = 'block';
+            document.getElementById('formNouveauSection').style.display = 'none';
+            document.getElementById('newNumeroCarte').focus();
+        }
+
+        function closeExistantForm() {
+            document.getElementById('formExistantSection').style.display = 'none';
+        }
+
+        function showNouveauForm(demandeurId, demandeurName) {
+            document.getElementById('demandeurIdNouveau').value = demandeurId;
+            document.getElementById('demandeurNameNouveau').value = demandeurName;
+            document.getElementById('numeroPassportNouveau').value = '';
+            document.getElementById('newNumeroCarteNouveau').value = '';
+            document.getElementById('formExistantSection').style.display = 'none';
+            document.getElementById('formNouveauSection').style.display = 'block';
+            document.getElementById('numeroPassportNouveau').focus();
+        }
+
+        function closeNouveauForm() {
+            document.getElementById('formNouveauSection').style.display = 'none';
+        }
+
+        function submitExistant(event) {
+            event.preventDefault();
+            const demandeurId = document.getElementById('demandeurId').value;
+            const newNumeroCarte = document.getElementById('newNumeroCarte').value;
+
+            const payload = {
+                demandeurId: demandeurId,
+                newNumeroCarte: newNumeroCarte
+            };
+
+            fetch('/api/perte-carte/existing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('✓ Demande créée avec succès! ID Demande: ' + data.demandeId, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/demandes';
+                    }, 2000);
+                } else {
+                    showAlert('Erreur: ' + (data.message || 'Erreur inconnue'), 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Erreur: ' + error.message, 'danger');
+                console.error('Error:', error);
+            });
+        }
+
+        function submitNouveau(event) {
+            event.preventDefault();
+            const payload = {
+                demandeurId: document.getElementById('demandeurIdNouveau').value,
+                numeroPassport: document.getElementById('numeroPassportNouveau').value,
+                numeroCarte: document.getElementById('newNumeroCarteNouveau').value
+            };
+
+            fetch('/api/perte-carte/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('✓ Nouvelles données enregistrées! ID Demande: ' + data.demandeIdPrimaire, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/demandes';
+                    }, 2000);
+                } else {
+                    showAlert('Erreur: ' + (data.message || 'Erreur inconnue'), 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Erreur: ' + error.message, 'danger');
+                console.error('Error:', error);
+            });
+        }
+
+        function resetSearch() {
+            document.getElementById('nomSearch').value = '';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('formExistantSection').style.display = 'none';
+            document.getElementById('formNouveauSection').style.display = 'none';
+            document.getElementById('alertContainer').innerHTML = '';
+            document.getElementById('nomSearch').focus();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

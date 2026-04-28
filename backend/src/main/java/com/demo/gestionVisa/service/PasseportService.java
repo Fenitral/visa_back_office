@@ -39,6 +39,7 @@ public class PasseportService {
 
     /**
      * Crée un nouveau passeport lié à un demandeur.
+     * Le numéro est généré automatiquement avec le préfixe "PASS-" + l'ID.
      *
      * @param dto       données du formulaire
      * @param demandeur le demandeur propriétaire du passeport
@@ -46,29 +47,27 @@ public class PasseportService {
      * @throws BusinessException si le numéro de passeport existe déjà
      */
     public Passeport creer(PasseportDTO dto, Demandeur demandeur) {
-        // Vérifier l'unicité du numéro de passeport
-        if (passeportRepository.findByNumero(dto.getNumero()).isPresent()) {
-            throw new BusinessException("Le numéro de passeport '" + dto.getNumero() + "' est déjà utilisé.");
-        }
-
         Passeport passeport = new Passeport();
-        passeport.setNumero(dto.getNumero());
         passeport.setDateDelivrance(dto.getDateDelivrance());
         passeport.setDateExpiration(dto.getDateExpiration());
         passeport.setDemandeur(demandeur);
 
+        // Sauvegarder d'abord pour obtenir l'ID généré
+        passeport = passeportRepository.save(passeport);
+
+        // Générer le numéro avec préfixe + ID
+        String numeroPrefixé = "PASS-" + passeport.getId();
+        
+        // Vérifier l'unicité (normalement impossible, mais par sécurité)
+        if (passeportRepository.findByNumero(numeroPrefixé).isPresent()) {
+            throw new BusinessException("Le numéro de passeport '" + numeroPrefixé + "' est déjà utilisé.");
+        }
+
+        passeport.setNumero(numeroPrefixé);
         return passeportRepository.save(passeport);
     }
 
     public Passeport modifier(Passeport passeport, PasseportDTO dto) {
-        // Unicité du numéro (sauf si on garde le même passeport)
-        passeportRepository.findByNumero(dto.getNumero())
-                .filter(existing -> !existing.getId().equals(passeport.getId()))
-                .ifPresent(existing -> {
-                    throw new BusinessException("Le numéro de passeport '" + dto.getNumero() + "' est déjà utilisé.");
-                });
-
-        passeport.setNumero(dto.getNumero());
         passeport.setDateDelivrance(dto.getDateDelivrance());
         passeport.setDateExpiration(dto.getDateExpiration());
         return passeportRepository.save(passeport);

@@ -34,8 +34,12 @@ public class DemandeCreateDTO {
     @NotNull(message = "Le type de visa est obligatoire")
     private Long idTypeVisa;                    // (O, S)
 
+    // Type de demande: "NOUVELLE" ou "DUPLICATA" (défaut: NOUVELLE)
+    @Builder.Default
+    private String typeDemande = "NOUVELLE";
+
     // dateDemande     → forcé à now() en service  (H)
-    // idTypeDemande   → forcé à NOUVELLE en service (H)
+    // idTypeDemande   → défini selon typeDemande (NOUVELLE ou DUPLICATA)
     // idStatutDemande → forcé à CREE en service (H)
 
     // ── Bloc 🟪 PIÈCES ───────────────────────────────────────────

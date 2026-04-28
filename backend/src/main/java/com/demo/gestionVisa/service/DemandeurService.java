@@ -112,4 +112,17 @@ public class DemandeurService {
 
         return demandeurRepository.save(demandeur);
     }
+
+    /**
+     * Recherche les demandeurs par nom (recherche insensible à la casse et partielle).
+     *
+     * @param nom le nom ou partie du nom à rechercher
+     * @return liste des demandeurs correspondants
+     */
+    public List<Demandeur> rechercherParNom(String nom) {
+        if (nom == null || nom.trim().isEmpty()) {
+            return List.of();
+        }
+        return demandeurRepository.findByNomContainingIgnoreCase(nom.trim());
+    }
 }

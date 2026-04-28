@@ -24,30 +24,31 @@ public class VisaTransformableService {
 
     /**
      * Crée et persiste un nouveau VisaTransformable.
+     * La référence visa est générée automatiquement avec le préfixe "VISTRANS-" + l'ID.
      *
      * Règles appliquées :
-     *   RG-01 : referenceVisa doit être unique
      *   RG-02 : dateExpiration > dateEntree
      *   RG-03 : passeport non null
      *
      * @param dto       données du formulaire
      * @param passeport entité Passeport résolue (non null)
      * @return          entité persistée
-     * @throws BusinessException si référence déjà utilisée ou dates incohérentes
+     * @throws BusinessException si dates incohérentes
      */
     public VisaTransformable creer(VisaTransformableDTO dto, Passeport passeport) {
-        // 1. Vérifier unicité referenceVisa
-        if (visaTransformableRepository.findByReferenceVisa(dto.getReferenceVisa()).isPresent()) {
-            throw new BusinessException("La référence visa '" + dto.getReferenceVisa() + "' est déjà utilisée.");
-        }
-
-        // 2. Vérifier cohérence des dates
+        // Vérifier cohérence des dates
         if (!dto.getDateExpiration().isAfter(dto.getDateEntree())) {
             throw new BusinessException("La date d'expiration doit être postérieure à la date d'entrée.");
         }
 
-        // 3. Mapper et sauvegarder
+        // Mapper et sauvegarder d'abord pour obtenir l'ID généré
         VisaTransformable entity = visaTransformableMapper.toEntity(dto, passeport);
+        entity = visaTransformableRepository.save(entity);
+
+        // Générer la référence avec préfixe + ID
+        String referencePrefixée = "VISTRANS-" + entity.getId();
+        entity.setReferenceVisa(referencePrefixée);
+        
         return visaTransformableRepository.save(entity);
     }
 
@@ -62,17 +63,10 @@ public class VisaTransformableService {
     }
 
     public VisaTransformable modifier(VisaTransformable visaTransformable, VisaTransformableDTO dto) {
-        visaTransformableRepository.findByReferenceVisa(dto.getReferenceVisa())
-                .filter(existing -> !existing.getId().equals(visaTransformable.getId()))
-                .ifPresent(existing -> {
-                    throw new BusinessException("La référence visa '" + dto.getReferenceVisa() + "' est déjà utilisée.");
-                });
-
         if (!dto.getDateExpiration().isAfter(dto.getDateEntree())) {
             throw new BusinessException("La date d'expiration doit être postérieure à la date d'entrée.");
         }
 
-        visaTransformable.setReferenceVisa(dto.getReferenceVisa());
         visaTransformable.setDateEntree(dto.getDateEntree());
         visaTransformable.setLieuEntree(dto.getLieuEntree());
         visaTransformable.setDateExpiration(dto.getDateExpiration());
