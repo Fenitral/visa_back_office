@@ -171,13 +171,14 @@
                 <h3 class="mb-3"><i class="bi bi-list-check"></i> Étape 2: Résultats</h3>
                 
                 <div id="resultsList"></div>
-                
+
                 <div class="no-results" id="noResults" style="display: none;">
                     <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
                     <p class="mt-3">Aucun demandeur trouvé</p>
-                    <button class="btn btn-info mt-3" onclick="showNewDemandeurForm()">
-                        <i class="bi bi-plus-circle"></i> Créer un nouveau demandeur
-                    </button>
+                    <a href="/demandes/nouvelle" class="btn btn-primary" style="white-space: nowrap;">
+                        <i class="bi bi-plus-circle"></i> Nouvelle Demande
+                    </a>
+                
                 </div>
             </div>
         </div>
@@ -214,45 +215,23 @@
         <div class="card" id="formNouveauSection" style="display: none;">
             <div class="search-section">
                 <h3 class="mb-3"><i class="bi bi-file-earmark-plus"></i> Cas: Nouvelle Demande</h3>
-                <p class="text-muted">Enregistrer un nouveau demandeur</p>
+                <p class="text-muted">Enregistrer les informations manquantes du demandeur et créer les demandes</p>
                 
                 <form id="formNouveau" onsubmit="submitNouveau(event)">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="nom" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="prenom" required>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="dateNaissance" class="form-label">Date de Naissance <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="dateNaissance" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="idNationalite" class="form-label">Nationalité <span class="text-danger">*</span></label>
-                            <select class="form-control" id="idNationalite" required>
-                                <option value="">-- Sélectionner --</option>
-                                <option value="1">Madagascar</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="adresseMadagascar" class="form-label">Adresse</label>
-                            <input type="text" class="form-control" id="adresseMadagascar" placeholder="Ex: Antananarivo">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="telephone" class="form-label">Téléphone</label>
-                            <input type="tel" class="form-control" id="telephone" placeholder="Ex: 0328888888">
-                        </div>
-                    </div>
                     <div class="mb-3">
-                        <label for="newNumeroCarteNouveau" class="form-label">Nouveau N° de Carte Résident <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="newNumeroCarteNouveau" placeholder="Ex: CR123456789" required>
+                        <label for="demandeurNameNouveau" class="form-label">Demandeur:</label>
+                        <input type="hidden" id="demandeurIdNouveau">
+                        <input type="text" class="form-control" id="demandeurNameNouveau" readonly>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="numeroPassportNouveau" class="form-label">N° Passeport <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="numeroPassportNouveau" placeholder="Ex: ABC123456" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="newNumeroCarteNouveau" class="form-label">N° Carte Résident <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="newNumeroCarteNouveau" placeholder="Ex: CR123456789" required>
+                        </div>
                     </div>
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-success">
@@ -328,9 +307,14 @@
                                 ${result.dateFin ? `<p><span class="result-label">Expiration:</span> ${result.dateFin}</p>` : ''}
                             </div>
                             <div class="action-buttons">
-                                <button class="btn btn-existing btn-sm" onclick="showExistantForm(${result.demandeurId}, '${result.nom} ${result.prenom}')">
-                                    <i class="bi bi-pencil"></i> Déclarer
-                                </button>
+                                ${result.hasCarteResident ? 
+                                    `<button class="btn btn-existing btn-sm" onclick="showExistantForm(${result.demandeurId}, '${result.nom} ${result.prenom}')">
+                                        <i class="bi bi-pencil"></i> Déclarer
+                                    </button>` :
+                                    `<button class="btn btn-info btn-sm" onclick="showNouveauForm(${result.demandeurId}, '${result.nom} ${result.prenom}')">
+                                        <i class="bi bi-file-earmark-plus"></i> Nouvelle Demande
+                                    </button>`
+                                }
                             </div>
                         </div>
                     </div>
@@ -359,10 +343,14 @@
             document.getElementById('formExistantSection').style.display = 'none';
         }
 
-        function showNewDemandeurForm() {
+        function showNouveauForm(demandeurId, demandeurName) {
+            document.getElementById('demandeurIdNouveau').value = demandeurId;
+            document.getElementById('demandeurNameNouveau').value = demandeurName;
+            document.getElementById('numeroPassportNouveau').value = '';
+            document.getElementById('newNumeroCarteNouveau').value = '';
             document.getElementById('formExistantSection').style.display = 'none';
             document.getElementById('formNouveauSection').style.display = 'block';
-            document.getElementById('nom').focus();
+            document.getElementById('numeroPassportNouveau').focus();
         }
 
         function closeNouveauForm() {
@@ -406,12 +394,8 @@
         function submitNouveau(event) {
             event.preventDefault();
             const payload = {
-                nom: document.getElementById('nom').value,
-                prenom: document.getElementById('prenom').value,
-                dateNaissance: document.getElementById('dateNaissance').value,
-                idNationalite: document.getElementById('idNationalite').value,
-                adresseMadagascar: document.getElementById('adresseMadagascar').value,
-                telephone: document.getElementById('telephone').value,
+                demandeurId: document.getElementById('demandeurIdNouveau').value,
+                numeroPassport: document.getElementById('numeroPassportNouveau').value,
                 numeroCarte: document.getElementById('newNumeroCarteNouveau').value
             };
 
@@ -425,7 +409,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showAlert('✓ Nouveau demandeur créé avec 2 demandes! ID: ' + data.demandeurId, 'success');
+                    showAlert('✓ Nouvelles données enregistrées! ID Demande: ' + data.demandeIdPrimaire, 'success');
                     setTimeout(() => {
                         window.location.href = '/demandes';
                     }, 2000);

@@ -70,63 +70,52 @@ public class PerteCarteResidentRestController {
     }
 
     /**
-     * Process lost carte resident for NEW demandeur
-     * - Creates new demandeur
+     * Process lost carte resident for EXISTING demandeur WITHOUT previous data
+     * - Creates new passport with provided number
+     * - Creates carte resident linked to passport
      * - Creates 2 new demands: first with type ID (id=1), then DUPLICATA (id=2)
      * 
      * POST /api/perte-carte/new
      * {
-     *   "nom": "Dupont",
-     *   "prenom": "Jean",
-     *   "dateNaissance": "1990-01-15",
-     *   "idNationalite": 1,
-     *   "idSituationFamiliale": 1,
-     *   "adresseMadagascar": "Antananarivo",
-     *   "telephone": "0328888888",
-     *   "numeroCarte": "CR123456789"
+     *   "demandeurId": 1,
+     *   "numeroCarte": "CR123456789",
+     *   "numeroPassport": "ABC123456"
      * }
      */
     @PostMapping("/new")
     public ResponseEntity<Map<String, Object>> reportLostNew(
             @RequestBody Map<String, Object> request) {
         try {
-            // Create Demandeur object from request
-            Demandeur newDemandeur = new Demandeur();
-            newDemandeur.setNom((String) request.get("nom"));
-            newDemandeur.setPrenom((String) request.get("prenom"));
-            newDemandeur.setAdresseMadagascar((String) request.get("adresseMadagascar"));
-            newDemandeur.setTelephone((String) request.get("telephone"));
-            
-            // Parse date
-            String dateNaissanceStr = (String) request.get("dateNaissance");
-            if (dateNaissanceStr != null && !dateNaissanceStr.isEmpty()) {
-                try {
-                    java.time.LocalDate dateNaissance = java.time.LocalDate.parse(dateNaissanceStr);
-                    newDemandeur.setDateNaissance(dateNaissance);
-                } catch (Exception e) {
-                    return ResponseEntity.badRequest().body(
-                            Map.of("success", false, "message", "Format de date invalide. Utiliser YYYY-MM-DD"));
-                }
+            // Get demandeurId
+            Object demandeurIdObj = request.get("demandeurId");
+            if (demandeurIdObj == null) {
+                return ResponseEntity.badRequest().body(
+                        Map.of("success", false, "message", "demandeurId est requis"));
             }
             
-            // Parse nationalité ID and fetch Nationalite object
-            Object idNationaliteObj = request.get("idNationalite");
-            if (idNationaliteObj != null) {
-                try {
-                    Long idNationalite = Long.parseLong(idNationaliteObj.toString());
-                    Nationalite nationalite = nationaliteRepository.findById(idNationalite)
-                            .orElseThrow(() -> new BusinessException("Nationalité not found with id: " + idNationalite));
-                    newDemandeur.setNationalite(nationalite);
-                } catch (NumberFormatException e) {
-                    return ResponseEntity.badRequest().body(
-                            Map.of("success", false, "message", "ID Nationalité invalide"));
-                }
+            Long demandeurId;
+            try {
+                demandeurId = Long.parseLong(demandeurIdObj.toString());
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body(
+                        Map.of("success", false, "message", "demandeurId invalide"));
             }
             
             String numeroCarte = (String) request.get("numeroCarte");
+            String numeroPassport = (String) request.get("numeroPassport");
+            
+            if (numeroPassport == null || numeroPassport.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(
+                        Map.of("success", false, "message", "Le numéro de passeport est requis"));
+            }
+            
+            if (numeroCarte == null || numeroCarte.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(
+                        Map.of("success", false, "message", "Le numéro de carte résident est requis"));
+            }
             
             Map<String, Object> result = perteCarteResidentService.reportLostCarteResidentNew(
-                    newDemandeur, numeroCarte);
+                    demandeurId, numeroCarte, numeroPassport);
             return ResponseEntity.ok(result);
         } catch (BusinessException e) {
             return ResponseEntity.badRequest().body(
