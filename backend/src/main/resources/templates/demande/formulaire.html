@@ -35,6 +35,9 @@
 
     <form th:action="${formAction != null ? formAction : '/demandes/nouvelle'}" th:object="${demandeForm}" method="post" novalidate>
 
+        <!-- Champ caché pour le type de demande (NOUVELLE ou DUPLICATA) -->
+        <input type="hidden" id="typeDemande" th:field="*{typeDemande}">
+
         <!-- ═══════════════════════════════════════════ -->
         <!-- BLOC 🟦 ÉTAT CIVIL (Dev1)                   -->
         <!-- ═══════════════════════════════════════════ -->

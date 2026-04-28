@@ -3,8 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Déclaration de Perte - Carte de Résident</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Déclaration de Perte - Carte de Résident</title>    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .search-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+        }
+        .form-group { margin-bottom: 20px; }
+        .search-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .search-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-input button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .search-results {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .result-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .result-item:hover { background-color: #f0f0f0; }
+        .declaration-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        .declaration-section.active { display: block; }
+        .checkbox-group {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        .btn-submit {
+            padding: 12px 30px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-annuler {
+            padding: 12px 30px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .alert {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>📋 Déclaration de Perte - Carte Résident</h1>
+        <p class="lead">Entrez le nom du demandeur pour retrouver son dossier</p>
+
+        <div class="search-section">
+            <h2>🔍 Étape 1: Rechercher le demandeur</h2>
+            <div class="search-input">
+                <input type="text" id="searchInput" placeholder="Ex: Ange, Marie, etc." autocomplete="off">
+                <button onclick="searchDemandeur()">Rechercher</button>
+                <button onclick="resetSearch()" type="button">Réinitialiser</button>
+            </div>
+            <div id="searchResults"></div>
+        </div>
+
+        <div class="declaration-section" id="declarationSection">
+            <h2>📝 Étape 2: Déclarer la perte</h2>
+            <div class="alert alert-error" id="alertError"></div>
+            <div class="alert alert-success" id="alertSuccess"></div>
+
+            <div class="form-group">
+                <label><strong>Demandeur sélectionné:</strong></label>
+                <div id="demandeurSelected" style="padding: 15px; background-color: #f9f9f9; border-radius: 4px;"></div>
+            </div>
+
+            <div class="checkbox-group">
+                <h3>Type(s) de perte à déclarer:</h3>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pertePasseport" name="pertePasseport">
+                    <label for="pertePasseport">Perte du Passeport</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="perteCarteResident" name="perteCarteResident">
+                    <label for="perteCarteResident">Perte de la Carte Résident (CR)</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="motif"><strong>Motif (optionnel):</strong></label>
+                <textarea id="motif" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-submit" onclick="submitDeclaration()">✅ Confirmer</button>
+                <button class="btn-annuler" onclick="cancelDeclaration()">❌ Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDemandeur = null;
+
+        function searchDemandeur() {
+            const nom = document.getElementById('searchInput').value.trim();
+            if (!nom) {
+                showError('Veuillez entrer un nom');
+                return;
+            }
+
+            fetch('/declaration/api/search-demandeur', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nom: nom })
+            })
+            .then(r => r.json())
+            .then(data => {
+                let html = '';
+                if (data.length === 0) {
+                    html = '<p style="padding: 20px; text-align: center;">Aucun demandeur trouvé</p>';
+                } else {
+                    data.forEach(d => {
+                        html += `<div class="result-item" onclick="selectDemandeur('${d.id}', '${d.nom}', '${d.prenom || ''}')">
+                            <strong>${d.nom} ${d.prenom || ''}</strong> - ${d.dateNaissance}
+                        </div>`;
+                    });
+                }
+                document.getElementById('searchResults').innerHTML = html;
+            })
+            .catch(e => showError('Erreur: ' + e.message));
+        }
+
+        function selectDemandeur(id, nom, prenom) {
+            selectedDemandeur = { id: id, nom: nom, prenom: prenom };
+            document.getElementById('demandeurSelected').innerHTML = `<strong>${nom} ${prenom}</strong>`;
+            document.getElementById('declarationSection').classList.add('active');
+        }
+
+        function submitDeclaration() {
+            if (!selectedDemandeur) {
+                showError('Sélectionnez un demandeur');
+                return;
+            }
+
+            const pertePasseport = document.getElementById('pertePasseport').checked;
+            const perteCarteResident = document.getElementById('perteCarteResident').checked;
+
+            if (!pertePasseport && !perteCarteResident) {
+                showError('Cochez au moins une case');
+                return;
+            }
+
+            fetch('/declaration/api/declarer-perte', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idDemandeur: parseInt(selectedDemandeur.id),
+                    pertePasseport: pertePasseport,
+                    perteCarteResident: perteCarteResident,
+                    motif: document.getElementById('motif').value || null
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                showSuccess('Déclaration enregistrée!');
+                setTimeout(() => window.location.href = '/demande/details/' + data.id, 1500);
+            })
+            .catch(e => showError('Erreur: ' + e.message));
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('declarationSection').classList.remove('active');
+            selectedDemandeur = null;
+        }
+
+        function cancelDeclaration() {
+            resetSearch();
+        }
+
+        function showError(msg) {
+            const div = document.getElementById('alertError');
+            div.textContent = msg;
+            div.classList.add('show');
+            setTimeout(() => div.classList.remove('show'), 5000);
+        }
+
+        function showSuccess(msg) {
+            const div = document.getElementById('alertSuccess');
+            div.textContent = msg;
+            div.classList.add('show');
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchDemandeur();
+        });
+    </script>
+</body>
+</html>    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         body {

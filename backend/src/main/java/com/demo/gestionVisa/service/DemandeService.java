@@ -113,9 +113,10 @@ public class DemandeService {
         TypeVisa typeVisa = typeVisaRepository.findById(dto.getIdTypeVisa())
                 .orElseThrow(() -> new ResourceNotFoundException("TypeVisa introuvable : id=" + dto.getIdTypeVisa()));
 
-        // ÉTAPE 5 — TypeDemande forcé à NOUVELLE
-        TypeDemande typeDemande = typeDemandeRepository.findByLibelle("NOUVELLE")
-                .orElseThrow(() -> new ResourceNotFoundException("TypeDemande NOUVELLE introuvable en base"));
+        // ÉTAPE 5 — TypeDemande selon le DTO (NOUVELLE ou DUPLICATA)
+        String typeDemandeName = dto.getTypeDemande() != null ? dto.getTypeDemande() : "NOUVELLE";
+        TypeDemande typeDemande = typeDemandeRepository.findByLibelle(typeDemandeName)
+                .orElseThrow(() -> new ResourceNotFoundException("TypeDemande " + typeDemandeName + " introuvable en base"));
 
         // ÉTAPE 6 — StatutDemande forcé à CREE
         StatutDemande statutCree = statutDemandeRepository.findByLibelle("CREE")
@@ -308,6 +309,7 @@ public class DemandeService {
                 .passeportDTO(passeportDTO)
                 .visaDTO(visaDTO)
                 .idTypeVisa(demande.getTypeVisa() != null ? demande.getTypeVisa().getId() : null)
+                .typeDemande(demande.getTypeDemande() != null ? demande.getTypeDemande().getLibelle() : "NOUVELLE")
                 .piecesFournies(piecesFournies)
                 .build();
     }

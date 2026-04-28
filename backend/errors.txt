@@ -1,0 +1,409 @@
+[ERROR] COMPILATION ERROR : 
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[100,25] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[101,25] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[106,25] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[33,44] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[36,50] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[37,50] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[38,42] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[39,45] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[40,52] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[41,54] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[42,53] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[43,53] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[66,18] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[69,18] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[87,37] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[100,47] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[102,44] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[102,71] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[119,21] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[130,42] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[143,41] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[156,51] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[157,51] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[158,63] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[159,63] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[162,49] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[162,81] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[163,55] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[84,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[84,51] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[88,17] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[88,45] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[93,63] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[94,101] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[109,41] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[110,50] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[117,38] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[129,63] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[142,65] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[162,24] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[163,24] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[164,24] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[165,24] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[166,24] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[167,24] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[171,36] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[180,65] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[193,45] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[193,70] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[196,74] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[208,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[209,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[210,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[216,44] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[228,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[229,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[230,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[230,51] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[231,29] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[232,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[238,55] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[250,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[251,50] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[252,45] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[258,44] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[273,41] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[274,41] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[275,45] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[278,20] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[279,20] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[281,20] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[282,20] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[282,55] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[283,33] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[286,16] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[292,55] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[311,53] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[312,51] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[313,26] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[314,26] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[317,30] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[318,30] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[320,30] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[320,71] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[321,58] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[322,37] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[323,30] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[329,63] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[350,46] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[351,46] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[352,44] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[353,25] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[359,64] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[373,19] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[374,19] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[375,19] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[376,19] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PasseportService.java:[51,40] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PasseportService.java:[52,40] cannot find symbol
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PasseportService.java:[53,18] cannot find symbol
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project backoffice: Compilation failure: Compilation failure: 
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[100,25] cannot find symbol
+[ERROR]   symbol:   method setNom(java.lang.String)
+[ERROR]   location: variable newDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[101,25] cannot find symbol
+[ERROR]   symbol:   method setPrenom(java.lang.String)
+[ERROR]   location: variable newDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[106,25] cannot find symbol
+[ERROR]   symbol:   method setNumero(java.lang.String)
+[ERROR]   location: variable newPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[33,44] cannot find symbol
+[ERROR]   symbol:   method getDemandeur()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[36,50] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[37,50] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[38,42] cannot find symbol
+[ERROR]   symbol:   method getNom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[39,45] cannot find symbol
+[ERROR]   symbol:   method getPrenom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[40,52] cannot find symbol
+[ERROR]   symbol:   method getDateNaissance()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[41,54] cannot find symbol
+[ERROR]   symbol:   method getNumero()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[42,53] cannot find symbol
+[ERROR]   symbol:   method getDateDelivrance()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[43,53] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[66,18] cannot find symbol
+[ERROR]   symbol:   method getDemandeur()
+[ERROR]   location: variable p of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[69,18] cannot find symbol
+[ERROR]   symbol:   method setNumero(java.lang.String)
+[ERROR]   location: variable p of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[87,37] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[100,47] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[102,44] cannot find symbol
+[ERROR]   symbol:   method getNom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[102,71] cannot find symbol
+[ERROR]   symbol:   method getPrenom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[119,21] cannot find symbol
+[ERROR]   symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+[ERROR]   location: variable newPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[130,42] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[143,41] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[156,51] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[157,51] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[158,63] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedDemandePremiere of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[159,63] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedDemandeSeconde of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[162,49] cannot find symbol
+[ERROR]   symbol:   method getNom()
+[ERROR]   location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[162,81] cannot find symbol
+[ERROR]   symbol:   method getPrenom()
+[ERROR]   location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[163,55] cannot find symbol
+[ERROR]   symbol:   method getNumero()
+[ERROR]   location: variable savedPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[84,16] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[84,51] cannot find symbol
+[ERROR]   symbol:   method getPerteCarteResident()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[88,17] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[88,45] cannot find symbol
+[ERROR]   symbol:   method getPerteCarteResident()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[93,63] cannot find symbol
+[ERROR]   symbol:   method getIdDemandeur()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[94,101] cannot find symbol
+[ERROR]   symbol:   method getIdDemandeur()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[109,41] cannot find symbol
+[ERROR]   symbol:   method getTypeVisa()
+[ERROR]   location: variable demandePrecedente of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[110,50] cannot find symbol
+[ERROR]   symbol:   method getVisaTransformable()
+[ERROR]   location: variable demandePrecedente of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[117,38] cannot find symbol
+[ERROR]   symbol:   method getPasseport()
+[ERROR]   location: variable visaTransformable of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[129,63] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[142,65] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[162,24] cannot find symbol
+[ERROR]   symbol:   method setDateDemande(java.time.LocalDateTime)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[163,24] cannot find symbol
+[ERROR]   symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[164,24] cannot find symbol
+[ERROR]   symbol:   method setVisaTransformable(com.demo.gestionVisa.model.VisaTransformable)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[165,24] cannot find symbol
+[ERROR]   symbol:   method setTypeVisa(com.demo.gestionVisa.model.TypeVisa)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[166,24] cannot find symbol
+[ERROR]   symbol:   method setTypeDemande(com.demo.gestionVisa.model.TypeDemande)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[167,24] cannot find symbol
+[ERROR]   symbol:   method setStatutDemande(com.demo.gestionVisa.model.StatutDemande)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[171,36] cannot find symbol
+[ERROR]   symbol:   method getPerteCarteResident()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[180,65] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[193,45] cannot find symbol
+[ERROR]   symbol:   method getMotif()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[193,70] cannot find symbol
+[ERROR]   symbol:   method getMotif()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[196,74] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[208,16] cannot find symbol
+[ERROR]   symbol:   method setDateDelivrance(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[209,16] cannot find symbol
+[ERROR]   symbol:   method setDateExpiration(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[210,16] cannot find symbol
+[ERROR]   symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[216,44] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[228,16] cannot find symbol
+[ERROR]   symbol:   method setDateEntree(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[229,16] cannot find symbol
+[ERROR]   symbol:   method setLieuEntree(java.lang.String)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[230,16] cannot find symbol
+[ERROR]   symbol:   method setDateExpiration(nouveauPas[...]rs(5))
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[230,51] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[231,29] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[232,16] cannot find symbol
+[ERROR]   symbol:   method setPasseport(com.demo.gestionVisa.model.Passeport)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[238,55] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[250,16] cannot find symbol
+[ERROR]   symbol:   method setDateDelivrance(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[251,50] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable ancienPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[252,45] cannot find symbol
+[ERROR]   symbol:   method getDemandeur()
+[ERROR]   location: variable ancienPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[258,44] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[273,41] cannot find symbol
+[ERROR]   symbol:   method getDateEntree()
+[ERROR]   location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[274,41] cannot find symbol
+[ERROR]   symbol:   method getLieuEntree()
+[ERROR]   location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[275,45] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[278,20] cannot find symbol
+[ERROR]   symbol:   method getDateEntree()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[279,20] cannot find symbol
+[ERROR]   symbol:   method setDateEntree(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[281,20] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[282,20] cannot find symbol
+[ERROR]   symbol:   method setDateExpiration(nouveauPas[...]rs(5))
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[282,55] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[283,33] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[286,16] cannot find symbol
+[ERROR]   symbol:   method setPasseport(com.demo.gestionVisa.model.Passeport)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[292,55] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[311,53] cannot find symbol
+[ERROR]   symbol:   method getDateDebut()
+[ERROR]   location: variable ancienneCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[312,51] cannot find symbol
+[ERROR]   symbol:   method getDateFin()
+[ERROR]   location: variable ancienneCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[313,26] cannot find symbol
+[ERROR]   symbol:   method setPasseport(com.demo.gestionVisa.model.Passeport)
+[ERROR]   location: variable nouvelleCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[314,26] cannot find symbol
+[ERROR]   symbol:   method setDemande(com.demo.gestionVisa.model.Demande)
+[ERROR]   location: variable nouvelleCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[317,30] cannot find symbol
+[ERROR]   symbol:   method getDateDebut()
+[ERROR]   location: variable nouvelleCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[318,30] cannot find symbol
+[ERROR]   symbol:   method setDateDebut(java.time.LocalDate)
+[ERROR]   location: variable nouvelleCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[320,30] cannot find symbol
+[ERROR]   symbol:   method getDateFin()
+[ERROR]   location: variable nouvelleCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[320,71] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[321,58] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[322,37] cannot find symbol
+[ERROR]   symbol:   method getDateFin()
+[ERROR]   location: variable nouvelleCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[323,30] cannot find symbol
+[ERROR]   symbol:   method setDateFin(java.time.LocalDate)
+[ERROR]   location: variable nouvelleCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[329,63] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouvelleCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[350,46] cannot find symbol
+[ERROR]   symbol:   method getPasseport()
+[ERROR]   location: variable oldVisa of type com.demo.gestionVisa.model.Visa
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[351,46] cannot find symbol
+[ERROR]   symbol:   method getDateDebut()
+[ERROR]   location: variable oldVisa of type com.demo.gestionVisa.model.Visa
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[352,44] cannot find symbol
+[ERROR]   symbol:   method getDateFin()
+[ERROR]   location: variable oldVisa of type com.demo.gestionVisa.model.Visa
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[353,25] cannot find symbol
+[ERROR]   symbol:   method setDemande(com.demo.gestionVisa.model.Demande)
+[ERROR]   location: variable nouvelleVisa of type com.demo.gestionVisa.model.Visa
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[359,64] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouvelleVisa of type com.demo.gestionVisa.model.Visa
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[373,19] cannot find symbol
+[ERROR]   symbol:   method setDemande(com.demo.gestionVisa.model.Demande)
+[ERROR]   location: variable historique of type com.demo.gestionVisa.model.HistoriqueStatut
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[374,19] cannot find symbol
+[ERROR]   symbol:   method setStatutDemande(com.demo.gestionVisa.model.StatutDemande)
+[ERROR]   location: variable historique of type com.demo.gestionVisa.model.HistoriqueStatut
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[375,19] cannot find symbol
+[ERROR]   symbol:   method setDateChangement(java.time.LocalDateTime)
+[ERROR]   location: variable historique of type com.demo.gestionVisa.model.HistoriqueStatut
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[376,19] cannot find symbol
+[ERROR]   symbol:   method setCommentaire(java.lang.String)
+[ERROR]   location: variable historique of type com.demo.gestionVisa.model.HistoriqueStatut
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PasseportService.java:[51,40] cannot find symbol
+[ERROR]   symbol:   method getDateDelivrance()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.PasseportDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PasseportService.java:[52,40] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.PasseportDTO
+[ERROR] /d:/etudes/Mr_Naina/Framework/Projet2/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PasseportService.java:[53,18] cannot find symbol
+[ERROR]   symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

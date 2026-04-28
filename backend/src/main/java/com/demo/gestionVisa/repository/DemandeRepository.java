@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface DemandeRepository extends JpaRepository<Demande, Long> {
     List<Demande> findByDemandeur(Demandeur demandeur);
+    List<Demande> findByDemandeurOrderByDateDemandeDesc(Demandeur demandeur);
 }

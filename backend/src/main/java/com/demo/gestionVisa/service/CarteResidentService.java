@@ -8,6 +8,8 @@ import com.demo.gestionVisa.repository.CarteResidentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @Transactional
 public class CarteResidentService {
@@ -37,6 +39,16 @@ public class CarteResidentService {
         if (visa != null) {
             carteResident.setDateDebut(visa.getDateEntree());
             carteResident.setDateFin(visa.getDateExpiration());
+        }
+        
+        // Si les dates ne sont pas remplies, utiliser des dates par défaut basées sur le passeport
+        if (carteResident.getDateDebut() == null) {
+            carteResident.setDateDebut(LocalDate.now());
+        }
+        if (carteResident.getDateFin() == null && passeport.getDateExpiration() != null) {
+            carteResident.setDateFin(passeport.getDateExpiration());
+        } else if (carteResident.getDateFin() == null) {
+            carteResident.setDateFin(LocalDate.now().plusYears(5));
         }
 
         // Sauvegarder d'abord pour obtenir l'ID généré
