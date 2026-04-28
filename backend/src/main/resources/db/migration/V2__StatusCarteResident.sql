@@ -3,23 +3,7 @@
 -- GESTION DES PERTES DE CARTE DE RÉSIDENT
 -- ============================================
 
--- Table des statuts de carte résident
-CREATE TABLE IF NOT EXISTS statut_cr (
-    id BIGSERIAL PRIMARY KEY,
-    libelle VARCHAR(50) NOT NULL UNIQUE,
-    date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT uk_statut_cr_libelle UNIQUE (libelle)
-);
 
--- Insertion des statuts par défaut
-INSERT INTO statut_cr (libelle) VALUES
-('Actif'),
-('Perdue'),
-('Volée'),
-('Expirée'),
-('Annulée'),
-('En renouvellement')
-ON CONFLICT (libelle) DO NOTHING;
 
 -- Table de relation entre carte_resident et statut_cr
 CREATE TABLE IF NOT EXISTS statut_carte_resident (

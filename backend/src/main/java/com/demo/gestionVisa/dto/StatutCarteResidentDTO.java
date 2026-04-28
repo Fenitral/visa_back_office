@@ -11,7 +11,5 @@ public class StatutCarteResidentDTO {
     private Long id;
     private Long carteResidentId;
     private String carteResidentNumero;
-    private Long statutCRId;
-    private String statutCRLibelle;
     private LocalDate dateModif;
 }

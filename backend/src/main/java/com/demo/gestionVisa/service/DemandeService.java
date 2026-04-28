@@ -35,6 +35,8 @@ public class DemandeService {
     private final PasseportService passeportService;
     private final DemandeMapper demandeMapper;
     private final PieceService pieceService;
+    private final CarteResidentService carteResidentService;
+    private final VisaService visaService;
 
     public DemandeService(DemandeRepository demandeRepository,
                          HistoriqueStatutRepository historiqueStatutRepository,
@@ -48,7 +50,9 @@ public class DemandeService {
                          DemandeurRepository demandeurRepository,
                          PasseportService passeportService,
                          DemandeMapper demandeMapper,
-                         PieceService pieceService) {
+                         PieceService pieceService,
+                         CarteResidentService carteResidentService,
+                         VisaService visaService) {
         this.demandeRepository = demandeRepository;
         this.historiqueStatutRepository = historiqueStatutRepository;
         this.demandePieceRepository = demandePieceRepository;
@@ -62,6 +66,8 @@ public class DemandeService {
         this.passeportService = passeportService;
         this.demandeMapper = demandeMapper;
         this.pieceService = pieceService;
+        this.carteResidentService = carteResidentService;
+        this.visaService = visaService;
     }
 
     /**
@@ -75,9 +81,11 @@ public class DemandeService {
      *   5. Forcer TypeDemande = "NOUVELLE"
      *   6. Forcer StatutDemande = "CREE"
      *   7. Construire et sauvegarder la Demande
-     *   8. Créer l'historique de statut initial
-     *   9. Lier les pièces à la demande
-     *  10. Retourner le DTO de réponse
+     *   8. Créer la Carte Résident liée au passeport
+     *   9. Créer le Visa lié au passeport et à la demande
+     *  10. Créer l'historique de statut initial
+     *  11. Lier les pièces à la demande
+     *  12. Retourner le DTO de réponse
      *
      * @param dto   formulaire complet soumis par l'utilisateur
      * @return      DemandeResponseDTO avec id, statut, pièces
@@ -124,13 +132,19 @@ public class DemandeService {
         // demande.setDemandeurExistant(demandeurExistait);
         demande = demandeRepository.save(demande);
 
-        // ÉTAPE 8 — Historique statut initial (RG-07 : obligatoire)
+        // ÉTAPE 8 — Créer la Carte Résident liée au passeport
+        carteResidentService.creer(passeport, demande);
+
+        // ÉTAPE 9 — Créer le Visa lié au passeport et à la demande
+        visaService.creer(passeport, demande);
+
+        // ÉTAPE 10 — Historique statut initial (RG-07 : obligatoire)
         creerHistoriqueStatut(demande, statutCree, "Création de la demande");
 
-        // ÉTAPE 9 — Lier les pièces
+        // ÉTAPE 11 — Lier les pièces
         lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa);
 
-        // ÉTAPE 10 — Recharger avec pièces et retourner DTO
+        // ÉTAPE 12 — Recharger avec pièces et retourner DTO
         Demande demandeFinal = demandeRepository.findById(demande.getId()).orElseThrow();
         return demandeMapper.toResponseDTO(demandeFinal);
     }

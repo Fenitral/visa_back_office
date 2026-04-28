@@ -21,9 +21,6 @@ public class StatutCarteResident {
     @JoinColumn(name = "id_carte_resident", nullable = false)
     private CarteResident carteResident;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_statut_cr", nullable = false)
-    private StatutCR statutCR;
 
     @Column(name = "date_modif", nullable = false)
     private LocalDate dateModif;
