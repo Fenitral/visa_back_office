@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclaration de Perte - Carte de Résident</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .page-header h1 {
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            margin-bottom: 20px;
+        }
+        .search-section {
+            padding: 30px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-search {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        .btn-search:hover {
+            background-color: #5568d3;
+            border-color: #5568d3;
+            color: white;
+        }
+        .results-section {
+            padding: 30px;
+            display: none;
+        }
+        .result-card {
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+        .result-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .result-data {
+            flex: 1;
+            min-width: 300px;
+        }
+        .result-data p {
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        .result-label {
+            font-weight: 600;
+            color: #667eea;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-existing {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        .btn-existing:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            color: white;
+        }
+        .btn-new {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: white;
+        }
+        .btn-new:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+            color: white;
+        }
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .alert-custom {
+            border: none;
+            border-radius: 0.375rem;
+        }
+        @media (max-width: 768px) {
+            .result-info {
+                flex-direction: column;
+            }
+            .action-buttons {
+                width: 100%;
+            }
+            .action-buttons .btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1><i class="bi bi-exclamation-triangle"></i> Déclaration de Perte - Carte de Résident</h1>
+                    <p class="text-white-50 mb-0">Déclarez la perte de votre carte de résident</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" style="max-width: 1000px;">
+        <!-- Messages d'alerte -->
+        <div id="alertContainer"></div>
+
+        <!-- Étape 1: Recherche -->
+        <div class="card">
+            <div class="search-section">
+                <h3 class="mb-3"><i class="bi bi-search"></i> Étape 1: Rechercher le demandeur</h3>
+                <p class="text-muted">Entrez le nom du demandeur pour vérifier s'il existe déjà dans le système</p>
+                
+                <div class="input-group">
+                    <input type="text" class="form-control" id="nomSearch" placeholder="Entrez le nom du demandeur...">
+                    <button class="btn btn-search" type="button" onclick="searchDemandeur()">
+                        <i class="bi bi-search"></i> Rechercher
+                    </button>
+                    <button class="btn btn-secondary" type="button" onclick="resetSearch()">
+                        <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+                    </button>
+                </div>
+                
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2">Recherche en cours...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Étape 2: Résultats -->
+        <div class="card results-section" id="resultsSection">
+            <div class="search-section">
+                <h3 class="mb-3"><i class="bi bi-list-check"></i> Étape 2: Résultats</h3>
+                
+                <div id="resultsList"></div>
+                
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
+                    <p class="mt-3">Aucun demandeur trouvé</p>
+                    <button class="btn btn-info mt-3" onclick="showNewDemandeurForm()">
+                        <i class="bi bi-plus-circle"></i> Créer un nouveau demandeur
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire pour le cas EXISTANT -->
+        <div class="card" id="formExistantSection" style="display: none;">
+            <div class="search-section">
+                <h3 class="mb-3"><i class="bi bi-pencil-square"></i> Cas: Données Existantes</h3>
+                <p class="text-muted">Le demandeur existe déjà. Veuillez entrer le nouveau numéro de carte.</p>
+                
+                <form id="formExistant" onsubmit="submitExistant(event)">
+                    <div class="mb-3">
+                        <label for="demandeurId" class="form-label">Demandeur:</label>
+                        <input type="hidden" id="demandeurId">
+                        <input type="text" class="form-control" id="demandeurName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newNumeroCarte" class="form-label">Nouveau N° de Carte <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newNumeroCarte" placeholder="Ex: CR123456789" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Valider
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeExistantForm()">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Formulaire pour le cas NOUVEAU -->
+        <div class="card" id="formNouveauSection" style="display: none;">
+            <div class="search-section">
+                <h3 class="mb-3"><i class="bi bi-file-earmark-plus"></i> Cas: Nouvelle Demande</h3>
+                <p class="text-muted">Enregistrer un nouveau demandeur</p>
+                
+                <form id="formNouveau" onsubmit="submitNouveau(event)">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nom" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="prenom" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dateNaissance" class="form-label">Date de Naissance <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="dateNaissance" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="idNationalite" class="form-label">Nationalité <span class="text-danger">*</span></label>
+                            <select class="form-control" id="idNationalite" required>
+                                <option value="">-- Sélectionner --</option>
+                                <option value="1">Madagascar</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="adresseMadagascar" class="form-label">Adresse</label>
+                            <input type="text" class="form-control" id="adresseMadagascar" placeholder="Ex: Antananarivo">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="telephone" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" id="telephone" placeholder="Ex: 0328888888">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newNumeroCarteNouveau" class="form-label">Nouveau N° de Carte Résident <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newNumeroCarteNouveau" placeholder="Ex: CR123456789" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Enregistrer
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeNouveauForm()">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bouton de retour -->
+        <div class="mt-4 mb-5">
+            <a href="/demandes" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function showAlert(message, type = 'success') {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-custom alert-dismissible fade show" role="alert">
+                    <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-circle-fill'}"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                </div>
+            `;
+            document.getElementById('alertContainer').innerHTML = alertHtml;
+        }
+
+        function searchDemandeur() {
+            const nom = document.getElementById('nomSearch').value.trim();
+            if (!nom) {
+                showAlert('Veuillez entrer un nom', 'warning');
+                return;
+            }
+
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+
+            fetch(`/api/perte-carte/search?nom=${encodeURIComponent(nom)}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    
+                    if (data.length > 0) {
+                        displayResults(data);
+                        document.getElementById('resultsSection').style.display = 'block';
+                    } else {
+                        showNoResults();
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    showAlert('Erreur lors de la recherche: ' + error.message, 'danger');
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayResults(results) {
+            let html = '';
+            results.forEach(result => {
+                html += `
+                    <div class="result-card">
+                        <div class="result-info">
+                            <div class="result-data">
+                                <p><span class="result-label">Nom:</span> ${result.nom} ${result.prenom}</p>
+                                <p><span class="result-label">Date de naissance:</span> ${result.dateNaissance}</p>
+                                ${result.numeroCarte ? `<p><span class="result-label">N° Carte Résident:</span> ${result.numeroCarte}</p>` : ''}
+                                ${result.dateFin ? `<p><span class="result-label">Expiration:</span> ${result.dateFin}</p>` : ''}
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-existing btn-sm" onclick="showExistantForm(${result.demandeurId}, '${result.nom} ${result.prenom}')">
+                                    <i class="bi bi-pencil"></i> Déclarer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('resultsList').innerHTML = html;
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        function showNoResults() {
+            document.getElementById('resultsList').innerHTML = '';
+            document.getElementById('noResults').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function showExistantForm(demandeurId, demandeurName) {
+            document.getElementById('demandeurId').value = demandeurId;
+            document.getElementById('demandeurName').value = demandeurName;
+            document.getElementById('newNumeroCarte').value = '';
+            document.getElementById('formExistantSection').style.display = 'block';
+            document.getElementById('formNouveauSection').style.display = 'none';
+            document.getElementById('newNumeroCarte').focus();
+        }
+
+        function closeExistantForm() {
+            document.getElementById('formExistantSection').style.display = 'none';
+        }
+
+        function showNewDemandeurForm() {
+            document.getElementById('formExistantSection').style.display = 'none';
+            document.getElementById('formNouveauSection').style.display = 'block';
+            document.getElementById('nom').focus();
+        }
+
+        function closeNouveauForm() {
+            document.getElementById('formNouveauSection').style.display = 'none';
+        }
+
+        function submitExistant(event) {
+            event.preventDefault();
+            const demandeurId = document.getElementById('demandeurId').value;
+            const newNumeroCarte = document.getElementById('newNumeroCarte').value;
+
+            const payload = {
+                demandeurId: demandeurId,
+                newNumeroCarte: newNumeroCarte
+            };
+
+            fetch('/api/perte-carte/existing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('✓ Demande créée avec succès! ID Demande: ' + data.demandeId, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/demandes';
+                    }, 2000);
+                } else {
+                    showAlert('Erreur: ' + (data.message || 'Erreur inconnue'), 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Erreur: ' + error.message, 'danger');
+                console.error('Error:', error);
+            });
+        }
+
+        function submitNouveau(event) {
+            event.preventDefault();
+            const payload = {
+                nom: document.getElementById('nom').value,
+                prenom: document.getElementById('prenom').value,
+                dateNaissance: document.getElementById('dateNaissance').value,
+                idNationalite: document.getElementById('idNationalite').value,
+                adresseMadagascar: document.getElementById('adresseMadagascar').value,
+                telephone: document.getElementById('telephone').value,
+                numeroCarte: document.getElementById('newNumeroCarteNouveau').value
+            };
+
+            fetch('/api/perte-carte/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('✓ Nouveau demandeur créé avec 2 demandes! ID: ' + data.demandeurId, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/demandes';
+                    }, 2000);
+                } else {
+                    showAlert('Erreur: ' + (data.message || 'Erreur inconnue'), 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Erreur: ' + error.message, 'danger');
+                console.error('Error:', error);
+            });
+        }
+
+        function resetSearch() {
+            document.getElementById('nomSearch').value = '';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('formExistantSection').style.display = 'none';
+            document.getElementById('formNouveauSection').style.display = 'none';
+            document.getElementById('alertContainer').innerHTML = '';
+            document.getElementById('nomSearch').focus();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
