@@ -83,9 +83,11 @@ public class ScanPiecesService {
     private ScanPieceDTO convertToScanPieceDTO(DemandePiece demandePiece) {
         boolean isScanned = demandePiece.getCheminFichier() != null;
         return ScanPieceDTO.builder()
+                .idDemandePiece(demandePiece.getId())
                 .idPiece(demandePiece.getPiece().getId())
                 .nomPiece(demandePiece.getPiece().getNom())
                 .obligatoire(demandePiece.getPiece().getObligatoire())
+                .fourni(demandePiece.getFourni() != null ? demandePiece.getFourni() : false)
                 .scannee(isScanned)
                 .nomFichier(demandePiece.getNomFichier())
                 .dateUpload(demandePiece.getDateUpload())
@@ -126,6 +128,11 @@ public class ScanPiecesService {
         // Trouver le lien demande_piece
         DemandePiece demandePiece = demandePieceRepository.findByDemandeIdAndPieceId(idDemande, idPiece)
                 .orElseThrow(() -> new BusinessException("Pièce non trouvée pour cette demande"));
+
+        // Vérifier que la pièce a été fournie (complétée)
+        if (demandePiece.getFourni() == null || !demandePiece.getFourni()) {
+            throw new BusinessException("Cette pièce n'a pas encore été fournie. Veuillez la compléter d'abord.");
+        }
 
         try {
             // Supprimer l'ancien fichier s'il existe
@@ -243,5 +250,30 @@ public class ScanPiecesService {
         demandePiece.setNomFichier(null);
         demandePiece.setDateUpload(null);
         demandePieceRepository.save(demandePiece);
+    }
+
+    /**
+     * Marque une pièce comme fournie (complétée)
+     * Permet à l'utilisateur de valider qu'il a fourni/complété une pièce
+     *
+     * @param idDemande l'ID de la demande
+     * @param idPiece l'ID de la pièce
+     * @throws ResourceNotFoundException si la demande ou la pièce n'existe pas
+     */
+    public void marquerPieceCommeFournie(Long idDemande, Long idPiece) {
+        // Vérifier que la demande existe
+        Demande demande = demandeRepository.findById(idDemande)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande non trouvée: " + idDemande));
+
+        // Trouver le lien demande_piece
+        DemandePiece demandePiece = demandePieceRepository.findByDemandeIdAndPieceId(idDemande, idPiece)
+                .orElseThrow(() -> new ResourceNotFoundException("Pièce non trouvée pour cette demande"));
+
+        // Marquer comme fournie
+        demandePiece.setFourni(true);
+        demandePieceRepository.save(demandePiece);
+        demandePieceRepository.flush();
+
+        log.info("Pièce marquée comme fournie - Demande: {}, Pièce: {}", idDemande, idPiece);
     }
 }

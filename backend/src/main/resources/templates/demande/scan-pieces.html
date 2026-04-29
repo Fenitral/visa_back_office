@@ -168,25 +168,7 @@
                             </small>
                         </div>
                         <div class="col-md-6">
-                            <!-- Input file simple et stylisé -->
-                            <div th:if="!${piece.scannee}">
-                                <label th:for="'file-input-' + ${piece.idPiece}" 
-                                       class="btn btn-primary btn-lg w-100"
-                                       style="cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px;">
-                                    <i class="bi bi-cloud-arrow-up" style="font-size: 2em; margin-right: 10px;"></i>
-                                    <div style="text-align: left;">
-                                        <div style="font-weight: 600;">Choisir un fichier</div>
-                                        <small>PDF, JPG, PNG, JPEG jusqu'à 10 MB</small>
-                                    </div>
-                                </label>
-                                <input type="file" 
-                                       th:id="'file-input-' + ${piece.idPiece}"
-                                       class="file-input" 
-                                       th:data-piece-id="${piece.idPiece}"
-                                       accept=".pdf,.jpg,.jpeg,.png"
-                                       style="display: none;">
-                            </div>
-                            
+                            <!-- DÉJÀ SCANNÉE: Afficher le fichier -->
                             <div th:if="${piece.scannee}">
                                 <div class="alert alert-success mb-2">
                                     <i class="bi bi-check-circle"></i>
@@ -194,17 +176,47 @@
                                     <br/><small th:text="${piece.nomFichier}"></small>
                                     <br/><small class="text-muted" th:text="${#temporals.format(piece.dateUpload, 'dd/MM/yyyy HH:mm')}"></small>
                                 </div>
+                                
+                                <!-- Bouton de suppression -->
+                                <button type="button" 
+                                        class="btn btn-sm btn-danger mt-2"
+                                        th:data-demande-piece-id="${piece.idDemandePiece}"
+                                        data-action="delete"
+                                        style="width: 100%;">
+                                    <i class="bi bi-trash"></i> Supprimer le fichier
+                                </button>
                             </div>
                             
-                            <!-- Bouton de suppression si fichier existe -->
-                            <button type="button" 
-                                    class="btn btn-sm btn-danger mt-2"
-                                    th:if="${piece.scannee}"
-                                    th:data-piece-id="${piece.idPiece}"
-                                    data-action="delete"
-                                    style="width: 100%;">
-                                <i class="bi bi-trash"></i> Supprimer le fichier
-                            </button>
+                            <!-- NON SCANNÉE: Vérifier si elle peut être uploadée -->
+                            <div th:if="!${piece.scannee}">
+                                <!-- Pièce FOURNIE: Permettre l'upload -->
+                                <div th:if="${piece.fourni}">
+                                    <label th:for="'file-input-' + ${piece.idPiece}" 
+                                           class="btn btn-primary btn-lg w-100"
+                                           style="cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px;">
+                                        <i class="bi bi-cloud-arrow-up" style="font-size: 2em; margin-right: 10px;"></i>
+                                        <div style="text-align: left;">
+                                            <div style="font-weight: 600;">Choisir un fichier</div>
+                                            <small>PDF, JPG, PNG, JPEG jusqu'à 10 MB</small>
+                                        </div>
+                                    </label>
+                                    <input type="file" 
+                                           th:id="'file-input-' + ${piece.idPiece}"
+                                           class="file-input" 
+                                           th:data-piece-id="${piece.idPiece}"
+                                           accept=".pdf,.jpg,.jpeg,.png"
+                                           style="display: none;">
+                                </div>
+                                
+                                <!-- Pièce NON FOURNIE: Afficher un message d'erreur -->
+                                <div th:if="!${piece.fourni}">
+                                    <div class="alert alert-danger mb-2">
+                                        <i class="bi bi-exclamation-circle"></i>
+                                        <strong>Pièce non complétée</strong>
+                                        <br/><small>Vous devez compléter cette pièce avant de pouvoir la scanner.</small>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- Progress bar pour chaque fichier -->
                             <div class="progress mt-2" style="height: 20px; display: none;" th:id="'upload-progress-' + ${piece.idPiece}">
@@ -417,9 +429,9 @@ function initializeUploadZones(demandeId) {
     // Boutons de suppression
     document.querySelectorAll('button[data-action="delete"]').forEach(btn => {
         btn.addEventListener('click', function() {
-            const pieceId = this.dataset.pieceId;
+            const idDemandePiece = this.dataset.demandePieceId;
             if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier?')) {
-                deleteFile(demandeId, pieceId);
+                deleteFile(demandeId, idDemandePiece);
             }
         });
     });
@@ -518,7 +530,7 @@ function updateScanStatus(demandeId, scanDemande) {
                             <br/><small class="text-muted">${formattedDate}</small>
                         </div>
                         <button type="button" class="btn btn-sm btn-danger mt-2" 
-                                style="width: 100%;" data-piece-id="${piece.idPiece}" data-action="delete">
+                                style="width: 100%;" data-demande-piece-id="${piece.idDemandePiece}" data-action="delete">
                             <i class="bi bi-trash"></i> Supprimer le fichier
                         </button>
                     `;
@@ -528,31 +540,43 @@ function updateScanStatus(demandeId, scanDemande) {
                     if (deleteBtn) {
                         deleteBtn.addEventListener('click', function() {
                             if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier?')) {
-                                deleteFile(demandeId, piece.idPiece);
+                                deleteFile(demandeId, piece.idDemandePiece);
                             }
                         });
                     }
                 } else {
-                    // Afficher le bouton d'upload
-                    rightCol.innerHTML = `
-                        <label for="file-input-${piece.idPiece}" 
-                               class="btn btn-primary btn-lg w-100"
-                               style="cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px;">
-                            <i class="bi bi-cloud-arrow-up" style="font-size: 2em; margin-right: 10px;"></i>
-                            <div style="text-align: left;">
-                                <div style="font-weight: 600;">Choisir un fichier</div>
-                                <small>PDF, JPG, PNG, JPEG jusqu'à 10 MB</small>
+                    // Pièce NON SCANNÉE: vérifier si elle peut être uploadée
+                    if (piece.fourni) {
+                        // Pièce FOURNIE: Permettre l'upload
+                        rightCol.innerHTML = `
+                            <label for="file-input-${piece.idPiece}" 
+                                   class="btn btn-primary btn-lg w-100"
+                                   style="cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px;">
+                                <i class="bi bi-cloud-arrow-up" style="font-size: 2em; margin-right: 10px;"></i>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 600;">Choisir un fichier</div>
+                                    <small>PDF, JPG, PNG, JPEG jusqu'à 10 MB</small>
+                                </div>
+                            </label>
+                            <input type="file" 
+                                   id="file-input-${piece.idPiece}"
+                                   class="file-input" 
+                                   data-piece-id="${piece.idPiece}"
+                                   accept=".pdf,.jpg,.jpeg,.png"
+                                   style="display: none;">
+                        `;
+                    } else {
+                        // Pièce NON FOURNIE: Afficher un message d'erreur
+                        rightCol.innerHTML = `
+                            <div class="alert alert-danger mb-2">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <strong>Pièce non complétée</strong>
+                                <br/><small>Vous devez compléter cette pièce avant de pouvoir la scanner.</small>
                             </div>
-                        </label>
-                        <input type="file" 
-                               id="file-input-${piece.idPiece}"
-                               class="file-input" 
-                               data-piece-id="${piece.idPiece}"
-                               accept=".pdf,.jpg,.jpeg,.png"
-                               style="display: none;">
-                    `;
+                        `;
+                    }
                     
-                    // Réattacher le listener à l'input file
+                    // Réattacher le listener à l'input file (uniquement si fournie)
                     const fileInput = rightCol.querySelector('input.file-input');
                     if (fileInput) {
                         fileInput.addEventListener('change', (e) => {
@@ -591,7 +615,13 @@ function deleteFile(demandeId, idDemandePiece) {
     .then(data => {
         if (data.success) {
             showAlert('Fichier supprimé avec succès!', 'success');
-            refreshScanStatus(demandeId);
+            // Utiliser les données retournées pour mettre à jour le DOM immédiatement
+            if (data.scanDemande) {
+                updateScanStatus(demandeId, data.scanDemande);
+            } else {
+                // Fallback: rafraîchir complètement si pas de données
+                refreshScanStatus(demandeId);
+            }
         } else {
             showAlert(data.message || 'Erreur lors de la suppression', 'danger');
         }

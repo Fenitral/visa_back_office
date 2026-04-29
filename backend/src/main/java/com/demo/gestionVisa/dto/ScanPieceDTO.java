@@ -18,8 +18,10 @@ import java.time.LocalDateTime;
 public class ScanPieceDTO {
 
     private Long idPiece;
+    private Long idDemandePiece; // ID du lien demande-piece
     private String nomPiece;
     private Boolean obligatoire;
+    private Boolean fourni; // true si la pièce a été fournie/complétée
     private Boolean scannee; // true si cheminFichier != null
     private String nomFichier;
     private LocalDateTime dateUpload;
