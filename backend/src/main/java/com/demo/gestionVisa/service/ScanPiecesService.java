@@ -96,6 +96,7 @@ public class ScanPiecesService {
 
     /**
      * Upload un fichier pour une pièce d'une demande
+     * IMPORTANT: Cette méthode supporte les uploads multiples et successifs
      *
      * @param idDemande l'ID de la demande
      * @param idPiece l'ID de la pièce
@@ -104,10 +105,6 @@ public class ScanPiecesService {
      * @throws ResourceNotFoundException si la demande ou la pièce n'existe pas
      */
     public void uploadFichier(Long idDemande, Long idPiece, MultipartFile file) {
-        // Vérifier que la demande existe
-        Demande demande = demandeRepository.findById(idDemande)
-                .orElseThrow(() -> new ResourceNotFoundException("Demande non trouvée: " + idDemande));
-
         // Vérifier que le fichier n'est pas vide
         if (file == null || file.isEmpty()) {
             throw new BusinessException("Le fichier ne peut pas être vide");
@@ -124,7 +121,11 @@ public class ScanPiecesService {
             throw new BusinessException("Format de fichier non autorisé. Formats acceptés: " + String.join(", ", ALLOWED_EXTENSIONS));
         }
 
-        // Trouver ou créer le lien demande_piece
+        // Vérifier que la demande existe
+        Demande demande = demandeRepository.findById(idDemande)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande non trouvée: " + idDemande));
+
+        // Trouver le lien demande_piece
         DemandePiece demandePiece = demandePieceRepository.findByDemandeIdAndPieceId(idDemande, idPiece)
                 .orElseThrow(() -> new BusinessException("Pièce non trouvée pour cette demande"));
 
@@ -147,7 +148,6 @@ public class ScanPiecesService {
                 }
             }
 
-        try {
             // Créer le répertoire s'il n'existe pas
             Path uploadDir = Paths.get(uploadDirectory, "demande_" + idDemande);
             Files.createDirectories(uploadDir);
@@ -164,6 +164,9 @@ public class ScanPiecesService {
             demandePiece.setNomFichier(file.getOriginalFilename());
             demandePiece.setDateUpload(LocalDateTime.now());
             demandePieceRepository.save(demandePiece);
+
+            // Forcer le flush pour éviter les problèmes de cache
+            demandePieceRepository.flush();
 
             log.info("Fichier uploadé avec succès - Demande: {}, Pièce: {}, Fichier: {}", idDemande, idPiece, fileName);
 

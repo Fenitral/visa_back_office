@@ -258,7 +258,7 @@
 
                     <!-- Boutons d'action -->
                     <div class="d-grid gap-2">
-                        <button id="btn-valider" type="button" class="btn btn-success btn-lg" disabled>
+                        <button id="btn-valider" type="button" class="btn btn-success btn-lg" style="display: none;">
                             <i class="bi bi-check-lg"></i> Valider le scan
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="window.history.back()">
@@ -443,7 +443,15 @@ function uploadFile(demandeId, pieceId, file) {
     formData.append('idPiece', pieceId);
 
     const progressBar = document.getElementById('upload-progress-' + pieceId);
-    progressBar.style.display = 'block';
+    if (progressBar) {
+        progressBar.style.display = 'block';
+    }
+
+    // Désactiver le bouton de validation pendant l'upload
+    const validateBtn = document.getElementById('btn-valider');
+    if (validateBtn) {
+        validateBtn.disabled = true;
+    }
 
     fetch(`/demandes/${demandeId}/scan/upload`, {
         method: 'POST',
@@ -452,8 +460,13 @@ function uploadFile(demandeId, pieceId, file) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Rafraîchir l'état du scan
-            refreshScanStatus(demandeId);
+            // Utiliser les données retournées pour mettre à jour le DOM immédiatement
+            if (data.scanDemande) {
+                updateScanStatus(demandeId, data.scanDemande);
+            } else {
+                // Fallback: rafraîchir complètement si pas de données
+                refreshScanStatus(demandeId);
+            }
             showAlert('Fichier uploadé avec succès!', 'success');
         } else {
             showAlert(data.message || 'Erreur lors de l\'upload', 'danger');
@@ -464,7 +477,13 @@ function uploadFile(demandeId, pieceId, file) {
         showAlert('Erreur lors de l\'upload du fichier', 'danger');
     })
     .finally(() => {
-        progressBar.style.display = 'none';
+        if (progressBar) {
+            progressBar.style.display = 'none';
+        }
+        // Réactiver le bouton de validation
+        if (validateBtn) {
+            updateValidationButtonState(demandeId);
+        }
     });
 }
 
@@ -615,109 +634,19 @@ function deleteFile(demandeId, idDemandePiece) {
 
 function refreshScanStatus(demandeId) {
     fetch(`/demandes/${demandeId}/scan/pieces`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur lors du rafraîchissement du statut');
+            }
+            return response.json();
+        })
         .then(data => {
-            // Mettre à jour les pièces
-            data.pieces.forEach(piece => {
-                const pieceItem = document.getElementById('piece-' + piece.idPiece);
-                if (pieceItem) {
-                    // Mettre à jour la classe
-                    pieceItem.className = 'piece-item ' + 
-                        (piece.scannee ? 'scanned' : (piece.obligatoire ? 'required-not-scanned' : 'not-scanned'));
-                    
-                    // Mettre à jour le statut
-                    const icon = pieceItem.querySelector('.status-icon i');
-                    icon.className = piece.scannee ? 'bi bi-check-circle' : 'bi bi-circle';
-                    
-                    // Mettre à jour la colonne de droite (col-md-6)
-                    const rightCol = pieceItem.querySelector('.col-md-6:last-child');
-                    if (rightCol) {
-                        if (piece.scannee) {
-                            // Afficher l'alerte de succès
-                            rightCol.innerHTML = `
-                                <div class="alert alert-success mb-2">
-                                    <i class="bi bi-check-circle"></i>
-                                    <strong>Fichier uploadé:</strong>
-                                    <br/><small>${piece.nomFichier}</small>
-                                    <br/><small class="text-muted">${piece.dateUpload}</small>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-danger mt-2" 
-                                        style="width: 100%;" data-piece-id="${piece.idPiece}" data-action="delete">
-                                    <i class="bi bi-trash"></i> Supprimer le fichier
-                                </button>
-                            `;
-                            
-                            // Réattacher le listener au bouton delete
-                            const deleteBtn = rightCol.querySelector('button[data-action="delete"]');
-                            deleteBtn.addEventListener('click', function() {
-                                if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier?')) {
-                                    deleteFile(demandeId, piece.idPiece);
-                                }
-                            });
-                        } else {
-                            // Afficher le bouton d'upload
-                            rightCol.innerHTML = `
-                                <label for="file-input-${piece.idPiece}" 
-                                       class="btn btn-primary btn-lg w-100"
-                                       style="cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px;">
-                                    <i class="bi bi-cloud-arrow-up" style="font-size: 2em; margin-right: 10px;"></i>
-                                    <div style="text-align: left;">
-                                        <div style="font-weight: 600;">Choisir un fichier</div>
-                                        <small>PDF, JPG, PNG, JPEG jusqu'à 10 MB</small>
-                                    </div>
-                                </label>
-                                <input type="file" 
-                                       id="file-input-${piece.idPiece}"
-                                       class="file-input" 
-                                       data-piece-id="${piece.idPiece}"
-                                       accept=".pdf,.jpg,.jpeg,.png"
-                                       style="display: none;">
-                            `;
-                            
-                            // Réattacher le listener à l'input file
-                            const fileInput = rightCol.querySelector('input.file-input');
-                            fileInput.addEventListener('change', (e) => {
-                                if (e.target.files.length > 0) {
-                                    const file = e.target.files[0];
-                                    const validFormats = ['pdf', 'jpg', 'jpeg', 'png'];
-                                    const extension = file.name.split('.').pop().toLowerCase();
-                                    if (!validFormats.includes(extension)) {
-                                        showAlert(`Format non accepté: .${extension}. Acceptés: PDF, JPG, JPEG, PNG`, 'warning');
-                                        e.target.value = '';
-                                        return;
-                                    }
-                                    if (file.size > 10 * 1024 * 1024) {
-                                        showAlert(`Le fichier est trop volumineux (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum: 10 MB`, 'warning');
-                                        e.target.value = '';
-                                        return;
-                                    }
-                                    uploadFile(demandeId, piece.idPiece, file);
-                                }
-                            });
-                        }
-                    }
-                    
-                    // Mettre à jour la colonne de gauche avec les infos
-                    const leftCol = pieceItem.querySelector('.col-md-6:first-child');
-                    if (leftCol) {
-                        const smallsContainer = leftCol.querySelector('div:nth-child(1)');
-                        if (piece.scannee) {
-                            // Ajouter les infos de date et fichier
-                            smallsContainer.innerHTML += `
-                                <small class="text-muted" style="display: block; margin-top: 5px;">
-                                    <i class="bi bi-calendar"></i> Uploadé le: 
-                                    <span>${piece.dateUpload}</span>
-                                </small>
-                                <small class="text-muted d-block">
-                                    <i class="bi bi-file-earmark"></i> Fichier: 
-                                    <span>${piece.nomFichier}</span>
-                                </small>
-                            `;
-                        }
-                    }
-                }
-            });
-            updateSummary(data);
+            // Mettre à jour complètement à partir des données du serveur
+            updateScanStatus(demandeId, data);
+        })
+        .catch(error => {
+            console.error('Erreur lors du rafraîchissement:', error);
+            // Ne pas afficher d'alerte pour ce rafraîchissement silencieux
         });
 }
 
@@ -766,11 +695,16 @@ function updateSummary(data) {
     ).join('');
     document.getElementById('optional-items').innerHTML = optionalHtml || '<small class="text-muted">Aucune pièce optionnelle</small>';
 
-    // Activer/désactiver le bouton valider
+    // Mettre à jour l'état du bouton de validation
+    updateValidationButtonState_internal(mandatory, mandatoryScanned);
+}
+
+function updateValidationButtonState_internal(mandatory, mandatoryScanned) {
     const allMandatoryScanned = mandatory.length > 0 && mandatoryScanned === mandatory.length;
     const validateBtn = document.getElementById('btn-valider');
     if (validateBtn) {
-        validateBtn.disabled = !allMandatoryScanned;
+        // Afficher le bouton uniquement si tous les fichiers obligatoires sont scannés
+        validateBtn.style.display = allMandatoryScanned ? 'block' : 'none';
         
         const validationMsg = document.getElementById('validation-message');
         if (!allMandatoryScanned) {
@@ -783,6 +717,20 @@ function updateSummary(data) {
             validationMsg.style.display = 'block';
         }
     }
+}
+
+function updateValidationButtonState(demandeId) {
+    // Récupérer l'état actuel
+    fetch(`/demandes/${demandeId}/scan/pieces`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.pieces) {
+                const mandatory = data.pieces.filter(p => p.obligatoire);
+                const mandatoryScanned = mandatory.filter(p => p.scannee).length;
+                updateValidationButtonState_internal(mandatory, mandatoryScanned);
+            }
+        })
+        .catch(error => console.error('Erreur lors de la récupération du statut:', error));
 }
 
 function validateScan(demandeId) {
