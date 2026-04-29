@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Map;
+
 /**
  * Contrôleur pour la gestion du scan des pièces justificatives
  * SPRINT 3
@@ -68,6 +70,8 @@ public class ScanPiecesController {
      * Paramètres:
      *   - idPiece: L'ID de la pièce
      *   - file: Le fichier à uploader
+     * 
+     * Retourne l'état du scan mis à jour après l'upload
      */
     @PostMapping("/{id}/scan/upload")
     @ResponseBody
@@ -80,12 +84,22 @@ public class ScanPiecesController {
             scanPiecesService.uploadFichier(id, idPiece, file);
             log.info("Upload réussi - Demande: {}, Pièce: {}", id, idPiece);
             
+            // Récupérer l'état mis à jour après l'upload
+            ScanDemandeDTO etatMisAJour = scanPiecesService.getEtatScan(id);
+            
             return ResponseEntity.ok()
-                    .body("{\"message\": \"Fichier uploadé avec succès\", \"success\": true}");
+                    .body(Map.of(
+                        "message", "Fichier uploadé avec succès",
+                        "success", true,
+                        "scanDemande", etatMisAJour
+                    ));
         } catch (BusinessException e) {
             log.warn("Erreur métier lors de l'upload - Demande: {}, Pièce: {}", id, idPiece, e);
             return ResponseEntity.badRequest()
-                    .body("{\"message\": \"" + e.getMessage() + "\", \"success\": false}");
+                    .body(Map.of(
+                        "message", e.getMessage(),
+                        "success", false
+                    ));
         } catch (ResourceNotFoundException e) {
             log.warn("Ressource non trouvée lors de l'upload - Demande: {}", id, e);
             return ResponseEntity.notFound().build();
