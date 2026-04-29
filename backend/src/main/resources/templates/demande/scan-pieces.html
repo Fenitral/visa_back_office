@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan des Pièces Justificatives</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .badge-obligatoire {
+            background-color: #FF6B6B;
+            color: white;
+            font-size: 0.8em;
+        }
+        .badge-optionnel {
+            background-color: #4ECDC4;
+            color: white;
+            font-size: 0.8em;
+        }
+        .piece-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        .piece-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .piece-item.scanned {
+            background-color: #f0f8f0;
+            border-left: 4px solid #28a745;
+        }
+        .piece-item.not-scanned {
+            background-color: #f8f0f0;
+            border-left: 4px solid #ff9800;
+        }
+        .piece-item.required-not-scanned {
+            background-color: #fff5f5;
+            border-left: 4px solid #dc3545;
+        }
+        .progress-section {
+            margin-bottom: 30px;
+        }
+        .file-input {
+            display: none;
+        }
+        label[class*="btn-primary"][for] {
+            transition: all 0.3s ease;
+            border: 2px solid #0056b3;
+        }
+        label[class*="btn-primary"][for]:hover {
+            background-color: #0056b3 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+        label[class*="btn-primary"][for]:active {
+            transform: translateY(0);
+        }
+        .btn-upload {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .status-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        .status-icon.ok {
+            color: #28a745;
+        }
+        .status-icon.nok {
+            color: #dc3545;
+        }
+        .progress-item {
+            margin-bottom: 10px;
+        }
+        .validation-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4 mb-4">
+    <!-- Messages flash -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- En-tête -->
+    <div class="mb-4">
+        <h1 class="mb-2">
+            <i class="bi bi-file-earmark-pdf"></i> Scan des Pièces Justificatives
+        </h1>
+        <p class="text-muted">Demande #<span th:text="${scanDemande.idDemande}"></span> - <span th:text="${scanDemande.nomDemandeur}"></span></p>
+    </div>
+
+    <!-- Information -->
+    <div class="info-box">
+        <i class="bi bi-info-circle"></i>
+        <strong>Instructions:</strong> Téléchargez un fichier pour chaque pièce justificative. Les formats acceptés sont: PDF, JPG, PNG, JPEG. Taille maximale: 10 MB.
+    </div>
+
+    <!-- Statut actuel -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Statut actuel:</strong></p>
+                    <span class="badge bg-info" th:text="${scanDemande.statutActuel}"></span>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Progression du scan:</strong></p>
+                    <div id="progress-bar" class="progress">
+                        <div class="progress-bar" id="progressPercent" style="width: 0%"></div>
+                    </div>
+                    <small><span id="piecesScannees">0</span>/<span id="totalPieces">0</span> pièces scannées</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des pièces -->
+    <div class="row">
+        <div class="col-md-8">
+            <h3 class="mb-3">Pièces à scanner</h3>
+            
+            <div id="pieces-container">
+                <div th:each="piece : ${scanDemande.pieces}" class="piece-item" 
+                     th:class="'piece-item ' + (${piece.scannee} ? 'scanned' : (${piece.obligatoire} ? 'required-not-scanned' : 'not-scanned'))"
+                     th:id="'piece-' + ${piece.idPiece}">
+                    
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="status-icon" th:class="'status-icon ' + (${piece.scannee} ? 'ok' : 'nok')">
+                                    <i th:class="${piece.scannee} ? 'bi bi-check-circle' : 'bi bi-circle'"></i>
+                                </span>
+                                <strong th:text="${piece.nomPiece}"></strong>
+                                <span class="badge ms-2" 
+                                      th:class="${piece.obligatoire} ? 'badge-obligatoire' : 'badge-optionnel'"
+                                      th:text="${piece.obligatoire} ? 'Obligatoire' : 'Optionnel'"></span>
+                            </div>
+                            <small class="text-muted" th:if="${piece.scannee}">
+                                <i class="bi bi-calendar"></i> Uploadé le: 
+                                <span th:text="${#temporals.format(piece.dateUpload, 'dd/MM/yyyy HH:mm')}"></span>
+                            </small>
+                            <small class="text-muted d-block" th:if="${piece.scannee}">
+                                <i class="bi bi-file-earmark"></i> Fichier: 
+                                <span th:text="${piece.nomFichier}"></span>
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Input file simple et stylisé -->
+                            <div th:if="!${piece.scannee}">
+                                <label th:for="'file-input-' + ${piece.idPiece}" 
+                                       class="btn btn-primary btn-lg w-100"
+                                       style="cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px;">
+                                    <i class="bi bi-cloud-arrow-up" style="font-size: 2em; margin-right: 10px;"></i>
+                                    <div style="text-align: left;">
+                                        <div style="font-weight: 600;">Choisir un fichier</div>
+                                        <small>PDF, JPG, PNG, JPEG jusqu'à 10 MB</small>
+                                    </div>
+                                </label>
+                                <input type="file" 
+                                       th:id="'file-input-' + ${piece.idPiece}"
+                                       class="file-input" 
+                                       th:data-piece-id="${piece.idPiece}"
+                                       accept=".pdf,.jpg,.jpeg,.png"
+                                       style="display: none;">
+                            </div>
+                            
+                            <div th:if="${piece.scannee}">
+                                <div class="alert alert-success mb-2">
+                                    <i class="bi bi-check-circle"></i>
+                                    <strong>Fichier uploadé:</strong>
+                                    <br/><small th:text="${piece.nomFichier}"></small>
+                                    <br/><small class="text-muted" th:text="${#temporals.format(piece.dateUpload, 'dd/MM/yyyy HH:mm')}"></small>
+                                </div>
+                            </div>
+                            
+                            <!-- Bouton de suppression si fichier existe -->
+                            <button type="button" 
+                                    class="btn btn-sm btn-danger mt-2"
+                                    th:if="${piece.scannee}"
+                                    th:data-piece-id="${piece.idPiece}"
+                                    data-action="delete"
+                                    style="width: 100%;">
+                                <i class="bi bi-trash"></i> Supprimer le fichier
+                            </button>
+
+                            <!-- Progress bar pour chaque fichier -->
+                            <div class="progress mt-2" style="height: 20px; display: none;" th:id="'upload-progress-' + ${piece.idPiece}">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panneau de contrôle latéral -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Résumé</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress-item">
+                        <p class="mb-2"><strong>Pièces obligatoires:</strong></p>
+                        <div id="mandatory-items">
+                            <small class="text-muted">Chargement...</small>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="progress-item">
+                        <p class="mb-2"><strong>Pièces optionnelles:</strong></p>
+                        <div id="optional-items">
+                            <small class="text-muted">Chargement...</small>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Message de validation -->
+                    <div id="validation-message" class="validation-message" style="display: none;"></div>
+
+                    <!-- Boutons d'action -->
+                    <div class="d-grid gap-2">
+                        <button id="btn-valider" type="button" class="btn btn-success btn-lg" disabled>
+                            <i class="bi bi-check-lg"></i> Valider le scan
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                            <i class="bi bi-arrow-left"></i> Retour
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation -->
+<div class="modal fade" id="confirmValidationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation de la validation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir valider le scan des pièces justificatives?</p>
+                <p class="text-muted">Une fois validé, le statut de la demande passera à "SCANNEE".</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-success" id="confirm-validation">Confirmer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Récupérer demandeId depuis le DOM (trouvé dans le texte de la page)
+    const headerText = document.querySelector('p.text-muted');
+    const demandeId = headerText ? parseInt(headerText.textContent.match(/\d+/)[0]) : null;
+    
+    // Construire les données des pièces depuis le DOM
+    const piecesData = [];
+    document.querySelectorAll('.piece-item').forEach(elem => {
+        const nameElem = elem.querySelector('strong');
+        const badge = elem.querySelector('.badge');
+        const icon = elem.querySelector('.status-icon i');
+        const idPiece = elem.id.replace('piece-', '');
+        
+        piecesData.push({
+            idPiece: parseInt(idPiece),
+            nomPiece: nameElem?.textContent || 'Unknown',
+            obligatoire: badge?.textContent === 'Obligatoire',
+            scannee: icon?.className.includes('check-circle') || false,
+            nomFichier: '',
+            dateUpload: ''
+        });
+    });
+
+    if (demandeId && piecesData.length > 0) {
+        // Initialiser les uploads
+        initializeUploadZones(demandeId);
+        
+        // Initialiser le résumé avec les données du DOM
+        updateSummary({pieces: piecesData});
+
+        // Bouton valider
+        const validateBtn = document.getElementById('btn-valider');
+        if (validateBtn) {
+            validateBtn.addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.getElementById('confirmValidationModal'));
+                modal.show();
+            });
+        }
+
+        if (document.getElementById('confirm-validation')) {
+            document.getElementById('confirm-validation').addEventListener('click', function() {
+                validateScan(demandeId);
+            });
+        }
+    }
+});
+
+function initializeUploadZones(demandeId) {
+    // Récupérer tous les inputs file
+    document.querySelectorAll('input.file-input').forEach(fileInput => {
+        const pieceId = fileInput.dataset.pieceId;
+
+        // Changement du fichier (clic sur le label)
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                // Vérifier le format
+                const validFormats = ['pdf', 'jpg', 'jpeg', 'png'];
+                const extension = file.name.split('.').pop().toLowerCase();
+                if (!validFormats.includes(extension)) {
+                    showAlert(`Format non accepté: .${extension}. Acceptés: PDF, JPG, JPEG, PNG`, 'warning');
+                    e.target.value = ''; // Réinitialiser l'input
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    showAlert(`Le fichier est trop volumineux (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum: 10 MB`, 'warning');
+                    e.target.value = ''; // Réinitialiser l'input
+                    return;
+                }
+                uploadFile(demandeId, pieceId, file);
+            }
+        });
+    });
+
+    // Gérer le drag-and-drop sur toute la page
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // Drop sur toute la page - trouver la zone la plus proche
+    document.body.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            
+            // Trouver le label le plus proche du point de drop
+            const dropPoint = { x: e.clientX, y: e.clientY };
+            const labels = document.querySelectorAll('label[for]');
+            let closestLabel = null;
+            let closestDistance = Infinity;
+            
+            labels.forEach(label => {
+                const rect = label.getBoundingClientRect();
+                const distance = Math.sqrt(
+                    Math.pow(dropPoint.x - (rect.left + rect.width/2), 2) +
+                    Math.pow(dropPoint.y - (rect.top + rect.height/2), 2)
+                );
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestLabel = label;
+                }
+            });
+            
+            if (closestLabel) {
+                const inputId = closestLabel.getAttribute('for');
+                const fileInput = document.getElementById(inputId);
+                if (fileInput) {
+                    const pieceId = fileInput.dataset.pieceId;
+                    
+                    // Vérifier le format
+                    const validFormats = ['pdf', 'jpg', 'jpeg', 'png'];
+                    const extension = file.name.split('.').pop().toLowerCase();
+                    if (!validFormats.includes(extension)) {
+                        showAlert(`Format non accepté: .${extension}. Acceptés: PDF, JPG, JPEG, PNG`, 'warning');
+                        return;
+                    }
+                    if (file.size > 10 * 1024 * 1024) {
+                        showAlert(`Le fichier est trop volumineux (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum: 10 MB`, 'warning');
+                        return;
+                    }
+                    uploadFile(demandeId, pieceId, file);
+                }
+            }
+        }
+    });
+
+    // Boutons de suppression
+    document.querySelectorAll('button[data-action="delete"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const pieceId = this.dataset.pieceId;
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier?')) {
+                deleteFile(demandeId, pieceId);
+            }
+        });
+    });
+}
+
+function uploadFile(demandeId, pieceId, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('idPiece', pieceId);
+
+    const progressBar = document.getElementById('upload-progress-' + pieceId);
+    progressBar.style.display = 'block';
+
+    fetch(`/demandes/${demandeId}/scan/upload`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Rafraîchir l'état du scan
+            refreshScanStatus(demandeId);
+            showAlert('Fichier uploadé avec succès!', 'success');
+        } else {
+            showAlert(data.message || 'Erreur lors de l\'upload', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showAlert('Erreur lors de l\'upload du fichier', 'danger');
+    })
+    .finally(() => {
+        progressBar.style.display = 'none';
+    });
+}
+
+function deleteFile(demandeId, idDemandePiece) {
+    fetch(`/demandes/${demandeId}/scan/fichier/${idDemandePiece}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            refreshScanStatus(demandeId);
+            showAlert('Fichier supprimé avec succès!', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showAlert('Erreur lors de la suppression', 'danger');
+    });
+}
+
+function refreshScanStatus(demandeId) {
+    fetch(`/demandes/${demandeId}/scan/pieces`)
+        .then(response => response.json())
+        .then(data => {
+            // Mettre à jour les pièces
+            data.pieces.forEach(piece => {
+                const pieceItem = document.getElementById('piece-' + piece.idPiece);
+                if (pieceItem) {
+                    // Mettre à jour la classe
+                    pieceItem.className = 'piece-item ' + 
+                        (piece.scannee ? 'scanned' : (piece.obligatoire ? 'required-not-scanned' : 'not-scanned'));
+                    
+                    // Mettre à jour le statut
+                    const icon = pieceItem.querySelector('.status-icon i');
+                    icon.className = piece.scannee ? 'bi bi-check-circle' : 'bi bi-circle';
+                    
+                    // Mettre à jour la colonne de droite (col-md-6)
+                    const rightCol = pieceItem.querySelector('.col-md-6:last-child');
+                    if (rightCol) {
+                        if (piece.scannee) {
+                            // Afficher l'alerte de succès
+                            rightCol.innerHTML = `
+                                <div class="alert alert-success mb-2">
+                                    <i class="bi bi-check-circle"></i>
+                                    <strong>Fichier uploadé:</strong>
+                                    <br/><small>${piece.nomFichier}</small>
+                                    <br/><small class="text-muted">${piece.dateUpload}</small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-danger mt-2" 
+                                        style="width: 100%;" data-piece-id="${piece.idPiece}" data-action="delete">
+                                    <i class="bi bi-trash"></i> Supprimer le fichier
+                                </button>
+                            `;
+                            
+                            // Réattacher le listener au bouton delete
+                            const deleteBtn = rightCol.querySelector('button[data-action="delete"]');
+                            deleteBtn.addEventListener('click', function() {
+                                if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier?')) {
+                                    deleteFile(demandeId, piece.idPiece);
+                                }
+                            });
+                        } else {
+                            // Afficher le bouton d'upload
+                            rightCol.innerHTML = `
+                                <label for="file-input-${piece.idPiece}" 
+                                       class="btn btn-primary btn-lg w-100"
+                                       style="cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px;">
+                                    <i class="bi bi-cloud-arrow-up" style="font-size: 2em; margin-right: 10px;"></i>
+                                    <div style="text-align: left;">
+                                        <div style="font-weight: 600;">Choisir un fichier</div>
+                                        <small>PDF, JPG, PNG, JPEG jusqu'à 10 MB</small>
+                                    </div>
+                                </label>
+                                <input type="file" 
+                                       id="file-input-${piece.idPiece}"
+                                       class="file-input" 
+                                       data-piece-id="${piece.idPiece}"
+                                       accept=".pdf,.jpg,.jpeg,.png"
+                                       style="display: none;">
+                            `;
+                            
+                            // Réattacher le listener à l'input file
+                            const fileInput = rightCol.querySelector('input.file-input');
+                            fileInput.addEventListener('change', (e) => {
+                                if (e.target.files.length > 0) {
+                                    const file = e.target.files[0];
+                                    const validFormats = ['pdf', 'jpg', 'jpeg', 'png'];
+                                    const extension = file.name.split('.').pop().toLowerCase();
+                                    if (!validFormats.includes(extension)) {
+                                        showAlert(`Format non accepté: .${extension}. Acceptés: PDF, JPG, JPEG, PNG`, 'warning');
+                                        e.target.value = '';
+                                        return;
+                                    }
+                                    if (file.size > 10 * 1024 * 1024) {
+                                        showAlert(`Le fichier est trop volumineux (${(file.size / 1024 / 1024).toFixed(2)} MB). Maximum: 10 MB`, 'warning');
+                                        e.target.value = '';
+                                        return;
+                                    }
+                                    uploadFile(demandeId, piece.idPiece, file);
+                                }
+                            });
+                        }
+                    }
+                    
+                    // Mettre à jour la colonne de gauche avec les infos
+                    const leftCol = pieceItem.querySelector('.col-md-6:first-child');
+                    if (leftCol) {
+                        const smallsContainer = leftCol.querySelector('div:nth-child(1)');
+                        if (piece.scannee) {
+                            // Ajouter les infos de date et fichier
+                            smallsContainer.innerHTML += `
+                                <small class="text-muted" style="display: block; margin-top: 5px;">
+                                    <i class="bi bi-calendar"></i> Uploadé le: 
+                                    <span>${piece.dateUpload}</span>
+                                </small>
+                                <small class="text-muted d-block">
+                                    <i class="bi bi-file-earmark"></i> Fichier: 
+                                    <span>${piece.nomFichier}</span>
+                                </small>
+                            `;
+                        }
+                    }
+                }
+            });
+            updateSummary(data);
+        });
+}
+
+function updateSummary(data) {
+    let pieces = [];
+    
+    if (data && data.pieces) {
+        pieces = data.pieces;
+    }
+    
+    if (!pieces || pieces.length === 0) {
+        // Pas de pièces disponibles
+        document.getElementById('piecesScannees').textContent = '0';
+        document.getElementById('totalPieces').textContent = '0';
+        document.getElementById('mandatory-items').innerHTML = '<small class="text-muted">Aucune pièce obligatoire</small>';
+        document.getElementById('optional-items').innerHTML = '<small class="text-muted">Aucune pièce optionnelle</small>';
+        return;
+    }
+    
+    const mandatory = pieces.filter(p => p.obligatoire);
+    const optional = pieces.filter(p => !p.obligatoire);
+
+    const mandatoryScanned = mandatory.filter(p => p.scannee).length;
+    const optionalScanned = optional.filter(p => p.scannee).length;
+
+    // Mettre à jour le compteur de progression
+    const totalScanned = mandatoryScanned + optionalScanned;
+    const total = pieces.length;
+    const percent = total > 0 ? (totalScanned / total) * 100 : 0;
+
+    document.getElementById('piecesScannees').textContent = totalScanned;
+    document.getElementById('totalPieces').textContent = total;
+    document.getElementById('progressPercent').style.width = percent + '%';
+
+    // Mettre à jour le résumé des obligatoires
+    const mandatoryHtml = mandatory.map(p => 
+        '<div>' + (p.scannee ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-circle text-danger"></i>') + 
+        ' ' + p.nomPiece + '</div>'
+    ).join('');
+    document.getElementById('mandatory-items').innerHTML = mandatoryHtml || '<small class="text-muted">Aucune pièce obligatoire</small>';
+
+    // Mettre à jour le résumé des optionnelles
+    const optionalHtml = optional.map(p => 
+        '<div>' + (p.scannee ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-circle text-muted"></i>') + 
+        ' ' + p.nomPiece + '</div>'
+    ).join('');
+    document.getElementById('optional-items').innerHTML = optionalHtml || '<small class="text-muted">Aucune pièce optionnelle</small>';
+
+    // Activer/désactiver le bouton valider
+    const allMandatoryScanned = mandatory.length > 0 && mandatoryScanned === mandatory.length;
+    const validateBtn = document.getElementById('btn-valider');
+    if (validateBtn) {
+        validateBtn.disabled = !allMandatoryScanned;
+        
+        const validationMsg = document.getElementById('validation-message');
+        if (!allMandatoryScanned) {
+            validationMsg.className = 'validation-message alert alert-warning';
+            validationMsg.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner toutes les pièces obligatoires';
+            validationMsg.style.display = 'block';
+        } else {
+            validationMsg.className = 'validation-message alert alert-success';
+            validationMsg.innerHTML = '<i class="bi bi-check-circle"></i> Tous les documents sont prêts. Vous pouvez valider!';
+            validationMsg.style.display = 'block';
+        }
+    }
+}
+
+function validateScan(demandeId) {
+    // Fermer la modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('confirmValidationModal'));
+    if (modal) {
+        modal.hide();
+    }
+
+    fetch(`/demandes/${demandeId}/scan/valider`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Scan validé avec succès! Redirection...', 'success');
+            setTimeout(() => {
+                window.location.href = data.redirectUrl;
+            }, 1500);
+        } else {
+            showAlert(data.message || 'Erreur lors de la validation', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showAlert('Erreur lors de la validation', 'danger');
+    });
+}
+
+function showAlert(message, type) {
+    const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    const container = document.createElement('div');
+    container.innerHTML = alertHtml;
+    document.body.appendChild(container.firstElementChild);
+}
+</script>
+
+</body>
+</html>

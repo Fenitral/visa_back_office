@@ -111,6 +111,9 @@
     </div>
 
     <div class="mt-4 text-center">
+        <a th:href="@{/demandes/{id}/scan(id=${demande.id})}" class="btn btn-warning">
+            <i class="bi bi-file-earmark-pdf"></i> Scanner les pièces justificatives
+        </a>
         <a th:href="@{/}" class="btn btn-primary">Retour à l'accueil</a>
         <a th:href="@{/demandes/nouvelle}" class="btn btn-secondary">Créer une nouvelle demande</a>
     </div>
