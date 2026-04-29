@@ -246,9 +246,7 @@
 
                     <!-- Boutons d'action -->
                     <div class="d-grid gap-2">
-                        <button id="btn-valider" type="button" class="btn btn-success btn-lg" 
-                                th:if="${toutes_pieces_obligatoires_scannees}" 
-                                disabled>
+                        <button id="btn-valider" type="button" class="btn btn-success btn-lg" disabled>
                             <i class="bi bi-check-lg"></i> Valider le scan
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="window.history.back()">
@@ -648,17 +646,27 @@ function updateSummary(data) {
 }
 
 function validateScan(demandeId) {
+    // Fermer la modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('confirmValidationModal'));
+    if (modal) {
+        modal.hide();
+    }
+
     fetch(`/demandes/${demandeId}/scan/valider`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
-    .then(response => {
-        if (response.ok) {
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
             showAlert('Scan validé avec succès! Redirection...', 'success');
             setTimeout(() => {
-                window.location.href = `/demandes/${demandeId}/details`;
+                window.location.href = data.redirectUrl;
             }, 1500);
         } else {
-            showAlert('Erreur lors de la validation', 'danger');
+            showAlert(data.message || 'Erreur lors de la validation', 'danger');
         }
     })
     .catch(error => {

@@ -118,24 +118,21 @@ public class ScanPiecesController {
      * Valide que toutes les pièces obligatoires sont scannées et change le statut
      */
     @PostMapping("/{id}/scan/valider")
-    public String validerScan(
-            @PathVariable Long id,
-            RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public ResponseEntity<?> validerScan(@PathVariable Long id) {
         
         try {
             scanPiecesService.validerScan(id);
-            redirectAttributes.addFlashAttribute("successMessage", 
-                "Scan validé avec succès. Statut changé à SCANNEE");
             log.info("Validation du scan réussie - Demande: {}", id);
-            return "redirect:/demandes/" + id + "/details";
+            return ResponseEntity.ok()
+                    .body("{\"message\": \"Scan validé avec succès. Statut changé à SCANNEE\", \"success\": true, \"redirectUrl\": \"/demandes/" + id + "/details\"}");
         } catch (BusinessException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             log.warn("Erreur lors de la validation du scan - Demande: {}", id, e);
-            return "redirect:/demandes/" + id + "/scan";
+            return ResponseEntity.badRequest()
+                    .body("{\"message\": \"" + e.getMessage() + "\", \"success\": false}");
         } catch (ResourceNotFoundException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             log.warn("Demande non trouvée - Demande: {}", id, e);
-            return "redirect:/demandes";
+            return ResponseEntity.notFound().build();
         }
     }
 }
