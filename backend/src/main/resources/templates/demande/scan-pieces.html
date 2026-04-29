@@ -258,7 +258,7 @@
 
                     <!-- Boutons d'action -->
                     <div class="d-grid gap-2">
-                        <button id="btn-valider" type="button" class="btn btn-success btn-lg" style="display: none;">
+                        <button id="btn-valider" type="button" class="btn btn-success btn-lg" style="display: none;" data-bs-toggle="modal" data-bs-target="#confirmValidationModal">
                             <i class="bi bi-check-lg"></i> Valider le scan
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="window.history.back()">
@@ -705,6 +705,7 @@ function updateValidationButtonState_internal(mandatory, mandatoryScanned) {
     if (validateBtn) {
         // Afficher le bouton uniquement si tous les fichiers obligatoires sont scannés
         validateBtn.style.display = allMandatoryScanned ? 'block' : 'none';
+        validateBtn.disabled = !allMandatoryScanned; // Aussi gérer l'état disabled
         
         const validationMsg = document.getElementById('validation-message');
         if (!allMandatoryScanned) {
