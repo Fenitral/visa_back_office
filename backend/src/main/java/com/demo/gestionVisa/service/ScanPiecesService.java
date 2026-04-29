@@ -134,6 +134,20 @@ public class ScanPiecesService {
         }
 
         try {
+            // Supprimer l'ancien fichier s'il existe
+            if (demandePiece.getCheminFichier() != null) {
+                try {
+                    Path oldFilePath = Paths.get(demandePiece.getCheminFichier());
+                    if (Files.exists(oldFilePath)) {
+                        Files.delete(oldFilePath);
+                        log.info("Ancien fichier supprimé - Demande: {}, Pièce: {}", idDemande, idPiece);
+                    }
+                } catch (IOException e) {
+                    log.warn("Erreur lors de la suppression de l'ancien fichier - Demande: {}, Pièce: {}", idDemande, idPiece, e);
+                }
+            }
+
+        try {
             // Créer le répertoire s'il n'existe pas
             Path uploadDir = Paths.get(uploadDirectory, "demande_" + idDemande);
             Files.createDirectories(uploadDir);
