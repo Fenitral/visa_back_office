@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Map;
+
 /**
  * Contrôleur pour la gestion du scan des pièces justificatives
  * SPRINT 3
@@ -31,11 +33,25 @@ public class ScanPiecesController {
     /**
      * GET /demandes/{id}/scan
      * Afficher la page de scan des pièces justificatives
+     * IMPORTANT: Vérifie que toutes les pièces requises ont été fournies avant d'accéder au scan
      */
     @GetMapping("/{id}/scan")
-    public String afficherPageScan(@PathVariable Long id, Model model) {
+    public String afficherPageScan(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             ScanDemandeDTO etatScan = scanPiecesService.getEtatScan(id);
+            
+            // Vérifier que toutes les pièces ont été fournies
+            boolean toutesPiecesFournies = etatScan.getPieces().stream()
+                    .allMatch(p -> p.getFourni() != null && p.getFourni());
+            
+            if (!toutesPiecesFournies) {
+                // Il y a des pièces manquantes, rediriger vers la page de détails
+                redirectAttributes.addFlashAttribute("errorMessage", 
+                    "Vous devez d'abord compléter toutes les pièces manquantes avant de pouvoir scanner.");
+                log.warn("Tentative d'accès au scan avec pièces manquantes - Demande: {}", id);
+                return "redirect:/demandes/" + id + "/details";
+            }
+            
             model.addAttribute("scanDemande", etatScan);
             model.addAttribute("toutes_pieces_obligatoires_scannees", 
                 etatScan.sontToutesPiecesObligatoiresScannees());
@@ -68,6 +84,8 @@ public class ScanPiecesController {
      * Paramètres:
      *   - idPiece: L'ID de la pièce
      *   - file: Le fichier à uploader
+     * 
+     * Retourne l'état du scan mis à jour après l'upload
      */
     @PostMapping("/{id}/scan/upload")
     @ResponseBody
@@ -80,12 +98,22 @@ public class ScanPiecesController {
             scanPiecesService.uploadFichier(id, idPiece, file);
             log.info("Upload réussi - Demande: {}, Pièce: {}", id, idPiece);
             
+            // Récupérer l'état mis à jour après l'upload
+            ScanDemandeDTO etatMisAJour = scanPiecesService.getEtatScan(id);
+            
             return ResponseEntity.ok()
-                    .body("{\"message\": \"Fichier uploadé avec succès\", \"success\": true}");
+                    .body(Map.of(
+                        "message", "Fichier uploadé avec succès",
+                        "success", true,
+                        "scanDemande", etatMisAJour
+                    ));
         } catch (BusinessException e) {
             log.warn("Erreur métier lors de l'upload - Demande: {}, Pièce: {}", id, idPiece, e);
             return ResponseEntity.badRequest()
-                    .body("{\"message\": \"" + e.getMessage() + "\", \"success\": false}");
+                    .body(Map.of(
+                        "message", e.getMessage(),
+                        "success", false
+                    ));
         } catch (ResourceNotFoundException e) {
             log.warn("Ressource non trouvée lors de l'upload - Demande: {}", id, e);
             return ResponseEntity.notFound().build();
@@ -106,10 +134,58 @@ public class ScanPiecesController {
             scanPiecesService.supprimerFichier(idDemandePiece);
             log.info("Fichier supprimé - Demande: {}", id);
             
+            // Récupérer l'état mis à jour après la suppression
+            ScanDemandeDTO etatMisAJour = scanPiecesService.getEtatScan(id);
+            
             return ResponseEntity.ok()
-                    .body("{\"message\": \"Fichier supprimé avec succès\", \"success\": true}");
+                    .body(Map.of(
+                        "message", "Fichier supprimé avec succès",
+                        "success", true,
+                        "scanDemande", etatMisAJour
+                    ));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Erreur lors de la suppression du fichier", e);
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                        "message", "Erreur lors de la suppression: " + e.getMessage(),
+                        "success", false
+                    ));
+        }
+    }
+
+    /**
+     * POST /demandes/{id}/marquer-piece-fournie
+     * Marque une pièce comme fournie (complétée)
+     * 
+     * Paramètres:
+     *   - idPiece: L'ID de la pièce
+     */
+    @PostMapping("/{id}/marquer-piece-fournie")
+    @ResponseBody
+    public ResponseEntity<?> marquerPieceCommeFournie(
+            @PathVariable Long id,
+            @RequestParam Long idPiece) {
+        
+        try {
+            scanPiecesService.marquerPieceCommeFournie(id, idPiece);
+            log.info("Pièce marquée comme fournie - Demande: {}, Pièce: {}", id, idPiece);
+            
+            return ResponseEntity.ok()
+                    .body(Map.of(
+                        "message", "Pièce marquée comme fournie",
+                        "success", true
+                    ));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Erreur lors du marquage de la pièce", e);
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                        "message", "Erreur: " + e.getMessage(),
+                        "success", false
+                    ));
         }
     }
 
