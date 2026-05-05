@@ -88,7 +88,7 @@
         }
     </style>
 </head>
-<body th:attr="data-has-antecedents=${hasAntecedents}, data-demande-id=${scanDemande.idDemande}">
+<body th:attr="data-has-antecedents=${hasAntecedents}, data-demande-id=${scanDemande.idDemande}, data-statut-actuel=${scanDemande.statutActuel}">
 
 <div class="container mt-4 mb-4">
     <!-- Messages flash -->
@@ -751,22 +751,22 @@ function updateValidationButtonState_internal(mandatory, mandatoryScanned, total
     const allPiecesScanned = totalPieces > 0 && totalScanned === totalPieces;
     const validateBtn = document.getElementById('btn-valider');
     if (validateBtn) {
-        const canValidate = hasAntecedents ? allPiecesScanned : totalScanned > 0;
+        const statutActuel = (document.body.dataset.statutActuel || '').toUpperCase();
+        const isStatutApprouvee = statutActuel === 'APPROUVEE';
+        const canValidate = isStatutApprouvee ? true : allPiecesScanned;
         validateBtn.style.display = canValidate ? 'block' : 'none';
         validateBtn.disabled = !canValidate;
         
         const validationMsg = document.getElementById('validation-message');
         if (!canValidate) {
             validationMsg.className = 'validation-message alert alert-warning';
-            validationMsg.innerHTML = hasAntecedents
-                ? '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner toutes les pièces'
-                : '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner au moins un fichier';
+            validationMsg.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner toutes les pièces';
             validationMsg.style.display = 'block';
         } else {
             validationMsg.className = 'validation-message alert alert-success';
-            validationMsg.innerHTML = hasAntecedents
-                ? '<i class="bi bi-check-circle"></i> Tous les documents sont prêts. Vous pouvez valider!'
-                : '<i class="bi bi-check-circle"></i> Au moins un fichier est charge. Vous pouvez valider.';
+            validationMsg.innerHTML = isStatutApprouvee
+                ? '<i class="bi bi-check-circle"></i> Vous pouvez valider même sans tout scanner.'
+                : '<i class="bi bi-check-circle"></i> Tous les documents sont prêts. Vous pouvez valider!';
             validationMsg.style.display = 'block';
         }
     }

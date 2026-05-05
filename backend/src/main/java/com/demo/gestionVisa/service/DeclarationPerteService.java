@@ -157,9 +157,9 @@ public class DeclarationPerteService {
         TypeDemande typeDemande = typeDemandeRepository.findByLibelle(typeDemandeLibelle)
                 .orElseThrow(() -> new ResourceNotFoundException("TypeDemande " + typeDemandeLibelle + " introuvable en base"));
 
-        // ÉTAPE 8 — StatutDemande = CREE
-        StatutDemande statutCree = statutDemandeRepository.findByLibelle("CREE")
-                .orElseThrow(() -> new ResourceNotFoundException("StatutDemande CREE introuvable en base"));
+        // ÉTAPE 8 — StatutDemande = APPROUVEE pour déclaration
+        StatutDemande statutApprouvee = statutDemandeRepository.findByLibelle("APPROUVEE")
+            .orElseThrow(() -> new ResourceNotFoundException("StatutDemande APPROUVEE introuvable en base"));
 
         // ÉTAPE 9 — Construire et sauvegarder la nouvelle Demande (copie de l'ancienne, mais TypeDemande = DUPLICATA)
         Demande nouvelleDemande = new Demande();
@@ -168,7 +168,7 @@ public class DeclarationPerteService {
         nouvelleDemande.setVisaTransformable(nouvelleVisaTransformable);
         nouvelleDemande.setTypeVisa(typeVisa);
         nouvelleDemande.setTypeDemande(typeDemande);
-        nouvelleDemande.setStatutDemande(statutCree);
+        nouvelleDemande.setStatutDemande(statutApprouvee);
         nouvelleDemande = demandeRepository.save(nouvelleDemande);
 
         // ÉTAPE 9 — Créer la carte résident si déclarée comme perdue
@@ -196,7 +196,7 @@ public class DeclarationPerteService {
         }
 
         // ÉTAPE 12 — Créer l'historique de statut
-        creerHistoriqueStatut(nouvelleDemande, statutCree, 
+        creerHistoriqueStatut(nouvelleDemande, statutApprouvee,
             "Déclaration de perte - " + (dto.getMotif() != null ? dto.getMotif() : "Non spécifié"));
 
         // ÉTAPE 13 — Recharger et retourner

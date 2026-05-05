@@ -202,7 +202,7 @@ public class ScanPiecesService {
             demande.setStatutDemande(statutScannee);
             log.info("Validation du scan réussie pour la demande {}, statut changé à SCANNEE", idDemande);
         } else {
-            // Sans antécédents: approuver directement
+            // Sans antécédents: approuver directement (même sans scan)
             StatutDemande statutApprouvee = statutDemandeRepository.findByLibelle("APPROUVEE")
                     .orElseThrow(() -> new BusinessException("Statut APPROUVEE non trouvé en base de données"));
             demande.setStatutDemande(statutApprouvee);
@@ -221,10 +221,17 @@ public class ScanPiecesService {
     }
 
     private boolean hasAntecedents(Demande demande) {
-        if (demande.getDateDemande() == null) {
+        if (demande.getDemandeur() == null) {
             return false;
         }
-        return demandeRepository.countByDemandeurAndDateDemandeBefore(demande.getDemandeur(), demande.getDateDemande()) > 0;
+        if (demande.getDateDemande() == null) {
+            return demande.getId() != null
+                    && demandeRepository.countByDemandeurAndIdNot(demande.getDemandeur(), demande.getId()) > 0;
+        }
+        return demandeRepository.countByDemandeurAndDateDemandeBefore(
+                demande.getDemandeur(),
+                demande.getDateDemande()
+        ) > 0;
     }
 
     /**
