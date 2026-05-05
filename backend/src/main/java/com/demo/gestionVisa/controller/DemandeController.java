@@ -54,10 +54,15 @@ public class DemandeController {
     @GetMapping("/nouvelle")
     public String afficherFormulaire(@RequestParam(required = false) Long idTypeVisa,
                                     @RequestParam(required = false, defaultValue = "NOUVELLE") String typeDemande,
+                                    @RequestParam(required = false) String typeDemandeSecondaire,
+                                    @RequestParam(required = false, defaultValue = "false") Boolean skipPiecesObligatoires,
+                                    @RequestParam(required = false) String source,
                                     Model model) {
         DemandeCreateDTO form = new DemandeCreateDTO();
         form.setIdTypeVisa(idTypeVisa);
         form.setTypeDemande(typeDemande); // Assigner le type de demande au DTO
+        form.setTypeDemandeSecondaire(typeDemandeSecondaire);
+        form.setSkipPiecesObligatoires(skipPiecesObligatoires || "perte".equalsIgnoreCase(source));
 
         model.addAttribute("demandeForm", form);
         model.addAttribute("typesVisa", typeVisaRepository.findAll());
@@ -70,6 +75,9 @@ public class DemandeController {
         model.addAttribute("submitLabel", "ENREGISTRER");
         model.addAttribute("cancelUrl", "/demandes");
         model.addAttribute("typeDemande", typeDemande); // Passer le type de demande
+        model.addAttribute("typeDemandeSecondaire", typeDemandeSecondaire);
+        model.addAttribute("skipPiecesObligatoires", skipPiecesObligatoires);
+        model.addAttribute("source", source);
         return "demande/formulaire";
     }
 
@@ -92,8 +100,22 @@ public class DemandeController {
     public String soumettreFormulaire(
             @Valid @ModelAttribute("demandeForm") DemandeCreateDTO dto,
             BindingResult result,
+            @RequestParam(required = false) String typeDemandeSecondaire,
+            @RequestParam(required = false) Boolean skipPiecesObligatoires,
+            @RequestParam(required = false) String source,
             Model model,
             RedirectAttributes redirectAttributes) {
+
+        if (typeDemandeSecondaire != null && !typeDemandeSecondaire.trim().isEmpty()) {
+            dto.setTypeDemandeSecondaire(typeDemandeSecondaire);
+            dto.setSkipPiecesObligatoires(true);
+        } else if (Boolean.TRUE.equals(skipPiecesObligatoires) || "perte".equalsIgnoreCase(source)) {
+            dto.setSkipPiecesObligatoires(true);
+        }
+
+        if (dto.getTypeDemandeSecondaire() != null && !dto.getTypeDemandeSecondaire().trim().isEmpty()) {
+            dto.setSkipPiecesObligatoires(true);
+        }
 
         // Si erreurs de validation Bean Validation (@NotBlank, @NotNull, etc.)
         if (result.hasErrors()) {
@@ -108,6 +130,8 @@ public class DemandeController {
             model.addAttribute("submitLabel", "ENREGISTRER");
             model.addAttribute("cancelUrl", "/demandes");
             model.addAttribute("typeDemande", dto.getTypeDemande()); // Repasserle type de demande
+            model.addAttribute("typeDemandeSecondaire", dto.getTypeDemandeSecondaire());
+            model.addAttribute("skipPiecesObligatoires", dto.getSkipPiecesObligatoires());
             return "demande/formulaire";
         }
 
@@ -129,6 +153,8 @@ public class DemandeController {
             model.addAttribute("submitLabel", "ENREGISTRER");
             model.addAttribute("cancelUrl", "/demandes");
             model.addAttribute("typeDemande", dto.getTypeDemande()); // Repasserle type de demande
+            model.addAttribute("typeDemandeSecondaire", dto.getTypeDemandeSecondaire());
+            model.addAttribute("skipPiecesObligatoires", dto.getSkipPiecesObligatoires());
             return "demande/formulaire";
         }
     }
@@ -151,6 +177,8 @@ public class DemandeController {
         model.addAttribute("submitLabel", "METTRE À JOUR");
         model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
         model.addAttribute("typeDemande", form.getTypeDemande()); // Passer le type de demande
+        model.addAttribute("typeDemandeSecondaire", form.getTypeDemandeSecondaire());
+        model.addAttribute("skipPiecesObligatoires", form.getSkipPiecesObligatoires());
         return "demande/formulaire";
     }
 
@@ -163,8 +191,22 @@ public class DemandeController {
             @PathVariable Long id,
             @Valid @ModelAttribute("demandeForm") DemandeCreateDTO dto,
             BindingResult result,
+            @RequestParam(required = false) String typeDemandeSecondaire,
+            @RequestParam(required = false) Boolean skipPiecesObligatoires,
+            @RequestParam(required = false) String source,
             Model model,
             RedirectAttributes redirectAttributes) {
+
+        if (typeDemandeSecondaire != null && !typeDemandeSecondaire.trim().isEmpty()) {
+            dto.setTypeDemandeSecondaire(typeDemandeSecondaire);
+            dto.setSkipPiecesObligatoires(true);
+        } else if (Boolean.TRUE.equals(skipPiecesObligatoires) || "perte".equalsIgnoreCase(source)) {
+            dto.setSkipPiecesObligatoires(true);
+        }
+
+        if (dto.getTypeDemandeSecondaire() != null && !dto.getTypeDemandeSecondaire().trim().isEmpty()) {
+            dto.setSkipPiecesObligatoires(true);
+        }
         if (result.hasErrors()) {
             model.addAttribute("typesVisa", typeVisaRepository.findAll());
             model.addAttribute("situationsFamiliales", situationFamilialeRepository.findAll());
@@ -176,6 +218,8 @@ public class DemandeController {
             model.addAttribute("submitLabel", "METTRE À JOUR");
             model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
             model.addAttribute("typeDemande", dto.getTypeDemande());
+            model.addAttribute("typeDemandeSecondaire", dto.getTypeDemandeSecondaire());
+            model.addAttribute("skipPiecesObligatoires", dto.getSkipPiecesObligatoires());
             return "demande/formulaire";
         }
 
@@ -195,6 +239,8 @@ public class DemandeController {
             model.addAttribute("submitLabel", "METTRE À JOUR");
             model.addAttribute("cancelUrl", "/demandes/" + id + "/details");
             model.addAttribute("typeDemande", dto.getTypeDemande());
+            model.addAttribute("typeDemandeSecondaire", dto.getTypeDemandeSecondaire());
+            model.addAttribute("skipPiecesObligatoires", dto.getSkipPiecesObligatoires());
             return "demande/formulaire";
         }
     }

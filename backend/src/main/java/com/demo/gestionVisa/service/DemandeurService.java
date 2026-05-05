@@ -125,4 +125,17 @@ public class DemandeurService {
         }
         return demandeurRepository.findByNomContainingIgnoreCase(nom.trim());
     }
+
+    /**
+     * Recherche les demandeurs par terme libre (nom, prenom, email, telephone, passeport, etc.).
+     *
+     * @param term le terme de recherche
+     * @return liste des demandeurs correspondants
+     */
+    public List<Demandeur> rechercherParTerme(String term) {
+        if (term == null || term.trim().isEmpty()) {
+            return List.of();
+        }
+        return demandeurRepository.searchByTerm(term.trim());
+    }
 }

@@ -39,22 +39,27 @@ public class ScanPiecesController {
     public String afficherPageScan(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
             ScanDemandeDTO etatScan = scanPiecesService.getEtatScan(id);
+
+            boolean hasAntecedents = scanPiecesService.hasAntecedents(id);
             
-            // Vérifier que toutes les pièces ont été fournies
-            boolean toutesPiecesFournies = etatScan.getPieces().stream()
-                    .allMatch(p -> p.getFourni() != null && p.getFourni());
-            
-            if (!toutesPiecesFournies) {
-                // Il y a des pièces manquantes, rediriger vers la page de détails
-                redirectAttributes.addFlashAttribute("errorMessage", 
-                    "Vous devez d'abord compléter toutes les pièces manquantes avant de pouvoir scanner.");
-                log.warn("Tentative d'accès au scan avec pièces manquantes - Demande: {}", id);
-                return "redirect:/demandes/" + id + "/details";
+            if (hasAntecedents) {
+                // Vérifier que toutes les pièces ont été fournies
+                boolean toutesPiecesFournies = etatScan.getPieces().stream()
+                        .allMatch(p -> p.getFourni() != null && p.getFourni());
+                
+                if (!toutesPiecesFournies) {
+                    // Il y a des pièces manquantes, rediriger vers la page de détails
+                    redirectAttributes.addFlashAttribute("errorMessage", 
+                        "Vous devez d'abord compléter toutes les pièces manquantes avant de pouvoir scanner.");
+                    log.warn("Tentative d'accès au scan avec pièces manquantes - Demande: {}", id);
+                    return "redirect:/demandes/" + id + "/details";
+                }
             }
             
             model.addAttribute("scanDemande", etatScan);
             model.addAttribute("toutes_pieces_obligatoires_scannees", 
                 etatScan.sontToutesPiecesObligatoiresScannees());
+            model.addAttribute("hasAntecedents", hasAntecedents);
             return "demande/scan-pieces";
         } catch (ResourceNotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -95,6 +100,14 @@ public class ScanPiecesController {
             @RequestParam("file") MultipartFile file) {
         
         try {
+            log.info(
+                "Upload request - Demande: {}, Pièce: {}, originalFilename: {}, size: {}, isEmpty: {}",
+                id,
+                idPiece,
+                file != null ? file.getOriginalFilename() : null,
+                file != null ? file.getSize() : null,
+                file == null || file.isEmpty()
+            );
             scanPiecesService.uploadFichier(id, idPiece, file);
             log.info("Upload réussi - Demande: {}, Pièce: {}", id, idPiece);
             
@@ -200,8 +213,10 @@ public class ScanPiecesController {
         try {
             scanPiecesService.validerScan(id);
             log.info("Validation du scan réussie - Demande: {}", id);
+            boolean hasAntecedents = scanPiecesService.hasAntecedents(id);
+            String statutMessage = hasAntecedents ? "SCANNEE" : "APPROUVEE";
             return ResponseEntity.ok()
-                    .body("{\"message\": \"Scan validé avec succès. Statut changé à SCANNEE\", \"success\": true, \"redirectUrl\": \"/demandes/" + id + "/details\"}");
+                    .body("{\"message\": \"Scan validé avec succès. Statut changé à " + statutMessage + "\", \"success\": true, \"redirectUrl\": \"/demandes/" + id + "/details\"}");
         } catch (BusinessException e) {
             log.warn("Erreur lors de la validation du scan - Demande: {}", id, e);
             return ResponseEntity.badRequest()

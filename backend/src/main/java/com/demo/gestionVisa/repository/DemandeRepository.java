@@ -11,4 +11,7 @@ import java.util.List;
 public interface DemandeRepository extends JpaRepository<Demande, Long> {
     List<Demande> findByDemandeur(Demandeur demandeur);
     List<Demande> findByDemandeurOrderByDateDemandeDesc(Demandeur demandeur);
+    long countByDemandeur(Demandeur demandeur);
+    long countByDemandeurAndDateDemandeBefore(Demandeur demandeur, java.time.LocalDateTime dateDemande);
+    long countByDemandeurAndIdNot(Demandeur demandeur, Long id);
 }

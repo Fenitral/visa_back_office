@@ -37,6 +37,9 @@
 
         <!-- Champ caché pour le type de demande (NOUVELLE ou DUPLICATA) -->
         <input type="hidden" id="typeDemande" th:field="*{typeDemande}">
+        <input type="hidden" id="typeDemandeSecondaire" th:field="*{typeDemandeSecondaire}">
+        <input type="hidden" id="skipPiecesObligatoires" th:field="*{skipPiecesObligatoires}">
+        <input type="hidden" id="source" name="source" th:value="${source}">
 
         <!-- ═══════════════════════════════════════════ -->
         <!-- BLOC 🟦 ÉTAT CIVIL (Dev1)                   -->
@@ -201,8 +204,9 @@
         <!-- ═══════════════════════════════════════════ -->
         <!-- BLOC 🟪 PIÈCES À FOURNIR (Dev2)             -->
         <!-- ═══════════════════════════════════════════ -->
-        <div class="section-header">
-            <h2>Pièces à fournir</h2>
+        <div class="section-header d-flex align-items-center justify-content-between">
+            <h2 class="mb-0">Pièces à fournir</h2>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="selectAllPieces">Tout sélectionner</button>
         </div>
 
         <!-- Pièces communes : affichées statiquement -->
@@ -253,5 +257,17 @@
     </form>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAllBtn = document.getElementById('selectAllPieces');
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            document.querySelectorAll('input[type="checkbox"][name="piecesFournies"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+    }
+});
+</script>
 </body>
 </html>

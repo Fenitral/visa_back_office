@@ -125,14 +125,10 @@ public class ScanPiecesService {
         Demande demande = demandeRepository.findById(idDemande)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande non trouvée: " + idDemande));
 
+
         // Trouver le lien demande_piece
         DemandePiece demandePiece = demandePieceRepository.findByDemandeIdAndPieceId(idDemande, idPiece)
                 .orElseThrow(() -> new BusinessException("Pièce non trouvée pour cette demande"));
-
-        // Vérifier que la pièce a été fournie (complétée)
-        if (demandePiece.getFourni() == null || !demandePiece.getFourni()) {
-            throw new BusinessException("Cette pièce n'a pas encore été fournie. Veuillez la compléter d'abord.");
-        }
 
         try {
             // Supprimer l'ancien fichier s'il existe
@@ -163,6 +159,7 @@ public class ScanPiecesService {
             demandePiece.setCheminFichier(filePath.toString());
             demandePiece.setNomFichier(file.getOriginalFilename());
             demandePiece.setDateUpload(LocalDateTime.now());
+            demandePiece.setFourni(true);
             demandePieceRepository.save(demandePiece);
 
             // Forcer le flush pour éviter les problèmes de cache
@@ -187,23 +184,54 @@ public class ScanPiecesService {
         Demande demande = demandeRepository.findById(idDemande)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande non trouvée: " + idDemande));
 
-        // Vérifier que toutes les pièces obligatoires sont scannées
-        boolean toutesObligatoiresScannees = demande.getDemandePieces().stream()
-                .filter(dp -> dp.getPiece().getObligatoire())
-                .allMatch(dp -> dp.getCheminFichier() != null);
+        boolean hasAntecedents = hasAntecedents(demande);
 
-        if (!toutesObligatoiresScannees) {
-            throw new BusinessException("Toutes les pièces obligatoires doivent être scannées avant de valider");
+        if (hasAntecedents) {
+            // Vérifier que toutes les pièces sont scannées
+            boolean toutesPiecesScannees = demande.getDemandePieces().stream()
+                    .allMatch(dp -> dp.getCheminFichier() != null);
+
+            if (!toutesPiecesScannees) {
+                throw new BusinessException("Toutes les pièces doivent être scannées avant de valider");
+            }
+
+            // Changer le statut en "SCANNEE"
+            StatutDemande statutScannee = statutDemandeRepository.findByLibelle("SCANNEE")
+                    .orElseThrow(() -> new BusinessException("Statut SCANNEE non trouvé en base de données"));
+
+            demande.setStatutDemande(statutScannee);
+            log.info("Validation du scan réussie pour la demande {}, statut changé à SCANNEE", idDemande);
+        } else {
+            // Sans antécédents: approuver directement (même sans scan)
+            StatutDemande statutApprouvee = statutDemandeRepository.findByLibelle("APPROUVEE")
+                    .orElseThrow(() -> new BusinessException("Statut APPROUVEE non trouvé en base de données"));
+            demande.setStatutDemande(statutApprouvee);
+            log.info("Validation du scan réussie pour la demande {}, statut changé à APPROUVEE", idDemande);
         }
-
-        // Changer le statut en "SCANNEE"
-        StatutDemande statutScannee = statutDemandeRepository.findByLibelle("SCANNEE")
-                .orElseThrow(() -> new BusinessException("Statut SCANNEE non trouvé en base de données"));
-
-        demande.setStatutDemande(statutScannee);
         demandeRepository.save(demande);
+    }
 
-        log.info("Validation du scan réussie pour la demande {}, statut changé à SCANNEE", idDemande);
+    /**
+     * Retourne true si le demandeur a des demandes antérieures (hors demande courante).
+     */
+    public boolean hasAntecedents(Long idDemande) {
+        Demande demande = demandeRepository.findById(idDemande)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande non trouvée: " + idDemande));
+        return hasAntecedents(demande);
+    }
+
+    private boolean hasAntecedents(Demande demande) {
+        if (demande.getDemandeur() == null) {
+            return false;
+        }
+        if (demande.getDateDemande() == null) {
+            return demande.getId() != null
+                    && demandeRepository.countByDemandeurAndIdNot(demande.getDemandeur(), demande.getId()) > 0;
+        }
+        return demandeRepository.countByDemandeurAndDateDemandeBefore(
+                demande.getDemandeur(),
+                demande.getDateDemande()
+        ) > 0;
     }
 
     /**

@@ -94,14 +94,16 @@ public class DemandeService {
      */
     public DemandeResponseDTO creerDemande(DemandeCreateDTO dto) {
 
-        // ÉTAPE 0 — Vérifier si le demandeur existe déjà
-        boolean demandeurExistait = demandeurRepository.findByNomAndDateNaissance(
-                dto.getDemandeurDTO().getNom(),
-                dto.getDemandeurDTO().getDateNaissance()
-        ).isPresent();
+                LocalDateTime demandeDate = LocalDateTime.now();
 
         // ÉTAPE 1 — Demandeur (Dev1)
         Demandeur demandeur = demandeurService.creerOuRecuperer(dto.getDemandeurDTO());
+
+        boolean demandeurSansAntecedent = demandeRepository.countByDemandeur(demandeur) == 0;
+
+        boolean skipPieces = Boolean.TRUE.equals(dto.getSkipPiecesObligatoires())
+                || (dto.getTypeDemandeSecondaire() != null && !dto.getTypeDemandeSecondaire().trim().isEmpty())
+                || demandeurSansAntecedent;
 
         // ÉTAPE 2 — Passeport (Dev1)
         Passeport passeport = passeportService.creer(dto.getPasseportDTO(), demandeur);
@@ -118,18 +120,19 @@ public class DemandeService {
         TypeDemande typeDemande = typeDemandeRepository.findByLibelle(typeDemandeName)
                 .orElseThrow(() -> new ResourceNotFoundException("TypeDemande " + typeDemandeName + " introuvable en base"));
 
-        // ÉTAPE 6 — StatutDemande forcé à CREE
+        // ÉTAPE 6 — StatutDemande: CREE pour création de demande
         StatutDemande statutCree = statutDemandeRepository.findByLibelle("CREE")
                 .orElseThrow(() -> new ResourceNotFoundException("StatutDemande CREE introuvable en base"));
+        StatutDemande statutInitial = statutCree;
 
         // ÉTAPE 7 — Construire et sauvegarder la Demande
         Demande demande = new Demande();
-        demande.setDateDemande(LocalDateTime.now());
+        demande.setDateDemande(demandeDate);
         demande.setDemandeur(demandeur);
         demande.setVisaTransformable(visa);
         demande.setTypeVisa(typeVisa);
         demande.setTypeDemande(typeDemande);
-        demande.setStatutDemande(statutCree);
+        demande.setStatutDemande(statutInitial);
         // demande.setDemandeurExistant(demandeurExistait);
         demande = demandeRepository.save(demande);
 
@@ -140,10 +143,31 @@ public class DemandeService {
         visaService.creer(passeport, demande);
 
         // ÉTAPE 10 — Historique statut initial (RG-07 : obligatoire)
-        creerHistoriqueStatut(demande, statutCree, "Création de la demande");
+        creerHistoriqueStatut(demande, statutInitial, "Création de la demande");
 
         // ÉTAPE 11 — Lier les pièces
-        lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa);
+        lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa, skipPieces);
+
+        String typeDemandeSecondaire = dto.getTypeDemandeSecondaire();
+        if (typeDemandeSecondaire != null && !typeDemandeSecondaire.trim().isEmpty()
+                && !typeDemandeSecondaire.equalsIgnoreCase(typeDemandeName)) {
+            TypeDemande typeSecondaire = typeDemandeRepository.findByLibelle(typeDemandeSecondaire.trim())
+                    .orElseThrow(() -> new ResourceNotFoundException("TypeDemande " + typeDemandeSecondaire + " introuvable en base"));
+
+            Demande demandeSecondaire = new Demande();
+            demandeSecondaire.setDateDemande(demandeDate);
+            demandeSecondaire.setDemandeur(demandeur);
+            demandeSecondaire.setVisaTransformable(visa);
+            demandeSecondaire.setTypeVisa(typeVisa);
+            demandeSecondaire.setTypeDemande(typeSecondaire);
+            demandeSecondaire.setStatutDemande(statutInitial);
+            demandeSecondaire = demandeRepository.save(demandeSecondaire);
+
+                        carteResidentService.creer(passeport, demandeSecondaire);
+
+            creerHistoriqueStatut(demandeSecondaire, statutInitial, "Création de la demande (secondaire)");
+            lierPiecesADemande(demandeSecondaire, dto.getPiecesFournies(), typeVisa, skipPieces);
+        }
 
         // ÉTAPE 12 — Recharger avec pièces et retourner DTO
         Demande demandeFinal = demandeRepository.findById(demande.getId()).orElseThrow();
@@ -180,7 +204,7 @@ public class DemandeService {
      * @param typeVisa          type de visa sélectionné
      * @throws BusinessException si pièce obligatoire manquante
      */
-    private void lierPiecesADemande(Demande demande, List<Long> piecesFournies, TypeVisa typeVisa) {
+        private void lierPiecesADemande(Demande demande, List<Long> piecesFournies, TypeVisa typeVisa, boolean skipPiecesObligatoires) {
         List<String> codes = List.of("COMMUN", typeVisa.getLibelle().toUpperCase());
         List<Piece> toutes = pieceRepository.findByTypePieceCodeIn(codes);
 
@@ -188,7 +212,7 @@ public class DemandeService {
             boolean fourni = piecesFournies != null && piecesFournies.contains(piece.getId());
 
             // RG-09 : contrôle pièce obligatoire
-            if (Boolean.TRUE.equals(piece.getObligatoire()) && !fourni) {
+                        if (!skipPiecesObligatoires && Boolean.TRUE.equals(piece.getObligatoire()) && !fourni) {
                 throw new BusinessException("Pièce obligatoire non fournie : " + piece.getNom());
             }
 
@@ -336,7 +360,8 @@ public class DemandeService {
 
         // Pièces (recalculées sur le typeVisa courant)
         demandePieceRepository.deleteAll(demande.getDemandePieces());
-        lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa);
+                boolean skipPieces = Boolean.TRUE.equals(dto.getSkipPiecesObligatoires());
+                lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa, skipPieces);
 
         return demandeMapper.toResponseDTO(demande);
     }
