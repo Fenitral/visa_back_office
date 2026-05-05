@@ -187,13 +187,12 @@ public class ScanPiecesService {
         boolean hasAntecedents = hasAntecedents(demande);
 
         if (hasAntecedents) {
-            // Vérifier que toutes les pièces obligatoires sont scannées
-            boolean toutesObligatoiresScannees = demande.getDemandePieces().stream()
-                    .filter(dp -> dp.getPiece().getObligatoire())
+            // Vérifier que toutes les pièces sont scannées
+            boolean toutesPiecesScannees = demande.getDemandePieces().stream()
                     .allMatch(dp -> dp.getCheminFichier() != null);
 
-            if (!toutesObligatoiresScannees) {
-                throw new BusinessException("Toutes les pièces obligatoires doivent être scannées avant de valider");
+            if (!toutesPiecesScannees) {
+                throw new BusinessException("Toutes les pièces doivent être scannées avant de valider");
             }
 
             // Changer le statut en "SCANNEE"

@@ -743,15 +743,15 @@ function updateSummary(data, hasAntecedents) {
     document.getElementById('optional-items').innerHTML = optionalHtml || '<small class="text-muted">Aucune pièce optionnelle</small>';
 
     // Mettre à jour l'état du bouton de validation
-    updateValidationButtonState_internal(mandatory, mandatoryScanned, hasAntecedents);
+    updateValidationButtonState_internal(mandatory, mandatoryScanned, totalScanned, total, hasAntecedents);
 }
 
-function updateValidationButtonState_internal(mandatory, mandatoryScanned, hasAntecedents) {
+function updateValidationButtonState_internal(mandatory, mandatoryScanned, totalScanned, totalPieces, hasAntecedents) {
     const allMandatoryScanned = mandatory.length > 0 && mandatoryScanned === mandatory.length;
-    const totalScanned = parseInt(document.getElementById('piecesScannees')?.textContent || '0', 10);
+    const allPiecesScanned = totalPieces > 0 && totalScanned === totalPieces;
     const validateBtn = document.getElementById('btn-valider');
     if (validateBtn) {
-        const canValidate = hasAntecedents ? allMandatoryScanned : totalScanned > 0;
+        const canValidate = hasAntecedents ? allPiecesScanned : totalScanned > 0;
         validateBtn.style.display = canValidate ? 'block' : 'none';
         validateBtn.disabled = !canValidate;
         
@@ -759,7 +759,7 @@ function updateValidationButtonState_internal(mandatory, mandatoryScanned, hasAn
         if (!canValidate) {
             validationMsg.className = 'validation-message alert alert-warning';
             validationMsg.innerHTML = hasAntecedents
-                ? '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner toutes les pièces obligatoires'
+                ? '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner toutes les pièces'
                 : '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner au moins un fichier';
             validationMsg.style.display = 'block';
         } else {
@@ -780,7 +780,15 @@ function updateValidationButtonState(demandeId) {
             if (data && data.pieces) {
                 const mandatory = data.pieces.filter(p => p.obligatoire);
                 const mandatoryScanned = mandatory.filter(p => p.scannee).length;
-                updateValidationButtonState_internal(mandatory, mandatoryScanned, document.body.dataset.hasAntecedents === 'true');
+                const totalPieces = data.pieces.length;
+                const totalScanned = data.pieces.filter(p => p.scannee).length;
+                updateValidationButtonState_internal(
+                    mandatory,
+                    mandatoryScanned,
+                    totalScanned,
+                    totalPieces,
+                    document.body.dataset.hasAntecedents === 'true'
+                );
             }
         })
         .catch(error => console.error('Erreur lors de la récupération du statut:', error));
