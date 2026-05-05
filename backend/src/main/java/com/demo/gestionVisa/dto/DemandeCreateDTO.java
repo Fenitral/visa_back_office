@@ -38,6 +38,13 @@ public class DemandeCreateDTO {
     @Builder.Default
     private String typeDemande = "NOUVELLE";
 
+    // Type de demande secondaire (optionnel) pour créer une 2e demande
+    private String typeDemandeSecondaire;
+
+    // Permet de ne pas bloquer sur les pieces obligatoires (cas sans antecedents)
+    @Builder.Default
+    private Boolean skipPiecesObligatoires = false;
+
     // dateDemande     → forcé à now() en service  (H)
     // idTypeDemande   → défini selon typeDemande (NOUVELLE ou DUPLICATA)
     // idStatutDemande → forcé à CREE en service (H)

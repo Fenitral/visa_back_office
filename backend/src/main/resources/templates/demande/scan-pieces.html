@@ -88,7 +88,7 @@
         }
     </style>
 </head>
-<body>
+<body th:attr="data-has-antecedents=${hasAntecedents}, data-demande-id=${scanDemande.idDemande}">
 
 <div class="container mt-4 mb-4">
     <!-- Messages flash -->
@@ -189,8 +189,8 @@
                             
                             <!-- NON SCANNÉE: Vérifier si elle peut être uploadée -->
                             <div th:if="!${piece.scannee}">
-                                <!-- Pièce FOURNIE: Permettre l'upload -->
-                                <div th:if="${piece.fourni}">
+                                <!-- Pièce FOURNIE ou sans antécédents: Permettre l'upload -->
+                                <div th:if="${piece.fourni} or !${hasAntecedents}">
                                     <label th:for="'file-input-' + ${piece.idPiece}" 
                                            class="btn btn-primary btn-lg w-100"
                                            style="cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px;">
@@ -209,7 +209,7 @@
                                 </div>
                                 
                                 <!-- Pièce NON FOURNIE: Afficher un message d'erreur -->
-                                <div th:if="!${piece.fourni}">
+                                <div th:if="!${piece.fourni} and ${hasAntecedents}">
                                     <div class="alert alert-danger mb-2">
                                         <i class="bi bi-exclamation-circle"></i>
                                         <strong>Pièce non complétée</strong>
@@ -281,7 +281,7 @@
             </div>
             <div class="modal-body">
                 <p>Êtes-vous sûr de vouloir valider le scan des pièces justificatives?</p>
-                <p class="text-muted">Une fois validé, le statut de la demande passera à "SCANNEE".</p>
+                <p class="text-muted" th:text="${hasAntecedents} ? 'Une fois valide, le statut de la demande passera a SCANNEE.' : 'Une fois valide, le statut de la demande passera a APPROUVEE.'"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -294,9 +294,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Récupérer demandeId depuis le DOM (trouvé dans le texte de la page)
-    const headerText = document.querySelector('p.text-muted');
-    const demandeId = headerText ? parseInt(headerText.textContent.match(/\d+/)[0]) : null;
+    const hasAntecedents = document.body.dataset.hasAntecedents === 'true';
+    // Récupérer demandeId depuis un attribut data fiable (évite parsing de texte)
+    const demandeId = document.body.dataset.demandeId ? parseInt(document.body.dataset.demandeId, 10) : null;
     
     // Construire les données des pièces depuis le DOM
     const piecesData = [];
@@ -316,12 +316,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    if (demandeId && piecesData.length > 0) {
+    if (!demandeId) {
+        showAlert("Impossible de déterminer l'ID de la demande (demandeId).", 'danger');
+        return;
+    }
+
+    if (piecesData.length > 0) {
         // Initialiser les uploads
         initializeUploadZones(demandeId);
         
         // Initialiser le résumé avec les données du DOM
-        updateSummary({pieces: piecesData});
+        updateSummary({pieces: piecesData}, hasAntecedents);
 
         // Bouton valider
         const validateBtn = document.getElementById('btn-valider');
@@ -457,7 +462,31 @@ function uploadFile(demandeId, pieceId, file) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(async (response) => {
+        const contentType = response.headers.get('content-type') || '';
+        let payload;
+        try {
+            if (contentType.includes('application/json')) {
+                payload = await response.json();
+            } else {
+                payload = await response.text();
+            }
+        } catch (e) {
+            payload = null;
+        }
+
+        if (!response.ok) {
+            const serverMsg = (payload && typeof payload === 'object' && payload.message)
+                ? payload.message
+                : (typeof payload === 'string' && payload.trim() ? payload.trim() : response.statusText);
+            throw new Error(`HTTP ${response.status} - ${serverMsg}`);
+        }
+
+        if (payload && typeof payload === 'string') {
+            throw new Error('Réponse serveur inattendue (non JSON).');
+        }
+        return payload;
+    })
     .then(data => {
         if (data.success) {
             // Utiliser les données retournées pour mettre à jour le DOM immédiatement
@@ -474,7 +503,7 @@ function uploadFile(demandeId, pieceId, file) {
     })
     .catch(error => {
         console.error('Erreur:', error);
-        showAlert('Erreur lors de l\'upload du fichier', 'danger');
+        showAlert(error?.message || 'Erreur lors de l\'upload du fichier', 'danger');
     })
     .finally(() => {
         if (progressBar) {
@@ -546,7 +575,7 @@ function updateScanStatus(demandeId, scanDemande) {
                     }
                 } else {
                     // Pièce NON SCANNÉE: vérifier si elle peut être uploadée
-                    if (piece.fourni) {
+                    if (piece.fourni || document.body.dataset.hasAntecedents !== 'true') {
                         // Pièce FOURNIE: Permettre l'upload
                         rightCol.innerHTML = `
                             <label for="file-input-${piece.idPiece}" 
@@ -604,14 +633,32 @@ function updateScanStatus(demandeId, scanDemande) {
     });
 
     // Mettre à jour le résumé
-    updateSummary(scanDemande);
+    updateSummary(scanDemande, document.body.dataset.hasAntecedents === 'true');
 }
 
 function deleteFile(demandeId, idDemandePiece) {
     fetch(`/demandes/${demandeId}/scan/fichier/${idDemandePiece}`, {
         method: 'DELETE'
     })
-    .then(response => response.json())
+    .then(async (response) => {
+        const contentType = response.headers.get('content-type') || '';
+        let payload;
+        if (contentType.includes('application/json')) {
+            payload = await response.json();
+        } else {
+            payload = await response.text();
+        }
+        if (!response.ok) {
+            const serverMsg = (payload && typeof payload === 'object' && payload.message)
+                ? payload.message
+                : (typeof payload === 'string' && payload.trim() ? payload.trim() : response.statusText);
+            throw new Error(`HTTP ${response.status} - ${serverMsg}`);
+        }
+        if (payload && typeof payload === 'string') {
+            throw new Error('Réponse serveur inattendue (non JSON).');
+        }
+        return payload;
+    })
     .then(data => {
         if (data.success) {
             showAlert('Fichier supprimé avec succès!', 'success');
@@ -628,7 +675,7 @@ function deleteFile(demandeId, idDemandePiece) {
     })
     .catch(error => {
         console.error('Erreur:', error);
-        showAlert('Erreur lors de la suppression', 'danger');
+        showAlert(error?.message || 'Erreur lors de la suppression', 'danger');
     });
 }
 
@@ -650,7 +697,7 @@ function refreshScanStatus(demandeId) {
         });
 }
 
-function updateSummary(data) {
+function updateSummary(data, hasAntecedents) {
     let pieces = [];
     
     if (data && data.pieces) {
@@ -696,25 +743,30 @@ function updateSummary(data) {
     document.getElementById('optional-items').innerHTML = optionalHtml || '<small class="text-muted">Aucune pièce optionnelle</small>';
 
     // Mettre à jour l'état du bouton de validation
-    updateValidationButtonState_internal(mandatory, mandatoryScanned);
+    updateValidationButtonState_internal(mandatory, mandatoryScanned, hasAntecedents);
 }
 
-function updateValidationButtonState_internal(mandatory, mandatoryScanned) {
+function updateValidationButtonState_internal(mandatory, mandatoryScanned, hasAntecedents) {
     const allMandatoryScanned = mandatory.length > 0 && mandatoryScanned === mandatory.length;
+    const totalScanned = parseInt(document.getElementById('piecesScannees')?.textContent || '0', 10);
     const validateBtn = document.getElementById('btn-valider');
     if (validateBtn) {
-        // Afficher le bouton uniquement si tous les fichiers obligatoires sont scannés
-        validateBtn.style.display = allMandatoryScanned ? 'block' : 'none';
-        validateBtn.disabled = !allMandatoryScanned; // Aussi gérer l'état disabled
+        const canValidate = hasAntecedents ? allMandatoryScanned : totalScanned > 0;
+        validateBtn.style.display = canValidate ? 'block' : 'none';
+        validateBtn.disabled = !canValidate;
         
         const validationMsg = document.getElementById('validation-message');
-        if (!allMandatoryScanned) {
+        if (!canValidate) {
             validationMsg.className = 'validation-message alert alert-warning';
-            validationMsg.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner toutes les pièces obligatoires';
+            validationMsg.innerHTML = hasAntecedents
+                ? '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner toutes les pièces obligatoires'
+                : '<i class="bi bi-exclamation-triangle"></i> Veuillez scanner au moins un fichier';
             validationMsg.style.display = 'block';
         } else {
             validationMsg.className = 'validation-message alert alert-success';
-            validationMsg.innerHTML = '<i class="bi bi-check-circle"></i> Tous les documents sont prêts. Vous pouvez valider!';
+            validationMsg.innerHTML = hasAntecedents
+                ? '<i class="bi bi-check-circle"></i> Tous les documents sont prêts. Vous pouvez valider!'
+                : '<i class="bi bi-check-circle"></i> Au moins un fichier est charge. Vous pouvez valider.';
             validationMsg.style.display = 'block';
         }
     }
@@ -728,7 +780,7 @@ function updateValidationButtonState(demandeId) {
             if (data && data.pieces) {
                 const mandatory = data.pieces.filter(p => p.obligatoire);
                 const mandatoryScanned = mandatory.filter(p => p.scannee).length;
-                updateValidationButtonState_internal(mandatory, mandatoryScanned);
+                updateValidationButtonState_internal(mandatory, mandatoryScanned, document.body.dataset.hasAntecedents === 'true');
             }
         })
         .catch(error => console.error('Erreur lors de la récupération du statut:', error));
@@ -747,7 +799,30 @@ function validateScan(demandeId) {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(async (response) => {
+        const contentType = response.headers.get('content-type') || '';
+        let payload;
+        if (contentType.includes('application/json')) {
+            payload = await response.json();
+        } else {
+            const text = await response.text();
+            try {
+                payload = JSON.parse(text);
+            } catch (e) {
+                payload = text;
+            }
+        }
+        if (!response.ok) {
+            const serverMsg = (payload && typeof payload === 'object' && payload.message)
+                ? payload.message
+                : (typeof payload === 'string' && payload.trim() ? payload.trim() : response.statusText);
+            throw new Error(`HTTP ${response.status} - ${serverMsg}`);
+        }
+        if (payload && typeof payload === 'string') {
+            throw new Error('Réponse serveur inattendue (non JSON).');
+        }
+        return payload;
+    })
     .then(data => {
         if (data.success) {
             showAlert('Scan validé avec succès! Redirection...', 'success');
@@ -760,7 +835,7 @@ function validateScan(demandeId) {
     })
     .catch(error => {
         console.error('Erreur:', error);
-        showAlert('Erreur lors de la validation', 'danger');
+        showAlert(error?.message || 'Erreur lors de la validation', 'danger');
     });
 }
 

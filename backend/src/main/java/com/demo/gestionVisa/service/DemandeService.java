@@ -94,6 +94,10 @@ public class DemandeService {
      */
     public DemandeResponseDTO creerDemande(DemandeCreateDTO dto) {
 
+                boolean skipPieces = Boolean.TRUE.equals(dto.getSkipPiecesObligatoires())
+                        || (dto.getTypeDemandeSecondaire() != null && !dto.getTypeDemandeSecondaire().trim().isEmpty());
+                LocalDateTime demandeDate = LocalDateTime.now();
+
         // ÉTAPE 0 — Vérifier si le demandeur existe déjà
         boolean demandeurExistait = demandeurRepository.findByNomAndDateNaissance(
                 dto.getDemandeurDTO().getNom(),
@@ -124,7 +128,7 @@ public class DemandeService {
 
         // ÉTAPE 7 — Construire et sauvegarder la Demande
         Demande demande = new Demande();
-        demande.setDateDemande(LocalDateTime.now());
+        demande.setDateDemande(demandeDate);
         demande.setDemandeur(demandeur);
         demande.setVisaTransformable(visa);
         demande.setTypeVisa(typeVisa);
@@ -143,7 +147,26 @@ public class DemandeService {
         creerHistoriqueStatut(demande, statutCree, "Création de la demande");
 
         // ÉTAPE 11 — Lier les pièces
-        lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa);
+        lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa, skipPieces);
+
+        String typeDemandeSecondaire = dto.getTypeDemandeSecondaire();
+        if (typeDemandeSecondaire != null && !typeDemandeSecondaire.trim().isEmpty()
+                && !typeDemandeSecondaire.equalsIgnoreCase(typeDemandeName)) {
+            TypeDemande typeSecondaire = typeDemandeRepository.findByLibelle(typeDemandeSecondaire.trim())
+                    .orElseThrow(() -> new ResourceNotFoundException("TypeDemande " + typeDemandeSecondaire + " introuvable en base"));
+
+            Demande demandeSecondaire = new Demande();
+            demandeSecondaire.setDateDemande(demandeDate);
+            demandeSecondaire.setDemandeur(demandeur);
+            demandeSecondaire.setVisaTransformable(visa);
+            demandeSecondaire.setTypeVisa(typeVisa);
+            demandeSecondaire.setTypeDemande(typeSecondaire);
+            demandeSecondaire.setStatutDemande(statutCree);
+            demandeSecondaire = demandeRepository.save(demandeSecondaire);
+
+            creerHistoriqueStatut(demandeSecondaire, statutCree, "Création de la demande (secondaire)");
+            lierPiecesADemande(demandeSecondaire, dto.getPiecesFournies(), typeVisa, skipPieces);
+        }
 
         // ÉTAPE 12 — Recharger avec pièces et retourner DTO
         Demande demandeFinal = demandeRepository.findById(demande.getId()).orElseThrow();
@@ -180,7 +203,7 @@ public class DemandeService {
      * @param typeVisa          type de visa sélectionné
      * @throws BusinessException si pièce obligatoire manquante
      */
-    private void lierPiecesADemande(Demande demande, List<Long> piecesFournies, TypeVisa typeVisa) {
+        private void lierPiecesADemande(Demande demande, List<Long> piecesFournies, TypeVisa typeVisa, boolean skipPiecesObligatoires) {
         List<String> codes = List.of("COMMUN", typeVisa.getLibelle().toUpperCase());
         List<Piece> toutes = pieceRepository.findByTypePieceCodeIn(codes);
 
@@ -188,7 +211,7 @@ public class DemandeService {
             boolean fourni = piecesFournies != null && piecesFournies.contains(piece.getId());
 
             // RG-09 : contrôle pièce obligatoire
-            if (Boolean.TRUE.equals(piece.getObligatoire()) && !fourni) {
+                        if (!skipPiecesObligatoires && Boolean.TRUE.equals(piece.getObligatoire()) && !fourni) {
                 throw new BusinessException("Pièce obligatoire non fournie : " + piece.getNom());
             }
 
@@ -336,7 +359,8 @@ public class DemandeService {
 
         // Pièces (recalculées sur le typeVisa courant)
         demandePieceRepository.deleteAll(demande.getDemandePieces());
-        lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa);
+                boolean skipPieces = Boolean.TRUE.equals(dto.getSkipPiecesObligatoires());
+                lierPiecesADemande(demande, dto.getPiecesFournies(), typeVisa, skipPieces);
 
         return demandeMapper.toResponseDTO(demande);
     }

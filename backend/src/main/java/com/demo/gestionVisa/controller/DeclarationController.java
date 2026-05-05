@@ -62,17 +62,21 @@ public class DeclarationController {
     }
 
     /**
-     * API Endpoint: Rechercher les demandeurs par nom.
+     * API Endpoint: Rechercher les demandeurs par terme libre.
      * Retourne une liste de demandeurs avec infos sur leurs antécédents.
      * 
-     * @param searchDTO DTO contenant le nom de recherche
+     * @param searchDTO DTO contenant le terme de recherche
      * @return liste des demandeurs trouvés avec leurs détails
      */
     @PostMapping("/api/search-demandeur")
     @ResponseBody
     public ResponseEntity<List<DemandeurDetailsDTO>> searchDemandeur(@RequestBody SearchDemandeurDTO searchDTO) {
         try {
-            List<Demandeur> demandeurs = demandeurService.rechercherParNom(searchDTO.getNom());
+            String term = searchDTO.getQuery();
+            if (term == null || term.trim().isEmpty()) {
+                term = searchDTO.getNom();
+            }
+            List<Demandeur> demandeurs = demandeurService.rechercherParTerme(term);
             List<DemandeurDetailsDTO> resultat = demandeurs.stream()
                     .map(d -> {
                         DemandeurDTO dtoD = demandeurMapper.toDTO(d);

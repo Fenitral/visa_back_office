@@ -1,0 +1,636 @@
+Picked up JAVA_TOOL_OPTIONS: -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.visa:backoffice >-------------------------
+[INFO] Building backoffice 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backoffice ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 15 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ backoffice ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 85 source files with javac [debug release 17] to target\classes
+[INFO] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java: d:\ITU\Semestre6\Fraamework\visa_back_office\backend\src\main\java\com\demo\gestionVisa\controller\PertePassportRestController.java uses unchecked or unsafe operations.
+[INFO] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[24,28] cannot find symbol
+  symbol:   method builder()
+  location: class com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[25,30] cannot find symbol
+  symbol:   method getId()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[26,31] cannot find symbol
+  symbol:   method getNom()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[27,34] cannot find symbol
+  symbol:   method getPrenom()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[28,41] cannot find symbol
+  symbol:   method getNomJeuneFille()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[29,41] cannot find symbol
+  symbol:   method getDateNaissance()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[30,41] cannot find symbol
+  symbol:   method getLieuNaissance()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[31,48] cannot find symbol
+  symbol:   method getSituationFamiliale()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[31,92] cannot find symbol
+  symbol:   method getSituationFamiliale()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[32,41] cannot find symbol
+  symbol:   method getNationalite()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[32,78] cannot find symbol
+  symbol:   method getNationalite()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[33,45] cannot find symbol
+  symbol:   method getAdresseMadagascar()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[34,37] cannot find symbol
+  symbol:   method getTelephone()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[35,33] cannot find symbol
+  symbol:   method getEmail()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[51,28] cannot find symbol
+  symbol:   method getId()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[52,29] cannot find symbol
+  symbol:   method getNom()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[53,32] cannot find symbol
+  symbol:   method getPrenom()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[54,39] cannot find symbol
+  symbol:   method getNomJeuneFille()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[55,39] cannot find symbol
+  symbol:   method getDateNaissance()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[56,39] cannot find symbol
+  symbol:   method getLieuNaissance()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[57,43] cannot find symbol
+  symbol:   method getAdresseMadagascar()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[58,35] cannot find symbol
+  symbol:   method getTelephone()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[59,31] cannot find symbol
+  symbol:   method getEmail()
+  location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[100,25] cannot find symbol
+  symbol:   method setNom(java.lang.String)
+  location: variable newDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[101,25] cannot find symbol
+  symbol:   method setPrenom(java.lang.String)
+  location: variable newDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[106,25] cannot find symbol
+  symbol:   method setNumero(java.lang.String)
+  location: variable newPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[33,44] cannot find symbol
+  symbol:   method getDemandeur()
+  location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[36,50] cannot find symbol
+  symbol:   method getId()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[37,50] cannot find symbol
+  symbol:   method getId()
+  location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[38,42] cannot find symbol
+  symbol:   method getNom()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[39,45] cannot find symbol
+  symbol:   method getPrenom()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[40,52] cannot find symbol
+  symbol:   method getDateNaissance()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[41,54] cannot find symbol
+  symbol:   method getNumero()
+  location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[42,53] cannot find symbol
+  symbol:   method getDateDelivrance()
+  location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[43,53] cannot find symbol
+  symbol:   method getDateExpiration()
+  location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[66,18] cannot find symbol
+  symbol:   method getDemandeur()
+  location: variable p of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[69,18] cannot find symbol
+  symbol:   method setNumero(java.lang.String)
+  location: variable p of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[87,37] cannot find symbol
+  symbol:   method builder()
+  location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[100,47] cannot find symbol
+  symbol:   method getId()
+  location: variable savedDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[102,44] cannot find symbol
+  symbol:   method getNom()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[102,71] cannot find symbol
+  symbol:   method getPrenom()
+  location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[119,21] cannot find symbol
+  symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+  location: variable newPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[130,42] cannot find symbol
+  symbol:   method builder()
+  location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[143,41] cannot find symbol
+  symbol:   method builder()
+  location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[156,51] cannot find symbol
+  symbol:   method getId()
+  location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[157,51] cannot find symbol
+  symbol:   method getId()
+  location: variable savedPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[158,63] cannot find symbol
+  symbol:   method getId()
+  location: variable savedDemandePremiere of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[159,63] cannot find symbol
+  symbol:   method getId()
+  location: variable savedDemandeSeconde of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[162,49] cannot find symbol
+  symbol:   method getNom()
+  location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[162,81] cannot find symbol
+  symbol:   method getPrenom()
+  location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[163,55] cannot find symbol
+  symbol:   method getNumero()
+  location: variable savedPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[84,16] cannot find symbol
+  symbol:   method getPertePasseport()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[84,51] cannot find symbol
+  symbol:   method getPerteCarteResident()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[88,17] cannot find symbol
+  symbol:   method getPertePasseport()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[88,45] cannot find symbol
+  symbol:   method getPerteCarteResident()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[93,63] cannot find symbol
+  symbol:   method getIdDemandeur()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[94,101] cannot find symbol
+  symbol:   method getIdDemandeur()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[109,41] cannot find symbol
+  symbol:   method getTypeVisa()
+  location: variable demandePrecedente of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[110,50] cannot find symbol
+  symbol:   method getVisaTransformable()
+  location: variable demandePrecedente of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[117,38] cannot find symbol
+  symbol:   method getPasseport()
+  location: variable visaTransformable of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[129,63] cannot find symbol
+  symbol:   method getPertePasseport()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[142,65] cannot find symbol
+  symbol:   method getPertePasseport()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[162,24] cannot find symbol
+  symbol:   method setDateDemande(java.time.LocalDateTime)
+  location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[163,24] cannot find symbol
+  symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+  location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[164,24] cannot find symbol
+  symbol:   method setVisaTransformable(com.demo.gestionVisa.model.VisaTransformable)
+  location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[165,24] cannot find symbol
+  symbol:   method setTypeVisa(com.demo.gestionVisa.model.TypeVisa)
+  location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[166,24] cannot find symbol
+  symbol:   method setTypeDemande(com.demo.gestionVisa.model.TypeDemande)
+  location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[167,24] cannot find symbol
+  symbol:   method setStatutDemande(com.demo.gestionVisa.model.StatutDemande)
+  location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[171,36] cannot find symbol
+  symbol:   method getPerteCarteResident()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[180,65] cannot find symbol
+  symbol:   method getPertePasseport()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[193,45] cannot find symbol
+  symbol:   method getMotif()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[193,70] cannot find symbol
+  symbol:   method getMotif()
+  location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[196,74] cannot find symbol
+  symbol:   method getId()
+  location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[208,16] cannot find symbol
+  symbol:   method setDateDelivrance(java.time.LocalDate)
+  location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[209,16] cannot find symbol
+  symbol:   method setDateExpiration(java.time.LocalDate)
+  location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[210,16] cannot find symbol
+  symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+  location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[216,44] cannot find symbol
+  symbol:   method getId()
+  location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[228,16] cannot find symbol
+  symbol:   method setDateEntree(java.time.LocalDate)
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[229,16] cannot find symbol
+  symbol:   method setLieuEntree(java.lang.String)
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[230,16] cannot find symbol
+  symbol:   method setDateExpiration(nouveauPas[...]rs(5))
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[230,51] cannot find symbol
+  symbol:   method getDateExpiration()
+  location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[231,29] cannot find symbol
+  symbol:   method getDateExpiration()
+  location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[232,16] cannot find symbol
+  symbol:   method setPasseport(com.demo.gestionVisa.model.Passeport)
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[238,55] cannot find symbol
+  symbol:   method getId()
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[250,16] cannot find symbol
+  symbol:   method setDateDelivrance(java.time.LocalDate)
+  location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[251,50] cannot find symbol
+  symbol:   method getDateExpiration()
+  location: variable ancienPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[252,45] cannot find symbol
+  symbol:   method getDemandeur()
+  location: variable ancienPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[258,44] cannot find symbol
+  symbol:   method getId()
+  location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[273,41] cannot find symbol
+  symbol:   method getDateEntree()
+  location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[274,41] cannot find symbol
+  symbol:   method getLieuEntree()
+  location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[275,45] cannot find symbol
+  symbol:   method getDateExpiration()
+  location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[278,20] cannot find symbol
+  symbol:   method getDateEntree()
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[279,20] cannot find symbol
+  symbol:   method setDateEntree(java.time.LocalDate)
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[281,20] cannot find symbol
+  symbol:   method getDateExpiration()
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[282,20] cannot find symbol
+  symbol:   method setDateExpiration(nouveauPas[...]rs(5))
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[282,55] cannot find symbol
+  symbol:   method getDateExpiration()
+  location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[283,33] cannot find symbol
+  symbol:   method getDateExpiration()
+  location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[286,16] cannot find symbol
+  symbol:   method setPasseport(com.demo.gestionVisa.model.Passeport)
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[292,55] cannot find symbol
+  symbol:   method getId()
+  location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[311,53] cannot find symbol
+  symbol:   method getDateDebut()
+  location: variable ancienneCarte of type com.demo.gestionVisa.model.CarteResident
+[INFO] 100 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  25.561 s
+[INFO] Finished at: 2026-05-05T05:39:50+03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project backoffice: Compilation failure: Compilation failure: 
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[24,28] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[25,30] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[26,31] cannot find symbol
+[ERROR]   symbol:   method getNom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[27,34] cannot find symbol
+[ERROR]   symbol:   method getPrenom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[28,41] cannot find symbol
+[ERROR]   symbol:   method getNomJeuneFille()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[29,41] cannot find symbol
+[ERROR]   symbol:   method getDateNaissance()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[30,41] cannot find symbol
+[ERROR]   symbol:   method getLieuNaissance()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[31,48] cannot find symbol
+[ERROR]   symbol:   method getSituationFamiliale()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[31,92] cannot find symbol
+[ERROR]   symbol:   method getSituationFamiliale()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[32,41] cannot find symbol
+[ERROR]   symbol:   method getNationalite()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[32,78] cannot find symbol
+[ERROR]   symbol:   method getNationalite()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[33,45] cannot find symbol
+[ERROR]   symbol:   method getAdresseMadagascar()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[34,37] cannot find symbol
+[ERROR]   symbol:   method getTelephone()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[35,33] cannot find symbol
+[ERROR]   symbol:   method getEmail()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[51,28] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[52,29] cannot find symbol
+[ERROR]   symbol:   method getNom()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[53,32] cannot find symbol
+[ERROR]   symbol:   method getPrenom()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[54,39] cannot find symbol
+[ERROR]   symbol:   method getNomJeuneFille()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[55,39] cannot find symbol
+[ERROR]   symbol:   method getDateNaissance()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[56,39] cannot find symbol
+[ERROR]   symbol:   method getLieuNaissance()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[57,43] cannot find symbol
+[ERROR]   symbol:   method getAdresseMadagascar()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[58,35] cannot find symbol
+[ERROR]   symbol:   method getTelephone()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/mapper/DemandeurMapper.java:[59,31] cannot find symbol
+[ERROR]   symbol:   method getEmail()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DemandeurDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[100,25] cannot find symbol
+[ERROR]   symbol:   method setNom(java.lang.String)
+[ERROR]   location: variable newDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[101,25] cannot find symbol
+[ERROR]   symbol:   method setPrenom(java.lang.String)
+[ERROR]   location: variable newDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/controller/PertePassportRestController.java:[106,25] cannot find symbol
+[ERROR]   symbol:   method setNumero(java.lang.String)
+[ERROR]   location: variable newPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[33,44] cannot find symbol
+[ERROR]   symbol:   method getDemandeur()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[36,50] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[37,50] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[38,42] cannot find symbol
+[ERROR]   symbol:   method getNom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[39,45] cannot find symbol
+[ERROR]   symbol:   method getPrenom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[40,52] cannot find symbol
+[ERROR]   symbol:   method getDateNaissance()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[41,54] cannot find symbol
+[ERROR]   symbol:   method getNumero()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[42,53] cannot find symbol
+[ERROR]   symbol:   method getDateDelivrance()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[43,53] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable passeport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[66,18] cannot find symbol
+[ERROR]   symbol:   method getDemandeur()
+[ERROR]   location: variable p of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[69,18] cannot find symbol
+[ERROR]   symbol:   method setNumero(java.lang.String)
+[ERROR]   location: variable p of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[87,37] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[100,47] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[102,44] cannot find symbol
+[ERROR]   symbol:   method getNom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[102,71] cannot find symbol
+[ERROR]   symbol:   method getPrenom()
+[ERROR]   location: variable demandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[119,21] cannot find symbol
+[ERROR]   symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+[ERROR]   location: variable newPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[130,42] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[143,41] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[156,51] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[157,51] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[158,63] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedDemandePremiere of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[159,63] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable savedDemandeSeconde of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[162,49] cannot find symbol
+[ERROR]   symbol:   method getNom()
+[ERROR]   location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[162,81] cannot find symbol
+[ERROR]   symbol:   method getPrenom()
+[ERROR]   location: variable savedDemandeur of type com.demo.gestionVisa.model.Demandeur
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/PertePassportService.java:[163,55] cannot find symbol
+[ERROR]   symbol:   method getNumero()
+[ERROR]   location: variable savedPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[84,16] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[84,51] cannot find symbol
+[ERROR]   symbol:   method getPerteCarteResident()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[88,17] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[88,45] cannot find symbol
+[ERROR]   symbol:   method getPerteCarteResident()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[93,63] cannot find symbol
+[ERROR]   symbol:   method getIdDemandeur()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[94,101] cannot find symbol
+[ERROR]   symbol:   method getIdDemandeur()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[109,41] cannot find symbol
+[ERROR]   symbol:   method getTypeVisa()
+[ERROR]   location: variable demandePrecedente of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[110,50] cannot find symbol
+[ERROR]   symbol:   method getVisaTransformable()
+[ERROR]   location: variable demandePrecedente of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[117,38] cannot find symbol
+[ERROR]   symbol:   method getPasseport()
+[ERROR]   location: variable visaTransformable of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[129,63] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[142,65] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[162,24] cannot find symbol
+[ERROR]   symbol:   method setDateDemande(java.time.LocalDateTime)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[163,24] cannot find symbol
+[ERROR]   symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[164,24] cannot find symbol
+[ERROR]   symbol:   method setVisaTransformable(com.demo.gestionVisa.model.VisaTransformable)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[165,24] cannot find symbol
+[ERROR]   symbol:   method setTypeVisa(com.demo.gestionVisa.model.TypeVisa)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[166,24] cannot find symbol
+[ERROR]   symbol:   method setTypeDemande(com.demo.gestionVisa.model.TypeDemande)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[167,24] cannot find symbol
+[ERROR]   symbol:   method setStatutDemande(com.demo.gestionVisa.model.StatutDemande)
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[171,36] cannot find symbol
+[ERROR]   symbol:   method getPerteCarteResident()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[180,65] cannot find symbol
+[ERROR]   symbol:   method getPertePasseport()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[193,45] cannot find symbol
+[ERROR]   symbol:   method getMotif()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[193,70] cannot find symbol
+[ERROR]   symbol:   method getMotif()
+[ERROR]   location: variable dto of type com.demo.gestionVisa.dto.DeclarationPerteDTO
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[196,74] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouvelleDemande of type com.demo.gestionVisa.model.Demande
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[208,16] cannot find symbol
+[ERROR]   symbol:   method setDateDelivrance(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[209,16] cannot find symbol
+[ERROR]   symbol:   method setDateExpiration(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[210,16] cannot find symbol
+[ERROR]   symbol:   method setDemandeur(com.demo.gestionVisa.model.Demandeur)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[216,44] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[228,16] cannot find symbol
+[ERROR]   symbol:   method setDateEntree(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[229,16] cannot find symbol
+[ERROR]   symbol:   method setLieuEntree(java.lang.String)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[230,16] cannot find symbol
+[ERROR]   symbol:   method setDateExpiration(nouveauPas[...]rs(5))
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[230,51] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[231,29] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[232,16] cannot find symbol
+[ERROR]   symbol:   method setPasseport(com.demo.gestionVisa.model.Passeport)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[238,55] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[250,16] cannot find symbol
+[ERROR]   symbol:   method setDateDelivrance(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[251,50] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable ancienPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[252,45] cannot find symbol
+[ERROR]   symbol:   method getDemandeur()
+[ERROR]   location: variable ancienPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[258,44] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[273,41] cannot find symbol
+[ERROR]   symbol:   method getDateEntree()
+[ERROR]   location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[274,41] cannot find symbol
+[ERROR]   symbol:   method getLieuEntree()
+[ERROR]   location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[275,45] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable ancienVisa of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[278,20] cannot find symbol
+[ERROR]   symbol:   method getDateEntree()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[279,20] cannot find symbol
+[ERROR]   symbol:   method setDateEntree(java.time.LocalDate)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[281,20] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[282,20] cannot find symbol
+[ERROR]   symbol:   method setDateExpiration(nouveauPas[...]rs(5))
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[282,55] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[283,33] cannot find symbol
+[ERROR]   symbol:   method getDateExpiration()
+[ERROR]   location: variable nouveauPasseport of type com.demo.gestionVisa.model.Passeport
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[286,16] cannot find symbol
+[ERROR]   symbol:   method setPasseport(com.demo.gestionVisa.model.Passeport)
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[292,55] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable nouveau of type com.demo.gestionVisa.model.VisaTransformable
+[ERROR] /d:/ITU/Semestre6/Fraamework/visa_back_office/backend/src/main/java/com/demo/gestionVisa/service/DeclarationPerteService.java:[311,53] cannot find symbol
+[ERROR]   symbol:   method getDateDebut()
+[ERROR]   location: variable ancienneCarte of type com.demo.gestionVisa.model.CarteResident
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

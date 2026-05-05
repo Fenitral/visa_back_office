@@ -6,12 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO pour rechercher un demandeur par son nom.
+ * DTO pour rechercher un demandeur par un terme libre.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class SearchDemandeurDTO {
+    private String query;
     private String nom;
 }

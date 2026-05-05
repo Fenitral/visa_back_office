@@ -21,7 +21,9 @@ CREATE TABLE nationalite (
 );
 
 INSERT INTO nationalite (libelle) VALUES
-('Malagasy'),
+('Transafert'),
+('DUPLICATA'),
+('TRANSFERT_VISA');
 ('Française'),
 ('Chinoise'),
 ('Indienne'),
@@ -78,7 +80,8 @@ CREATE TABLE type_demande (
 
 INSERT INTO type_demande (libelle) VALUES
 ('NOUVELLE'),
-('DUPLICATA');
+('DUPLICATA'),
+('TRANSFERT_VISA');
 
 CREATE TABLE statut_demande (
     id SERIAL PRIMARY KEY,

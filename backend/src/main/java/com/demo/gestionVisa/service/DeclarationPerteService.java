@@ -68,7 +68,7 @@ public class DeclarationPerteService {
      * Déclare une perte de passeport et/ou carte résident pour un demandeur.
      * 
      * Règles:
-     * 1. Créer une NOUVELLE demande de type DUPLICATA
+        * 1. Créer une NOUVELLE demande (DUPLICATA ou TRANSFERT_VISA selon le cas)
      * 2. Récupérer le VisaTransformable le plus récent de la dernière demande
      * 3. Créer les nouveaux passeport et/ou carte résident
      * 4. Ne JAMAIS modifier les anciennes données
@@ -140,7 +140,8 @@ public class DeclarationPerteService {
         // ÉTAPE 5 — Créer le nouveau VisaTransformable SEULEMENT si passeport perdu
         VisaTransformable nouvelleVisaTransformable;
         if (visaTransformable != null && Boolean.TRUE.equals(dto.getPertePasseport())) {
-            nouvelleVisaTransformable = creerNouvelleVisaTransformable(visaTransformable, nouveauPasseport);
+            // Perte de passeport (TRANSFERT_VISA): le numéro de passeport change, mais la référence visa doit rester la même
+            nouvelleVisaTransformable = creerNouvelleVisaTransformable(visaTransformable, nouveauPasseport, true);
         } else if (visaTransformable != null) {
             // Visa transformable existe mais passeport pas perdu : réutiliser
             nouvelleVisaTransformable = visaTransformable;
@@ -149,9 +150,12 @@ public class DeclarationPerteService {
             nouvelleVisaTransformable = creerVisaTransformableInitial(nouveauPasseport);
         }
 
-        // ÉTAPE 7 — TypeDemande forcé à DUPLICATA
-        TypeDemande typeDemandeDuplicate = typeDemandeRepository.findByLibelle("DUPLICATA")
-                .orElseThrow(() -> new ResourceNotFoundException("TypeDemande DUPLICATA introuvable en base"));
+        // ÉTAPE 6 — TypeDemande selon le type de perte
+        // - Perte carte résident (sans perte passeport) => DUPLICATA (sans changer passeport/référence)
+        // - Perte passeport => TRANSFERT_VISA (passeport change, référence visa reste la même)
+        final String typeDemandeLibelle = Boolean.TRUE.equals(dto.getPertePasseport()) ? "TRANSFERT_VISA" : "DUPLICATA";
+        TypeDemande typeDemande = typeDemandeRepository.findByLibelle(typeDemandeLibelle)
+                .orElseThrow(() -> new ResourceNotFoundException("TypeDemande " + typeDemandeLibelle + " introuvable en base"));
 
         // ÉTAPE 8 — StatutDemande = CREE
         StatutDemande statutCree = statutDemandeRepository.findByLibelle("CREE")
@@ -163,7 +167,7 @@ public class DeclarationPerteService {
         nouvelleDemande.setDemandeur(demandeur);
         nouvelleDemande.setVisaTransformable(nouvelleVisaTransformable);
         nouvelleDemande.setTypeVisa(typeVisa);
-        nouvelleDemande.setTypeDemande(typeDemandeDuplicate);
+        nouvelleDemande.setTypeDemande(typeDemande);
         nouvelleDemande.setStatutDemande(statutCree);
         nouvelleDemande = demandeRepository.save(nouvelleDemande);
 
@@ -176,13 +180,16 @@ public class DeclarationPerteService {
         }
         // Sinon : aucune ancien CR et pas de perte déclarée, aucun CR créé
 
-        // ÉTAPE 10 — Créer ou copier le Visa SEULEMENT si passeport perdu
-        if (demandePrecedente != null && Boolean.TRUE.equals(dto.getPertePasseport())) {
-            // Cas normal : créer un nouveau visa
-            visaService.creer(nouveauPasseport, nouvelleDemande);
-        } else if (demandePrecedente != null) {
-            // Ancien visa existe mais passeport pas perdu : copier
-            copierAncienVisa(demandePrecedente, nouvelleDemande);
+        // ÉTAPE 10 — Visa
+        // Exigences métier (avec antécédents):
+        // - DUPLICATA (perte carte résident): ne pas changer la référence visa
+        // - TRANSFERT_VISA (perte passeport): passeport change mais la référence visa reste la même
+        if (demandePrecedente != null) {
+            if (Boolean.TRUE.equals(dto.getPertePasseport())) {
+                transfererVisaEnConservantReference(demandePrecedente, nouvelleDemande, nouveauPasseport);
+            } else {
+                copierAncienVisaEnConservantReference(demandePrecedente, nouvelleDemande);
+            }
         } else {
             // Aucune demande antérieure : créer un nouveau visa initial
             visaService.creer(nouveauPasseport, nouvelleDemande);
@@ -266,7 +273,7 @@ public class DeclarationPerteService {
      * @param nouveauPasseport  le nouveau passeport à lier
      * @return                  le nouveau visa transformable créé
      */
-    private VisaTransformable creerNouvelleVisaTransformable(VisaTransformable ancienVisa, Passeport nouveauPasseport) {
+    private VisaTransformable creerNouvelleVisaTransformable(VisaTransformable ancienVisa, Passeport nouveauPasseport, boolean conserverReferenceVisa) {
         VisaTransformable nouveau = new VisaTransformable();
         
         // Copier les dates de l'ancien visa
@@ -284,10 +291,15 @@ public class DeclarationPerteService {
         }
         
         nouveau.setPasseport(nouveauPasseport);
-        
+
+        if (conserverReferenceVisa) {
+            nouveau.setReferenceVisa(ancienVisa.getReferenceVisa());
+            return visaTransformableRepository.save(nouveau);
+        }
+
         // Sauvegarder d'abord pour obtenir l'ID
         nouveau = visaTransformableRepository.save(nouveau);
-        
+
         // Générer la référence avec le nouvel ID
         nouveau.setReferenceVisa("VISTRANS-" + nouveau.getId());
         return visaTransformableRepository.save(nouveau);
@@ -338,7 +350,7 @@ public class DeclarationPerteService {
      * @param ancienneDemande   la demande antérieure
      * @param nouvelleDemande   la nouvelle demande
      */
-    private void copierAncienVisa(Demande ancienneDemande, Demande nouvelleDemande) {
+    private void copierAncienVisaEnConservantReference(Demande ancienneDemande, Demande nouvelleDemande) {
         // Chercher un visa lié à l'ancienne demande
         List<Visa> ancienVisa = visaRepository.findByDemande(ancienneDemande);
         
@@ -351,14 +363,33 @@ public class DeclarationPerteService {
             nouvelleVisa.setDateDebut(oldVisa.getDateDebut());
             nouvelleVisa.setDateFin(oldVisa.getDateFin());
             nouvelleVisa.setDemande(nouvelleDemande);
+            nouvelleVisa.setReferenceVisa(oldVisa.getReferenceVisa());
             
-            // Sauvegarder pour obtenir l'ID
-            nouvelleVisa = visaRepository.save(nouvelleVisa);
-            
-            // Générer la référence avec ID
-            nouvelleVisa.setReferenceVisa("VIS-" + nouvelleVisa.getId());
             visaRepository.save(nouvelleVisa);
         }
+    }
+
+    /**
+     * Transfère le visa vers un nouveau passeport en conservant la référence du visa.
+     * (Perte passeport / TRANSFERT_VISA avec antécédents)
+     */
+    private void transfererVisaEnConservantReference(Demande ancienneDemande, Demande nouvelleDemande, Passeport nouveauPasseport) {
+        List<Visa> ancienVisa = visaRepository.findByDemande(ancienneDemande);
+        if (ancienVisa.isEmpty()) {
+            // S'il n'y a pas de visa à copier, on crée un nouveau visa lié au nouveau passeport.
+            // (Cas rare, mais évite de bloquer la déclaration)
+            visaService.creer(nouveauPasseport, nouvelleDemande);
+            return;
+        }
+
+        Visa oldVisa = ancienVisa.get(0);
+        Visa nouvelleVisa = new Visa();
+        nouvelleVisa.setPasseport(nouveauPasseport);
+        nouvelleVisa.setDateDebut(oldVisa.getDateDebut());
+        nouvelleVisa.setDateFin(oldVisa.getDateFin());
+        nouvelleVisa.setDemande(nouvelleDemande);
+        nouvelleVisa.setReferenceVisa(oldVisa.getReferenceVisa());
+        visaRepository.save(nouvelleVisa);
     }
 
     /**
