@@ -164,6 +164,8 @@ public class DemandeService {
             demandeSecondaire.setStatutDemande(statutCree);
             demandeSecondaire = demandeRepository.save(demandeSecondaire);
 
+                        carteResidentService.creer(passeport, demandeSecondaire);
+
             creerHistoriqueStatut(demandeSecondaire, statutCree, "Création de la demande (secondaire)");
             lierPiecesADemande(demandeSecondaire, dto.getPiecesFournies(), typeVisa, skipPieces);
         }
