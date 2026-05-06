@@ -40,7 +40,7 @@ mvn spring-boot:run
 
 ### 3️⃣ Tester
 ```
-http://localhost:8082/demandes/nouvelle
+http://localhost:8084/demandes/nouvelle
 → Créer une demande
 → Cliquer "Scanner les pièces"
 → Uploader des fichiers

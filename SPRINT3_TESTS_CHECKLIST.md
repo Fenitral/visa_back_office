@@ -25,12 +25,12 @@ mvn spring-boot:run
 ou depuis votre IDE (Run GestionVisaApplication.java)
 
 ### 3. Vérifier que le serveur démarre
-L'application devrait démarrer sur `http://localhost:8082`
+L'application devrait démarrer sur `http://localhost:8084`
 
 ## 🧪 Tests manuels
 
 ### Test 1: Créer une demande
-1. Aller à http://localhost:8082/demandes/nouvelle
+1. Aller à http://localhost:8084/demandes/nouvelle
 2. Remplir le formulaire complètement
 3. Cliquer "ENREGISTRER"
 4. **Résultat attendu:** Page de confirmation avec le bouton "Scanner les pièces justificatives"

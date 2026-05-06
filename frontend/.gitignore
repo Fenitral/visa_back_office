@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+*.log
+npm-debug.log*
+
+# Production
+dist/
+
+# Dev
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Env
+.env
+.env.local

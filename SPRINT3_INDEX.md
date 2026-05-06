@@ -142,7 +142,7 @@ backend/src/main/resources/templates/demande/
 mvn spring-boot:run
 
 # Dans le navigateur
-http://localhost:8082/demandes/nouvelle
+http://localhost:8084/demandes/nouvelle
 # Créer une demande...
 # Accéder à /demandes/{id}/scan
 # Tester les scénarios du fichier SPRINT3_TESTS_CHECKLIST.md
@@ -221,8 +221,8 @@ mvn clean package
 mvn spring-boot:run
 
 # 4. Tester
-# http://localhost:8082/demandes/nouvelle
-# http://localhost:8082/demandes/1/scan (après création)
+# http://localhost:8084/demandes/nouvelle
+# http://localhost:8084/demandes/1/scan (après création)
 ```
 
 ### Vérifications post-déploiement
@@ -370,7 +370,7 @@ mvn clean package
 mvn spring-boot:run
 
 # Accéder à l'app
-curl http://localhost:8082/demandes/1/scan/pieces | jq
+curl http://localhost:8084/demandes/1/scan/pieces | jq
 
 # Connecter à BD
 psql -U postgres -d visa_db

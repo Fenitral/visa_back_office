@@ -19,7 +19,7 @@ Le Sprint 3 ajoute une **fonctionnalité complète de scan (upload) des pièces 
 
 ### 1. Créer une demande
 ```
-URL: http://localhost:8082/demandes/nouvelle
+URL: http://localhost:8084/demandes/nouvelle
 Remplir le formulaire complètement
 Cliquer "ENREGISTRER"
 ```
@@ -105,7 +105,7 @@ mvn spring-boot:run
 
 ### Accéder
 ```bash
-http://localhost:8082
+http://localhost:8084
 ```
 
 ### Vérifier
@@ -198,7 +198,7 @@ Pour plus de tests, voir: **[SPRINT3_TESTS_CHECKLIST.md](SPRINT3_TESTS_CHECKLIST
 
 ### Exemple d'upload
 ```bash
-curl -X POST http://localhost:8082/demandes/1/scan/upload \
+curl -X POST http://localhost:8084/demandes/1/scan/upload \
   -F "idPiece=1" \
   -F "file=@passeport.pdf"
 
