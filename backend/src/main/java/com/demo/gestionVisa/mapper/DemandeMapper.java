@@ -2,6 +2,7 @@ package com.demo.gestionVisa.mapper;
 
 import com.demo.gestionVisa.dto.DemandePieceDTO;
 import com.demo.gestionVisa.dto.DemandeResponseDTO;
+import com.demo.gestionVisa.dto.HistoriqueStatutDTO;
 import com.demo.gestionVisa.dto.PieceDTO;
 import com.demo.gestionVisa.model.Demande;
 import com.demo.gestionVisa.model.Piece;
@@ -59,7 +60,17 @@ public class DemandeMapper {
                 })
                 .collect(Collectors.toList()));
         }
-
+        // mapping des historiques de statut
+        if (demande.getHistoriques() != null) {
+            dto.setHistoriques(demande.getHistoriques().stream()
+                .map(h -> HistoriqueStatutDTO.builder()
+                    .id(h.getId())
+                    .statut(h.getStatutDemande() != null ? h.getStatutDemande().getLibelle() : null)
+                    .dateChangement(h.getDateChangement())
+                    .commentaire(h.getCommentaire())
+                    .build())
+                .collect(Collectors.toList()));
+        }
         return dto;
     }
 
