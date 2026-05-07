@@ -365,4 +365,56 @@ public class DemandeService {
 
         return demandeMapper.toResponseDTO(demande);
     }
+
+    /**
+     * Récupère une demande par son identifiant et toutes les demandes du même demandeur.
+     * Retourne un objet avec la demande principale et les demandes liées.
+     *
+     * @param id    identifiant de la demande
+     * @return      map contenant "principale" (la demande) et "liees" (autres demandes du même demandeur)
+     * @throws ResourceNotFoundException si demande absente
+     */
+    public java.util.Map<String, Object> getDemandeWithRelated(Long id) {
+        Demande demande = demandeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande introuvable : id=" + id));
+        
+        DemandeResponseDTO demandePrincipale = demandeMapper.toResponseDTO(demande);
+        
+        // Récupérer toutes les demandes du même demandeur
+        List<DemandeResponseDTO> demandesLiees = demandeRepository.findByDemandeur(demande.getDemandeur())
+                .stream()
+                .filter(d -> !d.getId().equals(id)) // Exclure la demande principale
+                .map(demandeMapper::toResponseDTO)
+                .toList();
+        
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("principale", demandePrincipale);
+        result.put("liees", demandesLiees);
+        return result;
+    }
+
+    /**
+     * Récupère toutes les demandes associées à un numéro de passeport.
+     *
+     * @param numeroPasSeport   numéro du passeport
+     * @return                  liste de DemandeResponseDTO
+     * @throws ResourceNotFoundException si passeport non trouvé
+     */
+    public List<DemandeResponseDTO> getDemandesByPasseport(String numeroPasSeport) {
+        // Récupérer le passeport par son numéro
+        Passeport passeport = passeportService.findByNumero(numeroPasSeport)
+                .orElseThrow(() -> new ResourceNotFoundException("Passeport introuvable : " + numeroPasSeport));
+        
+        // Récupérer le demandeur associé au passeport
+        Demandeur demandeur = passeport.getDemandeur();
+        if (demandeur == null) {
+            throw new ResourceNotFoundException("Demandeur associé au passeport introuvable");
+        }
+        
+        // Retourner toutes les demandes du demandeur
+        return demandeRepository.findByDemandeur(demandeur)
+                .stream()
+                .map(demandeMapper::toResponseDTO)
+                .toList();
+    }
 }

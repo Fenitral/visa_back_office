@@ -12,6 +12,13 @@
           >
             Liste des demandes
           </button>
+          <button 
+            class="nav-btn" 
+            :class="{ active: currentPage === 'recherche' }"
+            @click="currentPage = 'recherche'"
+          >
+            🔍 Rechercher
+          </button>
         </div>
       </div>
     </nav>
@@ -21,11 +28,18 @@
       <!-- Liste des demandes -->
       <ListeDemandes v-if="currentPage === 'list'" @open-details="openDetails" />
       
+      <!-- Recherche -->
+      <Recherche 
+        v-if="currentPage === 'recherche'" 
+        @back="currentPage = 'list'"
+        @view-details="openDetails"
+      />
+      
       <!-- Détails de la demande -->
       <DetailsDemande 
         v-if="currentPage === 'details'" 
         :demande-id="selectedDemandeId"
-        @back="currentPage = 'list'"
+        @back="currentPage = previousPage"
       />
       
       <!-- Page publique de suivi -->
@@ -46,22 +60,26 @@
 import ListeDemandes from './views/ListeDemandes.vue'
 import DetailsDemande from './views/DetailsDemande.vue'
 import FollowUp from './views/FollowUp.vue'
+import Recherche from './views/Recherche.vue'
 
 export default {
   name: 'App',
   components: {
     ListeDemandes,
     DetailsDemande,
-    FollowUp
+    FollowUp,
+    Recherche
   },
   data() {
     return {
       currentPage: 'list',
+      previousPage: 'list',
       selectedDemandeId: null
     }
   },
   methods: {
     openDetails(id) {
+      this.previousPage = this.currentPage
       this.selectedDemandeId = id
       this.currentPage = 'details'
     }
