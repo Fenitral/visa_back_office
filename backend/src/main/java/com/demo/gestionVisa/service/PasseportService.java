@@ -72,4 +72,14 @@ public class PasseportService {
         passeport.setDateExpiration(dto.getDateExpiration());
         return passeportRepository.save(passeport);
     }
+
+    /**
+     * Récupère un passeport par son numéro.
+     *
+     * @param numero    le numéro du passeport
+     * @return          Optional contenant le passeport si trouvé
+     */
+    public Optional<Passeport> findByNumero(String numero) {
+        return passeportRepository.findByNumero(numero);
+    }
 }

@@ -6,10 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST API Controller pour les demandes de visa
- * Endpoints: GET /api/demandes, GET /api/demandes/{id}
+ * Endpoints: GET /api/demandes, GET /api/demandes/{id}, GET /api/demandes/search/*
  */
 @RestController
 @RequestMapping("/api/demandes")
@@ -30,6 +31,31 @@ public class DemandeRestController {
     @GetMapping
     public ResponseEntity<List<DemandeResponseDTO>> listerDemandes() {
         List<DemandeResponseDTO> demandes = demandeService.getToutesDemandes();
+        return ResponseEntity.ok(demandes);
+    }
+
+    /**
+     * GET /api/demandes/search/id/{id}
+     * Récupère une demande par ID avec toutes les demandes liées du même demandeur
+     * Retourne: { "principale": {...}, "liees": [{...}, {...}] }
+     * @param id identifiant de la demande
+     * @return Map contenant la demande principale et les demandes liées
+     */
+    @GetMapping("/search/id/{id}")
+    public ResponseEntity<Map<String, Object>> rechercherParId(@PathVariable Long id) {
+        Map<String, Object> result = demandeService.getDemandeWithRelated(id);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * GET /api/demandes/search/passport/{numeroPasSeport}
+     * Récupère toutes les demandes associées à un numéro de passeport
+     * @param numeroPasSeport numéro du passeport
+     * @return liste de DemandeResponseDTO
+     */
+    @GetMapping("/search/passport/{numeroPasSeport}")
+    public ResponseEntity<List<DemandeResponseDTO>> rechercherParPasseport(@PathVariable String numeroPasSeport) {
+        List<DemandeResponseDTO> demandes = demandeService.getDemandesByPasseport(numeroPasSeport);
         return ResponseEntity.ok(demandes);
     }
 
